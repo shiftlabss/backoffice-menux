@@ -1,0 +1,46 @@
+# .gitignore
+
+# Mac OS
+.DS_Store
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python / Backend
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+backend/venv/
+backend/.env
+*.log
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+dist/
+build/
+coverage/
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database
+*.db
+*.sqlite3
+menux.db
+backend/menux.db
+
+# Other
+.gemini/
+tmp/
