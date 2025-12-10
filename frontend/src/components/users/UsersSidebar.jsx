@@ -8,16 +8,16 @@ export default function UsersSidebar() {
 
     const navItems = [
         {
-            path: '/users/list',
-            label: 'Usuários',
-            icon: Users,
-            desc: 'Gerencie sua equipe'
-        },
-        {
             path: '/users/roles',
             label: 'Perfil',
             icon: ShieldCheck,
             desc: 'Funções e Permissões'
+        },
+        {
+            path: '/users/list',
+            label: 'Usuários',
+            icon: Users,
+            desc: 'Gerencie sua equipe'
         }
     ];
 
@@ -33,8 +33,8 @@ export default function UsersSidebar() {
                             key={item.path}
                             to={item.path}
                             className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-200 min-w-[140px] md:min-w-0 ${isActive
-                                    ? 'bg-[#121212] text-white shadow-md'
-                                    : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                                ? 'bg-[#121212] text-white shadow-md'
+                                : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                                 }`}
                         >
                             <div className={`p-1.5 rounded-lg ${isActive ? 'bg-white/10' : 'bg-transparent'}`}>

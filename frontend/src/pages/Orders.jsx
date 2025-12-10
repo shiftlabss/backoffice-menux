@@ -12,11 +12,67 @@ export default function Orders() {
 
     // Mock data
     const [orders, setOrders] = useState([
-        { id: '#1234', table: 'Mesa 05', items: 3, total: 'R$ 145,90', status: 'pending', time: '5 min' },
-        { id: '#1233', table: 'Mesa 02', items: 1, total: 'R$ 45,00', status: 'preparing', time: '12 min' },
-        { id: '#1232', table: 'Delivery', items: 5, total: 'R$ 210,50', status: 'ready', time: '25 min' },
-        { id: '#1240', table: 'Mesa 10', items: 2, total: 'R$ 89,00', status: 'pending', time: '2 min' },
-        { id: '#1241', table: 'Mesa 08', items: 4, total: 'R$ 320,00', status: 'preparing', time: '15 min' },
+        {
+            id: '#1234',
+            table: 'Mesa 05',
+            items: 3,
+            total: 'R$ 145,90',
+            status: 'pending',
+            time: '5 min',
+            itemsList: [
+                { name: 'Filé Mignon ao Molho Madeira', quantity: 1 },
+                { name: 'Coca-Cola', quantity: 2 }
+            ]
+        },
+        {
+            id: '#1233',
+            table: 'Mesa 02',
+            items: 1,
+            total: 'R$ 45,00',
+            status: 'preparing',
+            time: '12 min',
+            itemsList: [
+                { name: 'Hambúrguer Artesanal', quantity: 1 }
+            ]
+        },
+        {
+            id: '#1232',
+            table: 'Delivery',
+            items: 5,
+            total: 'R$ 210,50',
+            status: 'ready',
+            time: '25 min',
+            itemsList: [
+                { name: 'Pizza Grande Calabresa', quantity: 1 },
+                { name: 'Guaraná 2L', quantity: 1 },
+                { name: 'Borda Recheada', quantity: 1 }
+            ]
+        },
+        {
+            id: '#1240',
+            table: 'Mesa 10',
+            items: 2,
+            total: 'R$ 89,00',
+            status: 'pending',
+            time: '2 min',
+            itemsList: [
+                { name: 'Risoto de Camarão', quantity: 1 },
+                { name: 'Suco de Laranja', quantity: 1 }
+            ]
+        },
+        {
+            id: '#1241',
+            table: 'Mesa 08',
+            items: 4,
+            total: 'R$ 320,00',
+            status: 'preparing',
+            time: '15 min',
+            itemsList: [
+                { name: 'Picanha na Chapa', quantity: 1 },
+                { name: 'Arroz Piamontese', quantity: 1 },
+                { name: 'Batata Frita', quantity: 2 }
+            ]
+        },
     ]);
 
     const handleViewOrder = (order) => {

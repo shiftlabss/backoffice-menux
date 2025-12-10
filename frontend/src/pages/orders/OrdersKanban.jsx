@@ -51,11 +51,20 @@ export default function OrdersKanban({ orders, onViewOrder }) {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between mt-4 text-sm">
-                  <div className="text-gray-600">
-                    {order.items} itens
-                  </div>
-                  <div className="font-semibold text-gray-900">
+                <div className="flex flex-col gap-1 mt-4 text-sm text-gray-600 border-t border-gray-50 pt-3">
+                  {order.itemsList && order.itemsList.slice(0, 3).map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center text-xs">
+                      <span>{item.quantity}x {item.name}</span>
+                    </div>
+                  ))}
+                  {order.itemsList && order.itemsList.length > 3 && (
+                    <span className="text-xs text-gray-400 italic">e mais {order.itemsList.length - 3} itens...</span>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between mt-3 pt-2 text-sm">
+                  <span className="text-xs text-gray-500 font-medium">{order.items} itens no total</span>
+                  <div className="font-semibold text-gray-900 border px-2 py-1 rounded bg-gray-50">
                     {order.total}
                   </div>
                 </div>

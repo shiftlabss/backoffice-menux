@@ -20,12 +20,6 @@ export default function IntelligenceLayout() {
       exact: true
     },
     {
-      label: 'Recomendações',
-      subtitle: 'Oportunidades de melhoria',
-      to: '/intelligence/recommendations',
-      icon: Sparkles
-    },
-    {
       label: 'Impacto nas Vendas',
       subtitle: 'Análise de conversão',
       to: '/intelligence/impact',
@@ -36,6 +30,12 @@ export default function IntelligenceLayout() {
       subtitle: 'Performance do cardápio',
       to: '/intelligence/products',
       icon: Package
+    },
+    {
+      label: 'Recomendações',
+      subtitle: 'Oportunidades de melhoria',
+      to: '/intelligence/recommendations',
+      icon: Sparkles
     },
     {
       label: 'Alertas e Operação',

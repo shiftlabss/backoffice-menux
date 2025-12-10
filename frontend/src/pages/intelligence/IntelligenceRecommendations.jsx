@@ -206,56 +206,91 @@ export default function IntelligenceRecommendations() {
             const isPending = rec.status === 'Pendente';
 
             return (
-              <Card key={rec.id} className="p-0 border-border overflow-hidden hover:shadow-md transition-shadow">
-                <div className="p-5 flex flex-col lg:flex-row gap-4 lg:items-center">
-                  {/* Icon & Time */}
-                  <div className="flex items-center gap-4 lg:w-48 shrink-0">
-                    <div className={cn("p-2.5 rounded-xl shrink-0", bg, color)}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-gray-500 uppercase">{new Date(rec.timestamp).toLocaleDateString()}</p>
-                      <p className="text-sm font-bold text-foreground">{new Date(rec.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-                    </div>
-                  </div>
+              <Card key={rec.id} className="group p-5 border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-surface relative overflow-hidden">
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-bold text-foreground flex items-center gap-2 flex-wrap">
-                      {rec.title}
-                      <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-normal text-gray-500 bg-gray-100">{rec.entity}</Badge>
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1 truncate">{rec.context}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-xs text-green-600 font-bold bg-green-50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                        <TrendingUp className="w-3 h-3" /> Impacto: {rec.impact_estimate}
-                      </span>
-                    </div>
-                  </div>
+                {/* Decorative Background Gradient (subtle) */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/5 to-transparent rounded-bl-full -mr-10 -mt-10 transition-opacity opacity-0 group-hover:opacity-100" />
 
-                  {/* Status & Actions */}
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 shrink-0 lg:justify-end lg:w-auto">
-                    <Badge variant="outline" className={cn("flex items-center gap-1.5 pl-1.5 pr-2.5 py-1", status.color)}>
-                      <status.icon className="w-3.5 h-3.5" />
-                      {status.label}
-                    </Badge>
+                <div className="relative flex flex-col gap-4">
 
-                    {isPending && (
-                      <div className="flex gap-2">
-                        <Button size="sm" variant="ghost" className="text-gray-600" onClick={() => openReviewModal(rec)}>
-                          Revisar
-                        </Button>
-                        <Button size="sm" className="bg-primary text-white hover:bg-[#262626]" onClick={(e) => handleApply(rec.id, e)}>
-                          Aplicar
-                        </Button>
+                  {/* Header Section: Product First */}
+                  <div className="flex justify-between items-start gap-4">
+                    <div className="flex items-start gap-4">
+                      {/* Icon Box */}
+                      <div className={cn("p-3 rounded-2xl shrink-0 transition-colors shadow-sm mt-1", bg, color, "group-hover:scale-110 duration-300")}>
+                        <Icon className="w-6 h-6" />
                       </div>
-                    )}
-                    {!isPending && (
-                      <Button size="sm" variant="ghost" disabled className="text-gray-300">
-                        Ação concluída
-                      </Button>
+
+                      <div>
+                        {/* Primary: Product Name */}
+                        <h3 className="text-xl font-bold text-gray-900 tracking-tight leading-tight mb-1">
+                          {rec.entity}
+                        </h3>
+
+                        {/* Secondary: Action Badge */}
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 uppercase tracking-wide">
+                            {rec.title}
+                          </span>
+                          <span className="text-xs text-text-tertiary">
+                            • {new Date(rec.timestamp).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Status Badge (Top Right) */}
+                    <div className={cn(
+                      "hidden sm:flex px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider items-center gap-1.5",
+                      status.color.replace('bg-', 'bg-opacity-10 bg-')
+                    )}>
+                      <status.icon className="w-3 h-3" />
+                      {status.label}
+                    </div>
+                  </div>
+
+                  {/* Context & Impact */}
+                  <div className="pl-[4.5rem]">
+                    <p className="text-sm text-text-secondary leading-relaxed mb-3 max-w-2xl">
+                      {rec.context}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-4">
+                      {/* Impact Metric */}
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 shadow-sm">
+                        <TrendingUp className="w-4 h-4" />
+                        <span>Impacto Estimado: <span className="text-sm">{rec.impact_estimate}</span></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions Footer */}
+                  <div className="flex items-center justify-end gap-3 pt-2 mt-2 border-t border-border/50">
+                    {isPending ? (
+                      <>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-text-secondary hover:text-text-primary text-xs"
+                          onClick={() => openReviewModal(rec)}
+                        >
+                          Ver detalhes
+                        </Button>
+                        <Button
+                          size="sm"
+                          className="bg-primary text-white hover:bg-primary-hover shadow-sm hover:shadow-md transition-all text-xs h-9 px-4"
+                          onClick={(e) => handleApply(rec.id, e)}
+                        >
+                          Aplicar Sugestão
+                        </Button>
+                      </>
+                    ) : (
+                      <span className="text-xs font-medium text-text-tertiary italic px-2 py-1.5">
+                        Ação {rec.status.toLowerCase()}
+                      </span>
                     )}
                   </div>
+
                 </div>
               </Card>
             );

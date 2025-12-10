@@ -32,11 +32,6 @@ export default function MenuSidebar({ activeView, onViewChange, onAction }) {
         }
     ];
 
-    const quickActions = [
-        { label: 'Nova Categoria', action: 'create_category', icon: Layers },
-        { label: 'Novo Produto', action: 'create_product', icon: Coffee },
-    ];
-
     return (
         <div className="hidden lg:flex w-64 flex-shrink-0 border-r border-border bg-surface h-full flex-col shadow-[1px_0_20px_rgba(0,0,0,0.02)] z-10 transition-all duration-300">
             <div className="flex-1 overflow-y-auto py-6 px-3 space-y-8">
@@ -94,27 +89,6 @@ export default function MenuSidebar({ activeView, onViewChange, onAction }) {
                         </nav>
                     </div>
                 ))}
-
-                {/* Quick Actions Block */}
-                <div>
-                    <h3 className="px-4 text-[11px] font-bold text-text-tertiary uppercase tracking-wider mb-2">
-                        Ações Rápidas
-                    </h3>
-                    <div className="space-y-2 px-1">
-                        {quickActions.map((action, i) => (
-                            <button
-                                key={i}
-                                onClick={() => onAction(action.action)}
-                                className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-text-secondary hover:text-primary hover:bg-primary/5 rounded-lg border border-transparent hover:border-primary/10 transition-all group"
-                            >
-                                <div className="h-6 w-6 rounded-md bg-surface border border-border flex items-center justify-center group-hover:border-primary/30 transition-colors">
-                                    <Plus className="h-3 w-3 text-text-tertiary group-hover:text-primary" />
-                                </div>
-                                {action.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
 
             </div>
 
