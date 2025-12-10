@@ -70,13 +70,13 @@ export default function HighlightsPerformance() {
                     <Card
                         key={item.id}
                         className={cn(
-                            "overflow-hidden transition-all hover:shadow-md border-t-4",
-                            item.is_active ? "border-t-yellow-500" : "border-t-text-tertiary opacity-80"
+                            "overflow-hidden transition-all hover:shadow-md border-t-4 h-full flex flex-col",
+                            item.is_active ? "border-t-yellow-500" : "border-t-border opacity-80"
                         )}
                     >
                         <CardContent className="p-0">
                             {/* Product Header */}
-                            <div className="p-4 flex items-start gap-3 border-b border-border bg-surface/50">
+                            <div className="p-4 flex items-start gap-3 border-b border-border bg-surface/50 flex-none h-[100px]">
                                 <div className="h-12 w-12 rounded-lg bg-surface-hover border border-border flex items-center justify-center overflow-hidden flex-shrink-0">
                                     {item.image_url ? (
                                         <img src={item.image_url} alt={item.name} className="h-full w-full object-cover" />
@@ -103,18 +103,18 @@ export default function HighlightsPerformance() {
                             </div>
 
                             {/* Metrics Grid */}
-                            <div className="grid grid-cols-2 divide-x divide-y divide-border">
-                                {/* Views */}
-                                <div className="p-3">
+                            <div className="grid grid-cols-2 flex-1">
+                                {/* Views (Top Left) */}
+                                <div className="p-3 border-r border-b border-border">
                                     <div className="flex items-center gap-1.5 mb-1">
-                                        <Eye className="w-3.5 h-3.5 text-blue-500" />
+                                        <Eye className="w-3.5 h-3.5 text-primary" />
                                         <span className="text-xs text-text-secondary">Visualizações</span>
                                     </div>
                                     <p className="text-lg font-bold text-text-primary">{item.views.toLocaleString()}</p>
                                 </div>
 
-                                {/* Clicks */}
-                                <div className="p-3">
+                                {/* Clicks (Top Right) */}
+                                <div className="p-3 border-b border-border">
                                     <div className="flex items-center gap-1.5 mb-1">
                                         <MousePointer className="w-3.5 h-3.5 text-purple-500" />
                                         <span className="text-xs text-text-secondary">Cliques</span>
@@ -125,8 +125,8 @@ export default function HighlightsPerformance() {
                                     </p>
                                 </div>
 
-                                {/* Add to Cart */}
-                                <div className="p-3">
+                                {/* Add to Cart (Bottom Left) */}
+                                <div className="p-3 border-r border-border">
                                     <div className="flex items-center gap-1.5 mb-1">
                                         <ShoppingBag className="w-3.5 h-3.5 text-orange-500" />
                                         <span className="text-xs text-text-secondary">Adições</span>
@@ -134,8 +134,8 @@ export default function HighlightsPerformance() {
                                     <p className="text-lg font-bold text-text-primary">{item.added_to_cart}</p>
                                 </div>
 
-                                {/* Orders */}
-                                <div className="p-3 bg-primary/5">
+                                {/* Orders (Bottom Right) */}
+                                <div className="p-3">
                                     <div className="flex items-center gap-1.5 mb-1">
                                         <CheckCircle className="w-3.5 h-3.5 text-green-600" />
                                         <span className="text-xs text-text-secondary font-medium">Pedidos</span>

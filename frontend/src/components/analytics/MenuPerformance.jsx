@@ -15,7 +15,7 @@ const mockPerformanceData = [
 const OpportunityTag = ({ type }) => {
     switch (type) {
         case 'Estrela': return <span className="px-2 py-1 rounded-full bg-yellow-100 text-yellow-800 text-[10px] font-bold uppercase tracking-wide">Estrela</span>;
-        case 'Melhorar Foto': return <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold uppercase tracking-wide">Melhorar Foto</span>;
+        case 'Melhorar Foto': return <span className="px-2 py-1 rounded-full bg-gray-100 text-gray-800 text-[10px] font-bold uppercase tracking-wide">Melhorar Foto</span>;
         case 'Alta Margem': return <span className="px-2 py-1 rounded-full bg-green-100 text-green-800 text-[10px] font-bold uppercase tracking-wide">Alta Margem</span>;
         case 'Subprecificado': return <span className="px-2 py-1 rounded-full bg-purple-100 text-purple-800 text-[10px] font-bold uppercase tracking-wide">Ajustar Preço</span>;
         default: return null;

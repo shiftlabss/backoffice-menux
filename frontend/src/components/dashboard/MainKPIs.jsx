@@ -33,19 +33,19 @@ const KPIItem = ({ label, value, subValue, trend, icon: Icon, color, isNegative 
 export default function MainKPIs() {
     return (
         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-3 mb-8">
-            <KPIItem label="Iniciados" value="215" trend={12} icon={ShoppingBag} color="bg-blue-500" />
+            <KPIItem label="Iniciados" value="215" trend={12} icon={ShoppingBag} color="bg-primary" />
             <KPIItem label="Finalizados" value="189" trend={8} icon={CheckCircle} color="bg-green-500" />
             <KPIItem label="Conversão" value="42%" trend={2.4} icon={MousePointer2} color="bg-purple-500" />
             <KPIItem label="Abandono" value="15%" trend={-1.2} isNegative={true} icon={AlertCircle} color="bg-red-500" />
 
             <KPIItem label="Ticket Médio" value="R$ 92" trend={-1.5} icon={DollarSign} color="bg-emerald-500" />
-            <KPIItem label="TM Categoria" value="R$ 45" subValue="Bebidas" icon={Layers} color="bg-teal-500" />
+            <KPIItem label="TM Categoria" value="R$ 45" subValue="Bebidas" icon={Layers} color="bg-primary" />
 
             <KPIItem label="T. Decisão" value="4m 12s" trend={-5} isNegative={true} icon={Clock} color="bg-orange-500" />
             <KPIItem label="T. Preparo" value="18m" trend={2} icon={ChefHat} color="bg-rose-500" />
 
-            <KPIItem label="SLA Meta" value="98%" subValue="95% Alvo" icon={Target} color="bg-indigo-500" />
-            <KPIItem label="Mesas Ativas" value="24" trend={10} icon={Users} color="bg-cyan-500" />
+            <KPIItem label="SLA Meta" value="98%" subValue="95% Alvo" icon={Target} color="bg-primary" />
+            <KPIItem label="Mesas Ativas" value="24" trend={10} icon={Users} color="bg-primary" />
             <KPIItem label="Em Risco" value="3" trend={-1} isNegative={true} icon={AlertOctagon} color="bg-amber-500" />
         </div>
     );

@@ -5,7 +5,7 @@ import { cn } from '../../lib/utils';
 export default function OrdersKanban({ orders, onViewOrder }) {
   const columns = [
     { id: 'pending', label: 'Pendente', color: 'bg-amber-50 text-amber-700 border-amber-200' },
-    { id: 'preparing', label: 'Em Preparo', color: 'bg-blue-50 text-blue-700 border-blue-200' },
+    { id: 'preparing', label: 'Em Preparo', color: 'bg-gray-50 text-gray-900 border-gray-200' },
     { id: 'ready', label: 'Pronto', color: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
   ];
 

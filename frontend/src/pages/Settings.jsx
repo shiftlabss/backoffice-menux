@@ -15,9 +15,9 @@ export default function Settings() {
 
     // Navigation Items for the Module Sidebar
     const navItems = [
-        { id: 'restaurant', label: 'Dados do Restaurante', icon: Store, onClick: () => setActiveTab('restaurant') },
-        { id: 'users', label: 'Usuários e Permissões', icon: Users, onClick: () => setActiveTab('users') },
-        { id: 'preferences', label: 'Preferências do Sistema', icon: SettingsIcon, onClick: () => setActiveTab('preferences') },
+        { id: 'restaurant', label: 'Dados do Restaurante', subtitle: 'Informações gerais e logo', icon: Store, onClick: () => setActiveTab('restaurant') },
+        { id: 'users', label: 'Usuários e Permissões', subtitle: 'Gestão de equipe', icon: Users, onClick: () => setActiveTab('users') },
+        { id: 'preferences', label: 'Preferências do Sistema', subtitle: 'Configurações globais', icon: SettingsIcon, onClick: () => setActiveTab('preferences') },
     ].map(item => ({ ...item, isActive: activeTab === item.id }));
     // Note: isActive logic is handled in ModuleLayout by 'to' or 'id' matching. 
     // Since we are using state here, we need to pass the current state to ModuleLayout or use IDs.

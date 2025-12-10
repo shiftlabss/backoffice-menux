@@ -55,7 +55,7 @@ export default function ModuleLayout({ title, subtitle, items, children, actions
             )}
 
             {/* Header / Title Area */}
-            <header className="px-4 sm:px-8 py-4 sm:py-6 flex flex-col md:flex-row items-start md:items-center justify-between shrink-0 gap-4">
+            <header className="px-4 sm:px-8 py-4 flex flex-col md:flex-row items-center md:items-start justify-between shrink-0 gap-4">
                 <div className="flex items-center gap-4 w-full md:w-auto">
                     <button onClick={toggleSidebar} className="lg:hidden p-2 -ml-2 text-muted-foreground" aria-label="Abrir menu">
                         <Menu className="h-6 w-6" />
@@ -127,7 +127,7 @@ export default function ModuleLayout({ title, subtitle, items, children, actions
                 {/* Secondary Sidebar (Optional) */}
                 {items && items.length > 0 && (
                     <aside className="w-[280px] shrink-0 overflow-y-auto hidden lg:block">
-                        <div className="bg-white rounded-[20px] shadow-sm shadow-black/5 p-2 space-y-1">
+                        <div className="bg-white rounded-[20px] shadow-sm shadow-black/5 border border-border p-2 space-y-1">
                             {items.map((item) => {
                                 const Icon = item.icon;
                                 const isActive = item.isActive !== undefined
@@ -145,14 +145,26 @@ export default function ModuleLayout({ title, subtitle, items, children, actions
                                             if (item.onClick) item.onClick();
                                         }}
                                         className={cn(
-                                            "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
+                                            "flex items-center gap-3 p-3 rounded-[10px] transition-all duration-200",
                                             isActive
-                                                ? "bg-primary text-white shadow-md shadow-black/10"
+                                                ? "bg-[#121212] text-white shadow-md"
                                                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                         )}
                                     >
-                                        {Icon && <Icon className="h-4 w-4" />}
-                                        {item.label}
+                                        <div className="p-1.5 rounded-lg bg-transparent">
+                                            {Icon && <Icon className="h-4 w-4" strokeWidth={isActive ? 2.5 : 2} />}
+                                        </div>
+                                        <div className="flex flex-col">
+                                            <span className="text-sm font-bold leading-tight">{item.label}</span>
+                                            {item.subtitle && (
+                                                <span className={cn(
+                                                    "text-[10px]",
+                                                    isActive ? "text-gray-400" : "text-muted-foreground"
+                                                )}>
+                                                    {item.subtitle}
+                                                </span>
+                                            )}
+                                        </div>
                                     </NavLink>
                                 );
                             })}
@@ -162,7 +174,7 @@ export default function ModuleLayout({ title, subtitle, items, children, actions
 
                 {/* Main View Area */}
                 <main className={cn(
-                    "flex-1 bg-white rounded-[20px] shadow-sm shadow-black/5 overflow-y-auto p-6 lg:p-10",
+                    "flex-1 bg-white rounded-[20px] shadow-sm shadow-black/5 overflow-y-auto p-6 lg:p-10 border",
                     !items && "ml-0" // If no sidebar, content is full width
                 )}>
                     {children}

@@ -7,9 +7,11 @@ export function MenuxProvider({ children }) {
     const [role, setRole] = useState('manager');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isIAPanelOpen, setIsIAPanelOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     const toggleRole = () => setRole(prev => prev === 'manager' ? 'waiter' : 'manager');
     const toggleSidebar = () => setIsSidebarOpen(prev => !prev);
+    const toggleSidebarCollapse = () => setIsSidebarCollapsed(prev => !prev);
     const toggleIAPanel = () => setIsIAPanelOpen(prev => !prev);
 
     return (
@@ -19,6 +21,8 @@ export function MenuxProvider({ children }) {
             toggleRole,
             isSidebarOpen,
             toggleSidebar,
+            isSidebarCollapsed,
+            toggleSidebarCollapse,
             isIAPanelOpen,
             toggleIAPanel
         }}>

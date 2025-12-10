@@ -159,11 +159,11 @@ export default function Menu() {
 
     // Navigation configuration for ModuleLayout
     const navItems = [
-        { id: 'overview', label: 'Visão Geral', icon: LayoutDashboard, onClick: () => setActiveView('overview') },
-        { id: 'insights', label: 'Insights IA', icon: Zap, onClick: () => setActiveView('insights') },
-        { id: 'categories', label: 'Categorias', icon: Layers, onClick: () => setActiveView('categories') },
-        { id: 'products', label: 'Produtos', icon: Coffee, onClick: () => setActiveView('products') },
-        { id: 'wine_list', label: 'Carta de Vinhos', icon: Wine, onClick: () => setActiveView('wine_list') },
+        { id: 'overview', label: 'Visão Geral', subtitle: 'Resumo do cardápio', icon: LayoutDashboard, onClick: () => setActiveView('overview') },
+        { id: 'insights', label: 'Insights IA', subtitle: 'Análise inteligente', icon: Zap, onClick: () => setActiveView('insights') },
+        { id: 'categories', label: 'Categorias', subtitle: 'Organização estrutural', icon: Layers, onClick: () => setActiveView('categories') },
+        { id: 'products', label: 'Produtos', subtitle: 'Todos os itens', icon: Coffee, onClick: () => setActiveView('products') },
+        { id: 'wine_list', label: 'Carta de Vinhos', subtitle: 'Gestão da adega', icon: Wine, onClick: () => setActiveView('wine_list') },
         // Actions
         { id: 'new_cat', label: '+ Categoria', icon: Plus, onClick: () => handleSidebarAction('create_category') },
         { id: 'new_prod', label: '+ Produto', icon: Plus, onClick: () => handleSidebarAction('create_product') },

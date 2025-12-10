@@ -23,10 +23,10 @@ const data = [
 ];
 
 const StatCard = ({ title, value, subtext, trend, icon: Icon, colorClass, chartColor }) => (
-    <Card className="border-gray-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+    <Card className="border-border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
         <CardContent className="p-6">
             <div className="flex justify-between items-start mb-4">
-                <div className={`p-3 rounded-xl ${colorClass}`}>
+                <div className={`p-3 rounded-lg ${colorClass}`}>
                     <Icon className="w-5 h-5 text-white" />
                 </div>
                 {trend && (
@@ -42,15 +42,6 @@ const StatCard = ({ title, value, subtext, trend, icon: Icon, colorClass, chartC
                 <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">{title}</h3>
                 <div className="text-2xl font-bold text-gray-900">{value}</div>
                 {subtext && <p className="text-xs text-gray-400">{subtext}</p>}
-            </div>
-
-            {/* Micro Chart Background */}
-            <div className="absolute bottom-0 right-0 w-24 h-16 opacity-10">
-                <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={data}>
-                        <Area type="monotone" dataKey="value" stroke={chartColor} fill={chartColor} />
-                    </AreaChart>
-                </ResponsiveContainer>
             </div>
         </CardContent>
     </Card>
@@ -71,7 +62,7 @@ export default function ExecutiveSummary() {
                     subtext="Últimos 7 dias"
                     trend={12}
                     icon={CreditCard}
-                    colorClass="bg-wine-600"
+                    colorClass="bg-rose-600"
                     chartColor="#8E4156"
                 />
                 <StatCard
@@ -80,8 +71,8 @@ export default function ExecutiveSummary() {
                     subtext="vs R$ 132.00 na semana anterior"
                     trend={8.5}
                     icon={Target}
-                    colorClass="bg-blue-600"
-                    chartColor="#2563EB"
+                    colorClass="bg-primary"
+                    chartColor="#171717"
                 />
                 <StatCard
                     title="Total Pedidos"
@@ -116,7 +107,7 @@ export default function ExecutiveSummary() {
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
                 </div>
 
-                <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+                <div className="bg-white border border-border rounded-xl p-5 shadow-sm">
                     <div className="text-xs text-gray-500 uppercase font-bold mb-2">Melhor Horário</div>
                     <div className="flex items-end gap-2">
                         <div className="text-2xl font-bold text-gray-900">20h - 21h</div>
@@ -127,7 +118,7 @@ export default function ExecutiveSummary() {
                     </div>
                 </div>
 
-                <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-sm">
+                <div className="bg-white border border-border rounded-xl p-5 shadow-sm">
                     <div className="text-xs text-gray-500 uppercase font-bold mb-2">Gargalo Identificado</div>
                     <div className="text-lg font-bold text-gray-900">Checkout (Pagamento)</div>
                     <p className="text-xs text-red-500 mt-1 font-medium">15% de abandono nesta etapa</p>
