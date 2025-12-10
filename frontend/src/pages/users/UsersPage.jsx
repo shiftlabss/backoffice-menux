@@ -15,6 +15,10 @@ const MOCK_USERS = [
     { id: 5, name: 'Pedro Alves', email: 'pedro.mkt@restaurante.com', role: 'Marketing', status: 'active', lastAccess: '1 semana atrás' },
 ];
 
+import { toast } from 'react-hot-toast';
+
+// ... (imports)
+
 export default function UsersPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [inviteEmail, setInviteEmail] = useState('');
@@ -22,20 +26,34 @@ export default function UsersPage() {
 
     const handleInvite = () => {
         if (!inviteEmail) return;
-        alert(`Convite enviado para ${inviteEmail}`); // Simple feedback for now
+        toast.success(`Convite enviado para ${inviteEmail}`);
         setInviteEmail('');
     };
 
+    const handleEdit = (user) => {
+        toast("Edição de usuário simulada!", { icon: '✏️' });
+    };
+
+    const handleHistory = (user) => {
+        toast("Histórico de acesso simulado!", { icon: '🕒' });
+    };
+
+    const filteredUsers = MOCK_USERS.filter(user =>
+        user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.role.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="space-y-6">
-            {/* Header */}
+            {/* ... (Header remains same) */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-foreground">Usuários</h1>
                     <p className="text-sm text-muted-foreground">Gerencie acessos e permissões da sua equipe.</p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2" onClick={() => toast("Funcionalidade em breve", { icon: '🚧' })}>
                         <User className="w-4 h-4" />
                         Para Garçom
                     </Button>
@@ -85,7 +103,7 @@ export default function UsersPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {MOCK_USERS.map((user) => (
+                            {filteredUsers.map((user) => (
                                 <TableRow key={user.id} className="hover:bg-background">
                                     <TableCell>
                                         <div className="flex items-center gap-3">
@@ -120,10 +138,10 @@ export default function UsersPage() {
                                     </TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Auditoria">
+                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Auditoria" onClick={() => handleHistory(user)}>
                                                 <History className="w-4 h-4 text-muted-foreground" />
                                             </Button>
-                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Editar">
+                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0" title="Editar" onClick={() => handleEdit(user)}>
                                                 <Edit2 className="w-4 h-4 text-foreground" />
                                             </Button>
                                         </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Plus, Search, Edit2, Trash2, Building2, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 
 export default function RestaurantList() {
   const navigate = useNavigate();
@@ -11,6 +12,17 @@ export default function RestaurantList() {
     { id: 1, name: 'Menux Demo Restaurant', cnpj: '12.345.678/0001-90', plan: 'Premium', status: 'Ativo', health: 98, lastAccess: 'Hoje, 10:42' },
     { id: 2, name: 'Cantina Italiana', cnpj: '98.765.432/0001-10', plan: 'Basic', status: 'Inativo', health: 45, lastAccess: 'Há 5 dias' },
   ];
+
+  const filteredRestaurants = restaurants.filter(r =>
+    r.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.cnpj.includes(searchTerm)
+  );
+
+  const handleDelete = (id) => {
+    if (confirm('Tem certeza que deseja excluir este restaurante?')) {
+      toast.success('Restaurante excluído com sucesso!');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -56,7 +68,7 @@ export default function RestaurantList() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {restaurants.map((restaurant) => (
+              {filteredRestaurants.map((restaurant) => (
                 <tr key={restaurant.id} className="hover:bg-gray-50/50 transition-colors group cursor-pointer" onClick={() => navigate(`/restaurants/${restaurant.id}`)}>
                   <td className="py-4 px-6">
                     <div className="flex items-center gap-3">
@@ -77,8 +89,8 @@ export default function RestaurantList() {
                   </td>
                   <td className="py-4 px-6">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${restaurant.status === 'Ativo'
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
-                        : 'bg-red-50 text-red-700 border-red-100'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                      : 'bg-red-50 text-red-700 border-red-100'
                       }`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${restaurant.status === 'Ativo' ? 'bg-emerald-500' : 'bg-red-500'
                         }`} />
@@ -98,10 +110,10 @@ export default function RestaurantList() {
                   </td>
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
-                      <button className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors" title="Editar">
+                      <button className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors" title="Editar" onClick={() => navigate(`/restaurants/${restaurant.id}`)}>
                         <Edit2 size={18} />
                       </button>
-                      <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Excluir">
+                      <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Excluir" onClick={() => handleDelete(restaurant.id)}>
                         <Trash2 size={18} />
                       </button>
                     </div>

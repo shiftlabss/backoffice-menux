@@ -3,13 +3,48 @@ import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie } from 'recharts';
 import { Users, Clock, LogOut } from 'lucide-react';
 
-const funnelData = [
-    { stage: 'Scan QR', users: 1200 },
-    { stage: 'Visualizar', users: 950 },
-    { stage: 'Adicionar', users: 400 },
-    { stage: 'Checkout', users: 200 },
-    { stage: 'Pedido', users: 180 },
-];
+const MOCK_DATA_SETS = {
+    'Hoje': {
+        funnel: [
+            { stage: 'Scan QR', users: 150 },
+            { stage: 'Visualizar', users: 120 },
+            { stage: 'Adicionar', users: 60 },
+            { stage: 'Checkout', users: 20 },
+            { stage: 'Pedido', users: 12 },
+        ],
+        metrics: { time: '2m 30s', views: '8.4x', abandonment: '10%' }
+    },
+    'Últimos 7 dias': {
+        funnel: [
+            { stage: 'Scan QR', users: 1200 },
+            { stage: 'Visualizar', users: 950 },
+            { stage: 'Adicionar', users: 400 },
+            { stage: 'Checkout', users: 200 },
+            { stage: 'Pedido', users: 180 },
+        ],
+        metrics: { time: '4m 12s', views: '12.4x', abandonment: '15%' }
+    },
+    'Últimos 15 dias': {
+        funnel: [
+            { stage: 'Scan QR', users: 2400 },
+            { stage: 'Visualizar', users: 1800 },
+            { stage: 'Adicionar', users: 800 },
+            { stage: 'Checkout', users: 450 },
+            { stage: 'Pedido', users: 380 },
+        ],
+        metrics: { time: '4m 05s', views: '11.8x', abandonment: '18%' }
+    },
+    'Últimos 30 dias': {
+        funnel: [
+            { stage: 'Scan QR', users: 5000 },
+            { stage: 'Visualizar', users: 4000 },
+            { stage: 'Adicionar', users: 1800 },
+            { stage: 'Checkout', users: 900 },
+            { stage: 'Pedido', users: 800 },
+        ],
+        metrics: { time: '3m 55s', views: '13.2x', abandonment: '12%' }
+    },
+};
 
 const newVsReturningData = [
     { name: 'Novos', value: 65, color: '#8E4156' },
@@ -35,7 +70,9 @@ const HeatmapRow = ({ label, values }) => (
     </div>
 );
 
-export default function ConsumptionDynamics() {
+export default function ConsumptionDynamics({ dateRange = 'Últimos 7 dias' }) {
+    const data = MOCK_DATA_SETS[dateRange] || MOCK_DATA_SETS['Últimos 7 dias'];
+
     return (
         <section className="space-y-6">
             <div className="flex items-center gap-2 mb-6">
@@ -49,12 +86,12 @@ export default function ConsumptionDynamics() {
                     <CardHeader>
                         <CardTitle className="flex justify-between items-center">
                             Jornada do Cliente
-                            <span className="text-xs font-normal px-2 py-1 bg-gray-100 rounded-full text-gray-500">Funil Diário</span>
+                            <span className="text-xs font-normal px-2 py-1 bg-gray-100 rounded-full text-gray-500">Funil ({dateRange})</span>
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={funnelData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                            <BarChart data={data.funnel} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                                 <XAxis type="number" hide />
                                 <YAxis dataKey="stage" type="category" width={80} tick={{ fontSize: 12 }} />
                                 <Tooltip
@@ -62,7 +99,7 @@ export default function ConsumptionDynamics() {
                                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                                 />
                                 <Bar dataKey="users" radius={[0, 4, 4, 0]}>
-                                    {funnelData.map((entry, index) => (
+                                    {data.funnel.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={index === 4 ? '#8E4156' : '#2563EB'} fillOpacity={0.8 - (index * 0.1)} />
                                     ))}
                                 </Bar>
@@ -78,14 +115,14 @@ export default function ConsumptionDynamics() {
                             <CardTitle>Horários de Pico</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <HeatmapRow label="Sexta" values={[0, 10, 20, 45, 80, 95, 100, 85, 60, 40, 20, 10]} />
-                            <HeatmapRow label="Sábado" values={[0, 5, 15, 50, 90, 100, 90, 70, 50, 30, 20, 5]} />
-                            <HeatmapRow label="Domingo" values={[10, 30, 60, 80, 60, 40, 30, 20, 10, 5, 0, 0]} />
+                            <HeatmapRow label="Sexta" values={[0, 10, 20, 45, 80, 95, 100, 85, 60, 40, 20, 10].map(v => Math.round(v * (dateRange === 'Hoje' ? 0.1 : 1)))} />
+                            <HeatmapRow label="Sábado" values={[0, 5, 15, 50, 90, 100, 90, 70, 50, 30, 20, 5].map(v => Math.round(v * (dateRange === 'Hoje' ? 0.1 : 1)))} />
+                            <HeatmapRow label="Domingo" values={[10, 30, 60, 80, 60, 40, 30, 20, 10, 5, 0, 0].map(v => Math.round(v * (dateRange === 'Hoje' ? 0.1 : 1)))} />
 
                             <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
                                 <div className="space-y-1">
                                     <div className="text-sm font-medium text-gray-900">Novos vs Recorrentes</div>
-                                    <div className="text-xs text-gray-500">Com base nos últimos 30 dias</div>
+                                    <div className="text-xs text-gray-500">Com base no período</div>
                                 </div>
                                 <div className="h-24 w-24">
                                     <ResponsiveContainer width="100%" height="100%">
@@ -117,7 +154,7 @@ export default function ConsumptionDynamics() {
                         <Clock className="w-5 h-5" />
                     </div>
                     <div>
-                        <div className="text-2xl font-bold">4m 12s</div>
+                        <div className="text-2xl font-bold">{data.metrics.time}</div>
                         <div className="text-xs text-gray-500">Tempo médio decisão</div>
                     </div>
                 </div>
@@ -127,7 +164,7 @@ export default function ConsumptionDynamics() {
                         <Users className="w-5 h-5" />
                     </div>
                     <div>
-                        <div className="text-2xl font-bold">12.4x</div>
+                        <div className="text-2xl font-bold">{data.metrics.views}</div>
                         <div className="text-xs text-gray-500">Itens vistos por visita</div>
                     </div>
                 </div>
@@ -137,7 +174,7 @@ export default function ConsumptionDynamics() {
                         <LogOut className="w-5 h-5" />
                     </div>
                     <div>
-                        <div className="text-2xl font-bold">15%</div>
+                        <div className="text-2xl font-bold">{data.metrics.abandonment}</div>
                         <div className="text-xs text-gray-500">Abandono no Checkout</div>
                     </div>
                 </div>

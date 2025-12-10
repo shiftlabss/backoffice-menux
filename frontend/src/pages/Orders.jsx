@@ -11,17 +11,27 @@ export default function Orders() {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Mock data
-    const orders = [
+    const [orders, setOrders] = useState([
         { id: '#1234', table: 'Mesa 05', items: 3, total: 'R$ 145,90', status: 'pending', time: '5 min' },
         { id: '#1233', table: 'Mesa 02', items: 1, total: 'R$ 45,00', status: 'preparing', time: '12 min' },
         { id: '#1232', table: 'Delivery', items: 5, total: 'R$ 210,50', status: 'ready', time: '25 min' },
         { id: '#1240', table: 'Mesa 10', items: 2, total: 'R$ 89,00', status: 'pending', time: '2 min' },
         { id: '#1241', table: 'Mesa 08', items: 4, total: 'R$ 320,00', status: 'preparing', time: '15 min' },
-    ];
+    ]);
 
     const handleViewOrder = (order) => {
         setSelectedOrder(order);
         setIsModalOpen(true);
+    };
+
+    const handleUpdateStatus = (orderId, newStatus) => {
+        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+        setSelectedOrder(prev => prev && prev.id === orderId ? { ...prev, status: newStatus } : prev);
+
+        const labels = { pending: 'Pendente', preparing: 'Em Preparo', ready: 'Pronto', finished: 'Finalizado' };
+        toast.success(`Pedido ${orderId} movido para ${labels[newStatus]}`);
+
+        if (newStatus === 'finished') setIsModalOpen(false);
     };
 
     const getStatusColor = (status) => {
@@ -95,7 +105,7 @@ export default function Orders() {
                 {/* Content */}
                 {viewMode === 'list' ? (
                     /* List View */
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden overflow-x-auto">
                         <table className="w-full">
                             <thead className="bg-gray-50 border-b border-gray-100">
                                 <tr>
@@ -149,6 +159,7 @@ export default function Orders() {
                     isOpen={isModalOpen}
                     onClose={() => setIsModalOpen(false)}
                     order={selectedOrder}
+                    onUpdateStatus={handleUpdateStatus}
                 />
             </div>
         </ModuleLayout>

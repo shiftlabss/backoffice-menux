@@ -3,7 +3,7 @@ import { Modal } from '../../components/ui/Modal';
 import { Clock, ShoppingBag, User, DollarSign } from 'lucide-react';
 import { Button } from '../../components/ui/Form';
 
-export default function OrderDetailsModal({ isOpen, onClose, order }) {
+export default function OrderDetailsModal({ isOpen, onClose, order, onUpdateStatus }) {
   if (!order) return null;
 
   return (
@@ -51,7 +51,24 @@ export default function OrderDetailsModal({ isOpen, onClose, order }) {
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={onClose}>Fechar</Button>
-            <Button onClick={() => alert('Ação de imprimir em breve!')}>Imprimir</Button>
+
+            {order.status === 'pending' && (
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => onUpdateStatus(order.id, 'preparing')}>
+                Iniciar Preparo
+              </Button>
+            )}
+
+            {order.status === 'preparing' && (
+              <Button className="bg-emerald-600 hover:bg-emerald-700 text-white" onClick={() => onUpdateStatus(order.id, 'ready')}>
+                Marcar Pronto
+              </Button>
+            )}
+
+            {order.status === 'ready' && (
+              <Button className="bg-gray-900 hover:bg-gray-800 text-white" onClick={() => onUpdateStatus(order.id, 'finished')}>
+                Entregar / Finalizar
+              </Button>
+            )}
           </div>
         </div>
       </div>

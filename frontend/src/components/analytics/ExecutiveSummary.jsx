@@ -12,6 +12,7 @@ import {
 import { Area, AreaChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 // Micro chart data mock
+// Micro chart data mock
 const data = [
     { value: 400 },
     { value: 300 },
@@ -21,6 +22,13 @@ const data = [
     { value: 500 },
     { value: 700 },
 ];
+
+const MOCK_DATA = {
+    'Hoje': { revenue: 1240.50, ticket: 112.00, orders: 12, time: '2m 30s', trend: 0.5, prevRevenue: 'Ontem' },
+    'Últimos 7 dias': { revenue: 12450.00, ticket: 145.90, orders: 86, time: '4m 12s', trend: 12, prevRevenue: 'Semana anterior' },
+    'Últimos 15 dias': { revenue: 28900.00, ticket: 138.50, orders: 208, time: '4m 05s', trend: 8.2, prevRevenue: '15 dias anteriores' },
+    'Últimos 30 dias': { revenue: 56200.00, ticket: 142.10, orders: 395, time: '3m 55s', trend: 15.5, prevRevenue: 'Mês anterior' },
+};
 
 const StatCard = ({ title, value, subtext, trend, icon: Icon, colorClass, chartColor }) => (
     <Card className="border-border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
@@ -47,7 +55,10 @@ const StatCard = ({ title, value, subtext, trend, icon: Icon, colorClass, chartC
     </Card>
 );
 
-export default function ExecutiveSummary() {
+export default function ExecutiveSummary({ dateRange = 'Últimos 7 dias' }) {
+    // Fallback if dateRange is somehow undefined or not in keys (though controlled by parent)
+    const stats = MOCK_DATA[dateRange] || MOCK_DATA['Últimos 7 dias'];
+
     return (
         <section className="space-y-6">
             <div className="flex items-center gap-2 mb-6">
@@ -58,25 +69,25 @@ export default function ExecutiveSummary() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                     title="Faturamento"
-                    value={formatCurrency(12450.00)}
-                    subtext="Últimos 7 dias"
-                    trend={12}
+                    value={formatCurrency(stats.revenue)}
+                    subtext={`vs ${stats.prevRevenue}`}
+                    trend={stats.trend}
                     icon={CreditCard}
                     colorClass="bg-rose-600"
                     chartColor="#8E4156"
                 />
                 <StatCard
                     title="Ticket Médio"
-                    value={formatCurrency(145.90)}
-                    subtext="vs R$ 132.00 na semana anterior"
-                    trend={8.5}
+                    value={formatCurrency(stats.ticket)}
+                    subtext="vs Período anterior"
+                    trend={stats.trend > 10 ? stats.trend - 2 : stats.trend + 1}
                     icon={Target}
                     colorClass="bg-primary"
                     chartColor="#171717"
                 />
                 <StatCard
                     title="Total Pedidos"
-                    value="86"
+                    value={stats.orders}
                     subtext="Taxa de conversão: 4.2%"
                     trend={-2.4}
                     icon={ShoppingBag}
@@ -85,7 +96,7 @@ export default function ExecutiveSummary() {
                 />
                 <StatCard
                     title="Tempo de Decisão"
-                    value="4m 12s"
+                    value={stats.time}
                     subtext="Média scan → pedido"
                     trend={5}
                     icon={Clock}
@@ -99,10 +110,10 @@ export default function ExecutiveSummary() {
                     <div className="relative z-10">
                         <div className="flex items-center gap-2 text-gray-400 text-xs uppercase font-bold mb-2">
                             <Award className="w-4 h-4" />
-                            Item Estrela
+                            Item Estrela ({dateRange})
                         </div>
                         <div className="text-xl font-bold mb-1">Bife Ancho Premium</div>
-                        <div className="text-sm opacity-80">R$ 4.250,00 em vendas</div>
+                        <div className="text-sm opacity-80">{formatCurrency(stats.revenue * 0.35)} em vendas</div>
                     </div>
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
                 </div>
@@ -110,8 +121,8 @@ export default function ExecutiveSummary() {
                 <div className="bg-white border border-border rounded-xl p-5 shadow-sm">
                     <div className="text-xs text-gray-500 uppercase font-bold mb-2">Melhor Horário</div>
                     <div className="flex items-end gap-2">
-                        <div className="text-2xl font-bold text-gray-900">20h - 21h</div>
-                        <div className="text-sm text-green-600 font-medium mb-1">Sexta-feira</div>
+                        <div className="text-2xl font-bold text-gray-900">{dateRange === 'Hoje' ? '12h - 13h' : '20h - 21h'}</div>
+                        <div className="text-sm text-green-600 font-medium mb-1">{dateRange === 'Hoje' ? 'Almoço' : 'Jantar'}</div>
                     </div>
                     <div className="w-full bg-gray-100 h-1.5 rounded-full mt-3 overflow-hidden">
                         <div className="bg-green-500 w-[85%] h-full rounded-full"></div>

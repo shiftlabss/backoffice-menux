@@ -10,7 +10,7 @@ import { Badge } from '../ui/Badge';
 
 function InfoTile({ label, value, subtext, icon: Icon, colorClass, trend }) {
     return (
-        <div className="bg-surface rounded-2xl border border-border p-5 shadow-sm hover:shadow-md transition-all duration-300 group">
+        <div className="bg-white rounded-2xl border border-border p-5 shadow-sm hover:shadow-md transition-all duration-300 group">
             <div className="flex justify-between items-start mb-4">
                 <div className={`p-3 rounded-xl ${colorClass} bg-opacity-10 transition-colors group-hover:bg-opacity-20`}>
                     <Icon className={`h-6 w-6 ${colorClass.replace('bg-', 'text-')}`} />
@@ -32,8 +32,8 @@ function InfoTile({ label, value, subtext, icon: Icon, colorClass, trend }) {
 
 function ActionChip({ label, icon: Icon, onClick, variant = 'default' }) {
     const variants = {
-        default: "bg-surface border-border text-text-secondary hover:border-primary/50 hover:text-primary",
-        primary: "bg-primary/5 border-primary/20 text-primary hover:bg-primary/10",
+        default: "bg-white border-border text-text-secondary hover:border-text-primary/50 hover:text-text-primary",
+        primary: "bg-primary/5 border-primary/20 text-text-primary hover:bg-primary/10",
         accent: "bg-accent/5 border-accent/20 text-accent hover:bg-accent/10"
     };
 
@@ -49,7 +49,7 @@ function ActionChip({ label, icon: Icon, onClick, variant = 'default' }) {
 }
 
 export default function MenuOverview({ data, onAction }) {
-    // Analytics Calculation
+    // ... (Analytics Calculation - kept same)
     const stats = useMemo(() => {
         let totalSubCategories = 0;
         let totalProducts = 0;
@@ -84,7 +84,7 @@ export default function MenuOverview({ data, onAction }) {
 
     if (!hasData) {
         return (
-            <div className="flex flex-col items-center justify-center h-full p-8 text-center animate-fadeIn">
+            <div className="flex flex-col items-center justify-center h-full p-8 text-center animate-fadeIn bg-white">
                 <div className="w-24 h-24 bg-primary/5 rounded-full flex items-center justify-center mb-6">
                     <Layers className="h-10 w-10 text-primary" />
                 </div>
@@ -103,7 +103,7 @@ export default function MenuOverview({ data, onAction }) {
     }
 
     return (
-        <div className="h-full overflow-y-auto bg-background p-6 md:p-8 animate-fadeIn space-y-8">
+        <div className="h-full overflow-y-auto bg-white p-6 md:p-8 animate-fadeIn space-y-8">
 
             {/* 1. Header Area */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -166,10 +166,8 @@ export default function MenuOverview({ data, onAction }) {
 
                 {/* AI Insight Card */}
                 <div className="lg:col-span-2">
-                    <Card className="h-full bg-gradient-to-br from-surface to-surface-hover border-primary/10 shadow-sm relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                            <Zap className="h-32 w-32 text-primary" />
-                        </div>
+                    <Card className="h-full bg-gradient-to-br from-white to-gray-50 border-primary/10 shadow-sm relative overflow-hidden group">
+
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Zap className="h-5 w-5 text-warning fill-warning" />
@@ -184,7 +182,7 @@ export default function MenuOverview({ data, onAction }) {
                                 </p>
                             </div>
                             <div className="pt-2 flex flex-wrap gap-3">
-                                <Button size="sm" className="bg-primary/10 text-primary hover:bg-primary/20 border-none shadow-none">
+                                <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 border-none shadow-sm">
                                     Aplicar Sugestão
                                 </Button>
                                 <Button size="sm" variant="ghost">Ignorar</Button>
@@ -226,9 +224,9 @@ export default function MenuOverview({ data, onAction }) {
                         Ver todas <ArrowRight className="h-4 w-4 ml-1" />
                     </Button>
                 </div>
-                <div className="bg-surface border border-border rounded-xl overflow-hidden">
+                <div className="bg-white border border-border rounded-xl overflow-hidden overflow-x-auto">
                     <table className="w-full text-sm text-left">
-                        <thead className="bg-surface-hover border-b border-border text-xs uppercase text-text-secondary font-semibold">
+                        <thead className="bg-gray-50 border-b border-border text-xs uppercase text-text-secondary font-semibold">
                             <tr>
                                 <th className="px-6 py-4">Nome</th>
                                 <th className="px-6 py-4">Itens</th>
@@ -237,7 +235,7 @@ export default function MenuOverview({ data, onAction }) {
                         </thead>
                         <tbody className="divide-y divide-border">
                             {data.slice(0, 5).map((cat) => (
-                                <tr key={cat.id} className="hover:bg-background transition-colors">
+                                <tr key={cat.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4 font-medium text-text-primary">{cat.name}</td>
                                     <td className="px-6 py-4 text-text-secondary">{cat.subcategories?.reduce((acc, sub) => acc + (sub.items?.length || 0), 0) || 0} produtos</td>
                                     <td className="px-6 py-4">

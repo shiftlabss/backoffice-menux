@@ -23,6 +23,15 @@ const OpportunityTag = ({ type }) => {
 };
 
 export default function MenuPerformance() {
+    const [activeFilter, setActiveFilter] = React.useState('all');
+
+    const filteredData = mockPerformanceData.filter(item => {
+        if (activeFilter === 'all') return true;
+        if (activeFilter === 'drinks') return item.category === 'Bebidas';
+        if (activeFilter === 'dishes') return item.category !== 'Bebidas';
+        return true;
+    });
+
     return (
         <section className="space-y-6">
             <div className="flex items-center gap-2 mb-6">
@@ -31,12 +40,30 @@ export default function MenuPerformance() {
             </div>
 
             <Card className="overflow-hidden">
-                <CardHeader className="flex flex-row items-center justify-between pb-4 border-b border-gray-100">
+                <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 pb-4 border-b border-gray-100">
                     <CardTitle>Análise Detalhada por Item</CardTitle>
                     <div className="flex gap-2">
-                        <Badge variant="outline" className="cursor-pointer hover:bg-gray-50">Todos</Badge>
-                        <Badge variant="outline" className="cursor-pointer hover:bg-gray-50 opacity-50">Pratos</Badge>
-                        <Badge variant="outline" className="cursor-pointer hover:bg-gray-50 opacity-50">Bebidas</Badge>
+                        <Badge
+                            variant={activeFilter === 'all' ? 'default' : 'outline'}
+                            className={`cursor-pointer hover:bg-gray-50 ${activeFilter !== 'all' ? 'opacity-50' : ''}`}
+                            onClick={() => setActiveFilter('all')}
+                        >
+                            Todos
+                        </Badge>
+                        <Badge
+                            variant={activeFilter === 'dishes' ? 'default' : 'outline'}
+                            className={`cursor-pointer hover:bg-gray-50 ${activeFilter !== 'dishes' ? 'opacity-50' : ''}`}
+                            onClick={() => setActiveFilter('dishes')}
+                        >
+                            Pratos
+                        </Badge>
+                        <Badge
+                            variant={activeFilter === 'drinks' ? 'default' : 'outline'}
+                            className={`cursor-pointer hover:bg-gray-50 ${activeFilter !== 'drinks' ? 'opacity-50' : ''}`}
+                            onClick={() => setActiveFilter('drinks')}
+                        >
+                            Bebidas
+                        </Badge>
                     </div>
                 </CardHeader>
                 <CardContent className="p-0">
@@ -66,7 +93,7 @@ export default function MenuPerformance() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {mockPerformanceData.map((item) => (
+                            {filteredData.map((item) => (
                                 <TableRow key={item.id} className="hover:bg-gray-50/50 transition-colors cursor-pointer group">
                                     <TableCell>
                                         <div className="font-semibold text-gray-900">{item.name}</div>

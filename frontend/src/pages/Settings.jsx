@@ -1,56 +1,87 @@
 
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import ModuleLayout from '../components/layout/ModuleLayout';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button, Input } from '../components/ui/Form';
 import { Modal } from '../components/ui/Modal';
 import { Badge } from '../components/ui/Badge';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '../components/ui/Table';
-import { Copy, Plus, Edit2, Trash2, Store, Users, Settings as SettingsIcon } from 'lucide-react';
+import { Switch } from '../components/ui/Switch';
+import { Copy, Plus, Edit2, Trash2, Store, Users, User, Settings as SettingsIcon, Bell, Moon, Globe, Volume2, Shield } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 export default function Settings() {
-    const [activeTab, setActiveTab] = useState('restaurant');
+    const location = useLocation();
+    const [activeTab, setActiveTab] = useState(location.state?.tab || 'restaurant');
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
+    // Preferences State
+    const [pushNotif, setPushNotif] = useState(true);
+    const [emailNotif, setEmailNotif] = useState(false);
+    const [darkMode, setDarkMode] = useState(false);
+    const [soundEnabled, setSoundEnabled] = useState(true);
+
+    // Update activeTab if location state changes (though typical navigation remounts component)
+    React.useEffect(() => {
+        if (location.state?.tab) {
+            setActiveTab(location.state.tab);
+        }
+    }, [location.state]);
 
     // Navigation Items for the Module Sidebar
     const navItems = [
         { id: 'restaurant', label: 'Dados do Restaurante', subtitle: 'Informações gerais e logo', icon: Store, onClick: () => setActiveTab('restaurant') },
+        { id: 'profile', label: 'Meu Perfil', subtitle: 'Dados pessoais e senha', icon: User, onClick: () => setActiveTab('profile') },
         { id: 'users', label: 'Usuários e Permissões', subtitle: 'Gestão de equipe', icon: Users, onClick: () => setActiveTab('users') },
         { id: 'preferences', label: 'Preferências do Sistema', subtitle: 'Configurações globais', icon: SettingsIcon, onClick: () => setActiveTab('preferences') },
     ].map(item => ({ ...item, isActive: activeTab === item.id }));
-    // Note: isActive logic is handled in ModuleLayout by 'to' or 'id' matching. 
-    // Since we are using state here, we need to pass the current state to ModuleLayout or use IDs.
 
-    // Actually ModuleLayout looks for 'to' path matching. Let's adjust ModuleLayout to handle onClick/active state from props too?
-    // Or just fake the navigation by passing `to` as `#` and handling `onClick`.
-    // Let's rely on ModuleLayout's fallback logic.
-
+    // Mock Users Data
     const users = [
         { id: 1, name: 'Fernando Calado', email: 'admin@menux.com', role: 'Administrador', status: 'active' },
         { id: 2, name: 'João Silva', email: 'joao@menux.com', role: 'Gerente', status: 'active' },
         { id: 3, name: 'Maria Oliveira', email: 'maria@menux.com', role: 'Garçom', status: 'active' },
     ];
 
-    // Override the id logic for ModuleLayout highlighting
-    const sidebarItems = navItems.map(item => ({
-        ...item,
-        // Hack: Make the layout think this is the active route if the IDs match
-        to: activeTab === item.id ? window.location.pathname : undefined,
-        // Better: pass a specific 'isActive' prop if I update ModuleLayout, but for now let's strict match.
-        // Actually, let's just update `ModuleLayout` to accept an `activeId` prop to be cleaner.
-        // Waiting... I will update ModuleLayout in a second pass if needed, but for now 
-        // I will just rely on the `onClick` and manually manage the view.
-        // The ModuleLayout uses `location.pathname` for highlighting. 
-        // Let's use `onClick` and passed `id` to match logic? 
-        // Let's just update the internal logic of ModuleLayout slightly in my mind or use a hack.
-        // I'll make the items contain `onClick`.
-    }));
-
-
     const renderContent = () => {
         switch (activeTab) {
+            case 'profile':
+                return (
+                    <div className="space-y-8 animate-fadeIn">
+                        <div className="space-y-6">
+                            <h3 className="text-xl font-bold text-foreground">Meu Perfil</h3>
+                            <div className="flex items-center gap-6 pb-6 border-b border-border">
+                                <div className="h-24 w-24 rounded-full bg-primary text-white flex items-center justify-center text-3xl font-bold">
+                                    FC
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold">Fernando Calado</h4>
+                                    <p className="text-muted-foreground">admin@menux.com.br</p>
+                                    <Badge className="mt-2" variant="outline">Administrador</Badge>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <Input label="Nome Completo" defaultValue="Fernando Calado" />
+                                <Input label="Email" defaultValue="admin@menux.com.br" readOnly />
+                            </div>
+
+                            <div className="space-y-4 pt-4">
+                                <h4 className="font-bold text-foreground">Alterar Senha</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <Input label="Senha Atual" type="password" />
+                                    <Input label="Nova Senha" type="password" />
+                                </div>
+                            </div>
+                        </div>
+                        <div className="pt-8 border-t border-border flex justify-end">
+                            <Button onClick={() => toast.success('Perfil atualizado!')} className="bg-primary text-white">Salvar Alterações</Button>
+                        </div>
+                    </div>
+                );
             case 'restaurant':
+                // ... (existing restaurant case) ...
                 return (
                     <div className="space-y-8 animate-fadeIn">
                         <div className="space-y-6">
@@ -125,6 +156,76 @@ export default function Settings() {
                                     ))}
                                 </TableBody>
                             </Table>
+                        </div>
+                    </div>
+                );
+            case 'preferences':
+                return (
+                    <div className="space-y-8 animate-fadeIn">
+                        {/* Notifications Section */}
+                        <div className="space-y-6">
+                            <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                                <Bell className="h-5 w-5" /> Notificações
+                            </h3>
+                            <div className="bg-white border border-border rounded-xl p-6 space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex-1 pr-4">
+                                        <p className="font-semibold text-foreground">Notificações Push</p>
+                                        <p className="text-sm text-muted-foreground">Receba alertas em tempo real sobre novos pedidos.</p>
+                                    </div>
+                                    <Switch checked={pushNotif} onCheckedChange={setPushNotif} />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex-1 pr-4">
+                                        <p className="font-semibold text-foreground">Relatório por Email</p>
+                                        <p className="text-sm text-muted-foreground">Receba o fechamento diário no seu email.</p>
+                                    </div>
+                                    <Switch checked={emailNotif} onCheckedChange={setEmailNotif} />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Appearance & System */}
+                        <div className="space-y-6">
+                            <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                                <SettingsIcon className="h-5 w-5" /> Sistema
+                            </h3>
+                            <div className="bg-white border border-border rounded-xl p-6 space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-gray-100 rounded-lg"><Moon className="h-4 w-4" /></div>
+                                        <div className="flex-1 pr-4">
+                                            <p className="font-semibold text-foreground">Modo Escuro</p>
+                                            <p className="text-sm text-muted-foreground">Alternar entre tema claro e escuro.</p>
+                                        </div>
+                                    </div>
+                                    <Switch checked={darkMode} onCheckedChange={setDarkMode} />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-gray-100 rounded-lg"><Volume2 className="h-4 w-4" /></div>
+                                        <div className="flex-1 pr-4">
+                                            <p className="font-semibold text-foreground">Sons de Alerta</p>
+                                            <p className="text-sm text-muted-foreground">Tocar som ao receber novo pedido.</p>
+                                        </div>
+                                    </div>
+                                    <Switch checked={soundEnabled} onCheckedChange={setSoundEnabled} />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-gray-100 rounded-lg"><Globe className="h-4 w-4" /></div>
+                                        <div className="flex-1 pr-4">
+                                            <p className="font-semibold text-foreground">Idioma</p>
+                                            <p className="text-sm text-muted-foreground">Português (Brasil)</p>
+                                        </div>
+                                    </div>
+                                    <Button variant="ghost" size="sm" disabled>Alterar</Button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-8 border-t border-border flex justify-end">
+                            <Button onClick={() => toast.success('Preferências salvas!')} className="bg-primary text-white">Salvar Preferências</Button>
                         </div>
                     </div>
                 );

@@ -108,7 +108,7 @@ export default function Menu() {
     // ... (Keep existing handlers: handleCreateCategory, handleUpdateCategory, etc. - omitting for brevity but standard implementation)
     // --- Handlers: Category ---
     const handleCreateCategory = async (name) => { try { await menuService.createCategory({ name, sort_order: categories.length }); refreshData(); toast.success("Categoria criada!"); } catch (e) { toast.error("Erro"); } };
-    const handleUpdateCategory = async (name) => { if (!catToEdit) return; try { await menuService.updateCategory(catToEdit.id, { name }); refreshData(); toast.success("Categoria atualizada!"); } catch (e) { } };
+    const handleUpdateCategory = async (name) => { if (!catToEdit) return; try { await menuService.updateCategory(catToEdit.id, { name }); refreshData(); toast.success("Categoria atualizada!"); } catch (e) { /* ignore */ } };
     const handleDeleteCategory = async (cat) => { if (confirm(`Excluir ${cat.name}?`)) { try { await menuService.deleteCategory(cat.id); refreshData(); toast.success("Excluída!"); } catch (e) { toast.error("Erro (verifique subcategorias)."); } } };
     const handleCategoryReorder = async (activeId, overId) => {
         const oldIndex = categories.findIndex(c => c.id === activeId);
@@ -158,16 +158,25 @@ export default function Menu() {
     };
 
     // Navigation configuration for ModuleLayout
-    const navItems = [
+    // Navigation configuration for ModuleLayout
+    const group1 = [
         { id: 'overview', label: 'Visão Geral', subtitle: 'Resumo do cardápio', icon: LayoutDashboard, onClick: () => setActiveView('overview') },
         { id: 'insights', label: 'Insights IA', subtitle: 'Análise inteligente', icon: Zap, onClick: () => setActiveView('insights') },
         { id: 'categories', label: 'Categorias', subtitle: 'Organização estrutural', icon: Layers, onClick: () => setActiveView('categories') },
+    ];
+
+    const group2 = [
         { id: 'products', label: 'Produtos', subtitle: 'Todos os itens', icon: Coffee, onClick: () => setActiveView('products') },
         { id: 'wine_list', label: 'Carta de Vinhos', subtitle: 'Gestão da adega', icon: Wine, onClick: () => setActiveView('wine_list') },
         // Actions
         { id: 'new_cat', label: '+ Categoria', icon: Plus, onClick: () => handleSidebarAction('create_category') },
         { id: 'new_prod', label: '+ Produto', icon: Plus, onClick: () => handleSidebarAction('create_product') },
-    ].map(item => ({ ...item, isActive: activeView === item.id }));
+    ];
+
+    const navItems = [
+        group1.map(item => ({ ...item, isActive: activeView === item.id })),
+        group2.map(item => ({ ...item, isActive: activeView === item.id }))
+    ];
 
     // Render Logic
     const renderContent = () => {

@@ -23,8 +23,14 @@ export default function ModuleLayout({ title, subtitle, items, children, actions
 
     const handleProfileNavigation = (path) => {
         setIsProfileOpen(false);
-        showToast(`Navegando para ${path}...`, 'info');
-        // navigate(path);
+
+        if (path === '/profile') {
+            navigate('/settings', { state: { tab: 'profile' } });
+        } else if (path === '/settings') {
+            navigate('/settings', { state: { tab: 'preferences' } });
+        } else {
+            navigate(path);
+        }
     };
 
     const handleLogout = () => {
@@ -55,7 +61,7 @@ export default function ModuleLayout({ title, subtitle, items, children, actions
             )}
 
             {/* Header / Title Area */}
-            <header className="px-4 sm:px-8 py-4 flex flex-col md:flex-row items-center md:items-start justify-between shrink-0 gap-4">
+            <header className="relative z-30 px-4 sm:px-8 py-4 flex flex-col md:flex-row items-center md:items-start justify-between shrink-0 gap-4">
                 <div className="flex items-center gap-4 w-full md:w-auto">
                     <button onClick={toggleSidebar} className="lg:hidden p-2 -ml-2 text-muted-foreground" aria-label="Abrir menu">
                         <Menu className="h-6 w-6" />
@@ -123,58 +129,92 @@ export default function ModuleLayout({ title, subtitle, items, children, actions
             </header>
 
             {/* Content Body */}
-            <div className="flex-1 flex px-8 pb-8 gap-8 min-h-0 overflow-hidden">
+            <div className="flex-1 flex flex-col lg:flex-row px-4 lg:px-8 pb-8 gap-4 lg:gap-8 min-h-0 overflow-hidden">
+                {/* Mobile Navigation (Horizontal Scroll) */}
+                {items && items.length > 0 && (
+                    <div className="lg:hidden shrink-0 w-full overflow-x-auto pb-2 flex gap-2 no-scrollbar">
+                        {(Array.isArray(items[0]) ? items.flat() : items).map((item) => {
+                            const Icon = item.icon;
+                            const isActive = item.isActive !== undefined
+                                ? item.isActive
+                                : (item.to
+                                    ? (item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to))
+                                    : false);
+
+                            return (
+                                <button
+                                    key={item.label || item.id}
+                                    onClick={() => {
+                                        if (item.onClick) item.onClick();
+                                        if (item.to) navigate(item.to);
+                                    }}
+                                    className={cn(
+                                        "flex items-center gap-2 px-3 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-colors",
+                                        isActive
+                                            ? "bg-gray-900 text-white border-gray-900"
+                                            : "bg-white text-gray-600 border-gray-200"
+                                    )}
+                                >
+                                    {Icon && <Icon className="h-4 w-4" />}
+                                    {item.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
                 {/* Secondary Sidebar (Optional) */}
                 {items && items.length > 0 && (
-                    <aside className="w-[280px] shrink-0 overflow-y-auto hidden lg:block">
-                        <div className="bg-white rounded-[20px] shadow-sm shadow-black/5 border border-border p-2 space-y-1">
-                            {items.map((item) => {
-                                const Icon = item.icon;
-                                const isActive = item.isActive !== undefined
-                                    ? item.isActive
-                                    : (item.to
-                                        ? (item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to))
-                                        : false);
+                    <aside className="w-[280px] shrink-0 overflow-y-auto hidden lg:block space-y-4">
+                        {(Array.isArray(items[0]) ? items : [items]).map((group, groupIndex) => (
+                            <div key={groupIndex} className="bg-white rounded-[20px] shadow-sm shadow-black/5 border border-border p-2 space-y-1">
+                                {group.map((item) => {
+                                    const Icon = item.icon;
+                                    const isActive = item.isActive !== undefined
+                                        ? item.isActive
+                                        : (item.to
+                                            ? (item.exact ? location.pathname === item.to : location.pathname.startsWith(item.to))
+                                            : false);
 
-                                return (
-                                    <NavLink
-                                        key={item.label}
-                                        to={item.to || '#'}
-                                        onClick={(e) => {
-                                            if (!item.to) e.preventDefault();
-                                            if (item.onClick) item.onClick();
-                                        }}
-                                        className={cn(
-                                            "flex items-center gap-3 p-3 rounded-[10px] transition-all duration-200",
-                                            isActive
-                                                ? "bg-[#121212] text-white shadow-md"
-                                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                                        )}
-                                    >
-                                        <div className="p-1.5 rounded-lg bg-transparent">
-                                            {Icon && <Icon className="h-4 w-4" strokeWidth={isActive ? 2.5 : 2} />}
-                                        </div>
-                                        <div className="flex flex-col">
-                                            <span className="text-sm font-bold leading-tight">{item.label}</span>
-                                            {item.subtitle && (
-                                                <span className={cn(
-                                                    "text-[10px]",
-                                                    isActive ? "text-gray-400" : "text-muted-foreground"
-                                                )}>
-                                                    {item.subtitle}
-                                                </span>
+                                    return (
+                                        <NavLink
+                                            key={item.label || item.id}
+                                            to={item.to || '#'}
+                                            onClick={(e) => {
+                                                if (!item.to) e.preventDefault();
+                                                if (item.onClick) item.onClick();
+                                            }}
+                                            className={cn(
+                                                "flex items-center gap-3 p-3 rounded-[10px] transition-all duration-200",
+                                                isActive
+                                                    ? "bg-[#121212] text-white shadow-md"
+                                                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                             )}
-                                        </div>
-                                    </NavLink>
-                                );
-                            })}
-                        </div>
+                                        >
+                                            <div className="p-1.5 rounded-lg bg-transparent">
+                                                {Icon && <Icon className="h-4 w-4" strokeWidth={isActive ? 2.5 : 2} />}
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-sm font-bold leading-tight">{item.label}</span>
+                                                {item.subtitle && (
+                                                    <span className={cn(
+                                                        "text-[10px]",
+                                                        isActive ? "text-gray-400" : "text-muted-foreground"
+                                                    )}>
+                                                        {item.subtitle}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </NavLink>
+                                    );
+                                })}
+                            </div>
+                        ))}
                     </aside>
                 )}
 
                 {/* Main View Area */}
                 <main className={cn(
-                    "flex-1 bg-white rounded-[20px] shadow-sm shadow-black/5 overflow-y-auto p-6 lg:p-10 border",
+                    "flex-1 bg-white rounded-[20px] shadow-sm shadow-black/5 overflow-y-auto p-4 lg:p-10 border",
                     !items && "ml-0" // If no sidebar, content is full width
                 )}>
                     {children}

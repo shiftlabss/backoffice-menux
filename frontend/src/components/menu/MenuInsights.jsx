@@ -110,9 +110,6 @@ export default function MenuInsights({ data, onAction }) {
             {/* Header */}
             <div>
                 <div className="flex items-center gap-2 mb-2">
-                    <div className="p-1.5 rounded-lg bg-warning/10">
-                        <Zap className="h-4 w-4 text-warning fill-warning" />
-                    </div>
                     <Badge variant="warning">Beta</Badge>
                 </div>
                 <h1 className="text-3xl font-bold tracking-tight text-text-primary">Insights da IA Menux</h1>
@@ -192,6 +189,6 @@ export default function MenuInsights({ data, onAction }) {
                     </Card>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

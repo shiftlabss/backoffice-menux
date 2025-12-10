@@ -195,7 +195,7 @@ export default function IntelligenceAlerts() {
         {selectedAlert && (
           <div className="space-y-4">
             <p className="text-sm text-gray-600">
-              Você está marcando o alerta <strong>"{selectedAlert.description}"</strong> como resolvido.
+              Você está marcando o alerta <strong>&quot;{selectedAlert.description}&quot;</strong> como resolvido.
               Confirma que a ação necessária foi tomada?
             </p>
             <div className="flex gap-3 pt-4">
