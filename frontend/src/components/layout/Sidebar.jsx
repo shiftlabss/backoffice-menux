@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard,
     Users,
@@ -22,6 +22,7 @@ import { useMenux } from '../../context/MenuxContext';
 
 export default function Sidebar() {
     const { role, isSidebarOpen, toggleSidebar, isSidebarCollapsed, toggleSidebarCollapse } = useMenux();
+    const location = useLocation();
 
     const managerLinksGeneral = [
         { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -185,27 +186,49 @@ export default function Sidebar() {
                             <NavLink
                                 key={link.to}
                                 to={link.to}
-                                className={({ isActive }) => cn(
-                                    "flex items-center gap-3 p-2.5 rounded-xl group",
-                                    isActive
-                                        ? "text-gray-900 font-bold bg-transparent"
-                                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-50",
-                                    isSidebarCollapsed && "justify-center aspect-square px-0"
-                                )}
+                                className={({ isActive }) => {
+                                    // Custom active logic:
+                                    // 'Menu' should NOT be active if we are on 'Upsell' route
+                                    let active = isActive;
+                                    if (link.to === '/menu' && location.pathname.startsWith('/menu/upsell')) {
+                                        active = false;
+                                    }
+
+                                    return cn(
+                                        "flex items-center gap-3 p-2.5 rounded-xl group",
+                                        active
+                                            ? "text-gray-900 font-bold bg-transparent"
+                                            : "text-gray-500 hover:text-gray-900 hover:bg-gray-50",
+                                        isSidebarCollapsed && "justify-center aspect-square px-0"
+                                    );
+                                }}
                                 title={isSidebarCollapsed ? link.label : undefined}
                             >
-                                {({ isActive }) => (
-                                    <>
-                                        <link.icon
-                                            size={22}
-                                            strokeWidth={isActive ? 2.5 : 2}
-                                            className={cn(isActive ? "text-gray-900" : "text-gray-500 group-hover:text-gray-900")}
-                                        />
-                                        {!isSidebarCollapsed && (
-                                            <span className="text-sm truncate">{link.label}</span>
-                                        )}
-                                    </>
-                                )}
+                                {({ isActive }) => {
+                                    // We need to recalculate active inside children render prop as well for icon styling
+                                    // Or reuse the active state if we could.
+                                    // Since we can't easily pass state down from className to children here without context or ref refactoring, 
+                                    // we will duplicate the logic or trust the parent style. 
+                                    // HOWEVER, the icon also changes style.
+
+                                    let active = isActive;
+                                    if (link.to === '/menu' && location.pathname.startsWith('/menu/upsell')) {
+                                        active = false;
+                                    }
+
+                                    return (
+                                        <>
+                                            <link.icon
+                                                size={22}
+                                                strokeWidth={active ? 2.5 : 2}
+                                                className={cn(active ? "text-gray-900" : "text-gray-500 group-hover:text-gray-900")}
+                                            />
+                                            {!isSidebarCollapsed && (
+                                                <span className="text-sm truncate">{link.label}</span>
+                                            )}
+                                        </>
+                                    );
+                                }}
                             </NavLink>
                         ))}
                     </div>
