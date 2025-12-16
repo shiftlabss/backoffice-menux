@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
-export default function MenuxIA() {
+export default function Maestro() {
     const { role, isIAPanelOpen, toggleIAPanel } = useMenux();
     const location = useLocation();
     const navigate = useNavigate();
@@ -197,7 +197,7 @@ export default function MenuxIA() {
                             <span className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-500 border-2 border-white rounded-full"></span>
                         </div>
                         <div>
-                            <h3 className="font-bold text-base text-gray-900 leading-tight">Menux IA</h3>
+                            <h3 className="font-bold text-base text-gray-900 leading-tight">Maestro</h3>
                             <p className="text-xs font-medium text-purple-600">Assistente Executivo</p>
                         </div>
                     </div>
@@ -259,7 +259,7 @@ export default function MenuxIA() {
                                     {msg.type === 'ai' && (
                                         <div className="flex items-center gap-2 mb-2 pb-2 border-b border-gray-100 text-xs font-semibold text-purple-600 uppercase tracking-wider">
                                             <Bot className="h-3 w-3" />
-                                            Menux IA
+                                            Maestro
                                         </div>
                                     )}
 
@@ -465,7 +465,7 @@ export default function MenuxIA() {
                     </button>
                 </form>
                 <div className="text-center mt-2">
-                    <span className="text-[10px] uppercase tracking-widest text-gray-300 font-semibold">Menux Enterprise AI</span>
+                    <span className="text-[10px] uppercase tracking-widest text-gray-300 font-semibold">Maestro Enterprise</span>
                 </div>
             </div>
         </div>

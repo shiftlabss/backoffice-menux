@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Search, Filter, Eye, Clock, CheckCircle2, AlertCircle, LayoutList, Kanban as KanbanIcon, ShoppingBag } from 'lucide-react';
+import { Search, Filter, Eye, Clock, CheckCircle2, AlertCircle, LayoutList, Kanban as KanbanIcon, ShoppingBag, X } from 'lucide-react';
 import OrdersKanban from './orders/OrdersKanban';
 import OrderDetailsModal from './orders/OrderDetailsModal';
+import TableMap from './orders/TableMap';
 import ModuleLayout from '../components/layout/ModuleLayout';
 
 export default function Orders() {
@@ -9,6 +10,7 @@ export default function Orders() {
     const [filterStatus, setFilterStatus] = useState('all');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTable, setSelectedTable] = useState(null);
 
     // Mock data
     const [orders, setOrders] = useState([
@@ -108,9 +110,11 @@ export default function Orders() {
         }
     };
 
-    const filteredOrders = filterStatus === 'all'
-        ? orders
-        : orders.filter(o => o.status === filterStatus);
+    const filteredOrders = orders.filter(o => {
+        const matchesStatus = filterStatus === 'all' || o.status === filterStatus;
+        const matchesTable = !selectedTable || o.table === selectedTable;
+        return matchesStatus && matchesTable;
+    });
 
     return (
         <ModuleLayout
@@ -157,6 +161,29 @@ export default function Orders() {
                         </button>
                     ))}
                 </div>
+
+                {/* Table Map Block */}
+                <TableMap
+                    orders={orders}
+                    selectedTable={selectedTable}
+                    onTableSelect={setSelectedTable}
+                />
+
+                {/* Active Filters Pill */}
+                {selectedTable && (
+                    <div className="flex items-center gap-2 animate-in fade-in slide-in-from-left-2">
+                        <span className="text-sm text-gray-500">Filtrando por:</span>
+                        <div className="flex items-center gap-1 pl-3 pr-2 py-1 bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-full text-sm font-medium">
+                            {selectedTable}
+                            <button
+                                onClick={() => setSelectedTable(null)}
+                                className="p-0.5 hover:bg-indigo-100 rounded-full transition-colors"
+                            >
+                                <X size={14} />
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Content */}
                 {viewMode === 'list' ? (

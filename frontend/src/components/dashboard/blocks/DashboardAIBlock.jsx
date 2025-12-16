@@ -56,7 +56,7 @@ export default function DashboardAIBlock() {
 
             <div className="flex items-center gap-2 mb-2">
                 <Sparkles className="w-5 h-5 text-purple-600" />
-                <h2 className="text-lg font-bold text-foreground">Menux Intelligence</h2>
+                <h2 className="text-lg font-bold text-foreground">Maestro</h2>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -91,7 +91,7 @@ export default function DashboardAIBlock() {
                     <div>
                         <div className="flex items-center gap-2 mb-2">
                             <Sparkles className="w-4 h-4 text-purple-400" />
-                            <p className="text-sm text-gray-300 font-medium">Vendas com IA</p>
+                            <p className="text-sm text-gray-300 font-medium">Vendas com Maestro</p>
                         </div>
                         <h3 className="text-3xl font-bold text-white mb-2">R$ 3.850</h3>
                         <div className="flex items-center gap-2">

@@ -6,7 +6,7 @@ import SecondarySidebar from '../components/layout/SecondarySidebar';
 import { useMenux } from '../context/MenuxContext';
 import { getMenuByPath } from '../config/navigation';
 import { Menu as MenuIcon, Bell, Search, ChevronRight } from 'lucide-react';
-import MenuxIA from '../components/MenuxIA';
+import Maestro from '../components/Maestro';
 
 export default function AppLayout() {
     const location = useLocation();
@@ -91,7 +91,7 @@ export default function AppLayout() {
             </div>
 
             {/* AI Panel (Right Side) */}
-            <MenuxIA />
+            <Maestro />
         </div>
     );
 }

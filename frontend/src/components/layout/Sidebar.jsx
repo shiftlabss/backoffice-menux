@@ -13,7 +13,9 @@ import {
     Sparkles,
     ChevronLeft,
     ChevronRight,
-    PanelLeft
+    PanelLeft,
+    TrendingUp,
+    FileText
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useMenux } from '../../context/MenuxContext';
@@ -26,11 +28,16 @@ export default function Sidebar() {
         { to: '/orders', icon: ShoppingBag, label: 'Pedidos' },
     ];
 
-    const managerLinksTools = [
-        { to: '/intelligence', icon: Sparkles, label: 'Menux Intelligence' },
+    const managerLinksIntelligence = [
+        { to: '/intelligence', icon: Sparkles, label: 'Maestro' },
         { to: '/analytics', icon: BarChart3, label: 'Analytics' },
+    ];
+
+    const managerLinksManagement = [
         { to: '/menu', icon: UtensilsCrossed, label: 'Cardápio' },
+        { to: '/menu/upsell', icon: TrendingUp, label: 'Upsell e Cross sell' },
         { to: '/users', icon: Users, label: 'Usuários' },
+        { to: '/reports', icon: FileText, label: 'Relatórios' },
         { to: '/settings', icon: Settings, label: 'Configurações' },
     ];
 
@@ -135,12 +142,46 @@ export default function Sidebar() {
                         ))}
                     </div>
 
-                    {/* Tools Group */}
+                    {/* Intelligence Group */}
+                    <div className="space-y-1">
+                        {!isSidebarCollapsed && (
+                            <p className="px-2 text-xs font-medium text-gray-400 mb-2">Menux Intelligence</p>
+                        )}
+                        {managerLinksIntelligence.map((link) => (
+                            <NavLink
+                                key={link.to}
+                                to={link.to}
+                                className={({ isActive }) => cn(
+                                    "flex items-center gap-3 p-2.5 rounded-xl group",
+                                    isActive
+                                        ? "text-gray-900 font-bold bg-transparent"
+                                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-50",
+                                    isSidebarCollapsed && "justify-center aspect-square px-0"
+                                )}
+                                title={isSidebarCollapsed ? link.label : undefined}
+                            >
+                                {({ isActive }) => (
+                                    <>
+                                        <link.icon
+                                            size={22}
+                                            strokeWidth={isActive ? 2.5 : 2}
+                                            className={cn(isActive ? "text-gray-900" : "text-gray-500 group-hover:text-gray-900")}
+                                        />
+                                        {!isSidebarCollapsed && (
+                                            <span className="text-sm truncate">{link.label}</span>
+                                        )}
+                                    </>
+                                )}
+                            </NavLink>
+                        ))}
+                    </div>
+
+                    {/* Management Group */}
                     <div className="space-y-1">
                         {!isSidebarCollapsed && (
                             <p className="px-2 text-xs font-medium text-gray-400 mb-2">Gestão</p>
                         )}
-                        {managerLinksTools.map((link) => (
+                        {managerLinksManagement.map((link) => (
                             <NavLink
                                 key={link.to}
                                 to={link.to}

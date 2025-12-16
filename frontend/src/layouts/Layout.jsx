@@ -2,7 +2,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
-import MenuxIA from '../components/MenuxIA';
+import Maestro from '../components/Maestro';
 import { useMenux } from '../context/MenuxContext';
 import { Menu } from 'lucide-react';
 
@@ -32,7 +32,7 @@ export default function Layout() {
                 </main>
             </div>
 
-            <MenuxIA />
+            <Maestro />
         </div>
     );
 }

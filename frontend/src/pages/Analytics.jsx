@@ -5,7 +5,7 @@ import ModuleLayout from '../components/layout/ModuleLayout';
 import ExecutiveSummary from '../components/analytics/ExecutiveSummary';
 import ConsumptionDynamics from '../components/analytics/ConsumptionDynamics';
 import MenuPerformance from '../components/analytics/MenuPerformance';
-import MenuxIA from '../components/analytics/MenuxIA';
+import MaestroHighlights from '../components/analytics/MaestroHighlights';
 import HighlightsPerformance from '../components/analytics/HighlightsPerformance';
 import { Button } from '../components/ui/Form';
 
@@ -90,7 +90,7 @@ export default function Analytics() {
                             <div className="h-6 w-1 bg-[#8E4156] rounded-full"></div>
                             <h2 className="text-lg font-bold text-foreground">Insights IA</h2>
                         </div>
-                        <MenuxIA onAction={handleIAAction} dateRange={dateRange} />
+                        <MaestroHighlights onAction={handleIAAction} dateRange={dateRange} />
                     </div>
                 </div>
 

@@ -23,6 +23,8 @@ import IntelligenceAlerts from './pages/intelligence/IntelligenceAlerts';
 import IntelligenceSettings from './pages/intelligence/IntelligenceSettings';
 import RestaurantList from './pages/restaurants/RestaurantList';
 import RestaurantForm from './pages/restaurants/RestaurantForm';
+import UpsellPage from './pages/menu/UpsellPage';
+import ReportsPage from './pages/reports/ReportsPage';
 
 function PrivateRoute({ children }) {
     const { user, loading } = useAuth();
@@ -76,7 +78,7 @@ export default function App() {
                                     <Route path="roles" element={<RolesPage />} />
                                 </Route>
 
-                                {/* Menux Intelligence Module */}
+                                {/* Maestro Module */}
                                 <Route path="intelligence" element={<IntelligenceLayout />}>
                                     <Route index element={<Navigate to="overview" replace />} />
                                     <Route path="overview" element={<IntelligenceOverview />} />
@@ -98,6 +100,8 @@ export default function App() {
                                 </Route>
 
                                 <Route path="menu/*" element={<Menu />} />
+                                <Route path="menu/upsell" element={<UpsellPage />} />
+                                <Route path="reports" element={<ReportsPage />} />
                                 <Route path="orders" element={<Orders />} />
                                 <Route path="analytics" element={<Analytics />} />
                                 <Route path="settings" element={<Settings />} />

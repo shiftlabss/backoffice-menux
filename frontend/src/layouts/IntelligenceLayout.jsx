@@ -48,7 +48,7 @@ export default function IntelligenceLayout() {
 
   return (
     <ModuleLayout
-      title="Menux Intelligence"
+      title="Maestro"
       subtitle="Central de inteligência e automação para o seu restaurante."
       items={sidebarItems}
     >

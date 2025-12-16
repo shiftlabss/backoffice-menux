@@ -87,7 +87,7 @@ export default function IntelligenceSettings() {
           <Settings className="w-6 h-6 text-purple-600" />
           Configurações da IA
         </h2>
-        <p className="text-sm text-gray-500 mt-1">Ajuste o comportamento e as notificações da Menux Intelligence.</p>
+        <p className="text-sm text-gray-500 mt-1">Ajuste o comportamento e as notificações da Maestro.</p>
       </div>
 
       {/* Sensitivity */}

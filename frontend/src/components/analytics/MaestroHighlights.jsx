@@ -37,7 +37,7 @@ const RecommendationCard = ({ type, title, description, badge, action, onAction 
     );
 };
 
-export default function MenuxIA({ onAction }) {
+export default function MaestroHighlights({ onAction }) {
     return (
         <Card className="bg-gray-900 border-gray-800 text-white overflow-hidden relative">
             {/* Background effects */}
@@ -50,7 +50,7 @@ export default function MenuxIA({ onAction }) {
                         <Sparkles className="w-4 h-4 text-white" />
                     </div>
                     <div>
-                        <CardTitle className="text-lg text-white">Inteligência Menux</CardTitle>
+                        <CardTitle className="text-lg text-white">Maestro Intelligence</CardTitle>
                         <p className="text-xs text-gray-400">3 novas recomendações baseadas em dados</p>
                     </div>
                 </div>

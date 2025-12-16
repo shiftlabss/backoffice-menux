@@ -31,7 +31,7 @@ export default function Dashboard() {
                     <DashboardKPIsBlock />
                 </section>
 
-                {/* 2. Menux Intelligence - Full Width */}
+                {/* 2. Maestro - Full Width */}
                 <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
                     <DashboardAIBlock />
                 </section>

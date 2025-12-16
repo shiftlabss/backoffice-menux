@@ -171,7 +171,7 @@ export default function MenuOverview({ data, onAction }) {
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
                                 <Zap className="h-5 w-5 text-warning fill-warning" />
-                                Menux Intelligence
+                                Maestro
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4 relative z-10">

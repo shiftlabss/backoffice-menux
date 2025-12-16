@@ -17,7 +17,7 @@ export default function RecommendationsPage() {
             <Sparkles className="w-6 h-6 text-purple-600" />
             Histórico de Recomendações
           </h1>
-          <p className="text-sm text-gray-500">Log completo de sugestões da Menux Intelligence.</p>
+          <p className="text-sm text-gray-500">Log completo de sugestões da Maestro.</p>
         </div>
       </div>
 

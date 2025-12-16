@@ -29,7 +29,7 @@ const InsightItem = ({ type, text, action, color, icon: Icon, onClick }) => (
     </div>
 );
 
-export default function MenuxAI({ onAction }) {
+export default function MaestroWidget({ onAction }) {
     return (
         <Card className="border-border bg-white relative overflow-hidden shadow-sm">
             <CardHeader className="relative z-10 border-b border-muted pb-4">
@@ -37,7 +37,7 @@ export default function MenuxAI({ onAction }) {
                     <div className="flex items-start flex-col gap-1">
                         <div className="flex items-center gap-2">
                             <Sparkles className="w-5 h-5 text-purple-600" />
-                            <CardTitle className="text-xl text-foreground">Menux AI <span className="text-purple-600">Recomendações</span></CardTitle>
+                            <CardTitle className="text-xl text-foreground">Maestro <span className="text-purple-600">Recomendações</span></CardTitle>
                         </div>
                         <p className="text-sm text-muted-foreground">Inteligência contextual em tempo real para tomada de decisão.</p>
                     </div>
