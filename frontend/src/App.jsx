@@ -84,7 +84,7 @@ export default function App() {
                                     <Route path="impact" element={<IntelligenceImpact />} />
                                     <Route path="products" element={<IntelligenceProducts />} />
                                     <Route path="alerts" element={<IntelligenceAlerts />} />
-                                    <Route path="settings" element={<IntelligenceSettings />} />
+
                                 </Route>
 
                                 {/* Legacy redirect */}

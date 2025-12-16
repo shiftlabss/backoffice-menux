@@ -43,12 +43,7 @@ export default function IntelligenceLayout() {
       to: '/intelligence/alerts',
       icon: AlertTriangle
     },
-    {
-      label: 'Configurações da IA',
-      subtitle: 'Personalize seu assistente',
-      to: '/intelligence/settings',
-      icon: Settings
-    }
+
   ];
 
   return (

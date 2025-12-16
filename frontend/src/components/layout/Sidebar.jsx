@@ -27,8 +27,8 @@ export default function Sidebar() {
     ];
 
     const managerLinksTools = [
-        { to: '/analytics', icon: BarChart3, label: 'Analytics' },
         { to: '/intelligence', icon: Sparkles, label: 'Menux Intelligence' },
+        { to: '/analytics', icon: BarChart3, label: 'Analytics' },
         { to: '/menu', icon: UtensilsCrossed, label: 'Cardápio' },
         { to: '/users', icon: Users, label: 'Usuários' },
         { to: '/settings', icon: Settings, label: 'Configurações' },

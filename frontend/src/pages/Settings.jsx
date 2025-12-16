@@ -10,6 +10,8 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '.
 import { Switch } from '../components/ui/Switch';
 import { Copy, Plus, Edit2, Trash2, Store, Users, User, Settings as SettingsIcon, Bell, Moon, Globe, Volume2, Shield } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { Sparkles } from 'lucide-react';
+import IntelligenceSettings from './intelligence/IntelligenceSettings';
 
 export default function Settings() {
     const location = useLocation();
@@ -34,6 +36,7 @@ export default function Settings() {
         { id: 'restaurant', label: 'Dados do Restaurante', subtitle: 'Informações gerais e logo', icon: Store, onClick: () => setActiveTab('restaurant') },
         { id: 'profile', label: 'Meu Perfil', subtitle: 'Dados pessoais e senha', icon: User, onClick: () => setActiveTab('profile') },
         { id: 'users', label: 'Usuários e Permissões', subtitle: 'Gestão de equipe', icon: Users, onClick: () => setActiveTab('users') },
+        { id: 'ai', label: 'Configurações da IA', subtitle: 'Personalize seu assistente', icon: Sparkles, onClick: () => setActiveTab('ai') },
         { id: 'preferences', label: 'Preferências do Sistema', subtitle: 'Configurações globais', icon: SettingsIcon, onClick: () => setActiveTab('preferences') },
     ].map(item => ({ ...item, isActive: activeTab === item.id }));
 
@@ -46,6 +49,12 @@ export default function Settings() {
 
     const renderContent = () => {
         switch (activeTab) {
+            case 'ai':
+                return (
+                    <div className="animate-fadeIn">
+                        <IntelligenceSettings />
+                    </div>
+                );
             case 'profile':
                 return (
                     <div className="space-y-8 animate-fadeIn">
