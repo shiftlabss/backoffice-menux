@@ -1,115 +1,150 @@
 import React from 'react';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Form';
-import { BarChart3, TrendingUp, DollarSign, Users, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { Download, Filter, Calendar } from 'lucide-react';
+import { Badge } from '../../components/ui/Badge';
 
 export default function UpsellReports() {
   return (
-    <div className="space-y-6">
-      {/* Top Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-5">
-          <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Receita Upsell</p>
-          <div className="flex items-end justify-between mt-2">
-            <h3 className="text-2xl font-bold text-gray-900">R$ 3.850</h3>
-            <span className="text-xs font-bold text-green-600 flex items-center bg-green-50 px-1.5 py-0.5 rounded">
-              <ArrowUpRight size={12} className="mr-0.5" /> +12%
-            </span>
-          </div>
-        </Card>
-        <Card className="p-5">
-          <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Taxa de Aceite</p>
-          <div className="flex items-end justify-between mt-2">
-            <h3 className="text-2xl font-bold text-gray-900">18.5%</h3>
-            <span className="text-xs font-bold text-green-600 flex items-center bg-green-50 px-1.5 py-0.5 rounded">
-              <ArrowUpRight size={12} className="mr-0.5" /> +0.5%
-            </span>
-          </div>
-        </Card>
-        <Card className="p-5">
-          <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Ticket Médio +</p>
-          <div className="flex items-end justify-between mt-2">
-            <h3 className="text-2xl font-bold text-gray-900">R$ 4,50</h3>
-            <span className="text-xs font-bold text-gray-400 flex items-center">
-              por pedido afetado
-            </span>
-          </div>
-        </Card>
-        <Card className="p-5">
-          <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Impressões</p>
-          <div className="flex items-end justify-between mt-2">
-            <h3 className="text-2xl font-bold text-gray-900">12.450</h3>
-            <span className="text-xs font-bold text-blue-600 flex items-center bg-blue-50 px-1.5 py-0.5 rounded">
-              Total/mês
-            </span>
-          </div>
-        </Card>
+    <div className="space-y-6 animate-in fade-in duration-500">
+
+      {/* Filters & Actions */}
+      <div className="flex flex-col md:flex-row justify-between gap-4 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <Button variant="outline" size="sm" className="gap-2 whitespace-nowrap">
+            <Calendar size={14} /> Últimos 30 dias
+          </Button>
+          <div className="h-6 w-px bg-gray-200 mx-2"></div>
+          <Button variant="ghost" size="sm" className="bg-gray-100 text-gray-900 rounded-full font-medium">Todos</Button>
+          <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-900">Upsell</Button>
+          <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-900">Cross-sell</Button>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="gap-2">
+            <Filter size={14} /> Filtrar
+          </Button>
+          <Button variant="outline" size="sm" className="gap-2">
+            <Download size={14} /> Exportar
+          </Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Chart Placeholder */}
-        <Card className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="font-bold text-gray-900">Performance por Dia</h3>
-            <div className="flex gap-2">
-              <div className="flex items-center gap-1 text-xs text-gray-500">
-                <div className="w-2 h-2 rounded-full bg-purple-500"></div> Pedidos
-              </div>
-              <div className="flex items-center gap-1 text-xs text-gray-500">
-                <div className="w-2 h-2 rounded-full bg-green-500"></div> Receita
-              </div>
+      {/* Main Metrics Chart Placeholder */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Chart */}
+        <Card className="lg:col-span-2 p-6 flex flex-col justify-between min-h-[300px]">
+          <div className="flex justify-between items-start mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-gray-900">Desempenho de Receita Incremental</h3>
+              <p className="text-sm text-gray-500">Comparativo diário de receita gerada por sugestões</p>
+            </div>
+            <div className="text-right">
+              <span className="block text-2xl font-bold text-gray-900">R$ 3.850,00</span>
+              <span className="text-sm text-green-600 font-medium">+15% vs mês anterior</span>
             </div>
           </div>
 
-          <div className="h-64 flex items-end justify-between gap-2 px-2">
-            {[40, 65, 45, 80, 55, 90, 70, 85, 60, 75, 50, 95].map((h, i) => (
-              <div key={i} className="flex-1 flex flex-col justify-end gap-1 group relative">
-                <div className="w-full bg-green-400/20 rounded-t-sm" style={{ height: `${h * 0.4}%` }}></div>
-                <div className="w-full bg-purple-600 rounded-t-md hover:opacity-80 transition-opacity" style={{ height: `${h}%` }}></div>
+          {/* Fake Chart Visualization */}
+          <div className="flex items-end gap-2 h-48 w-full px-2">
+            {[40, 60, 45, 80, 55, 70, 90, 60, 50, 75, 85, 95, 65, 55, 80, 70, 60, 75, 90].map((h, i) => (
+              <div key={i} className="flex-1 bg-indigo-50 hover:bg-indigo-100 rounded-t-sm relative group transition-all" style={{ height: `${h}%` }}>
+                <div className="absolute bottom-0 w-full bg-indigo-500 rounded-t-sm transition-all group-hover:bg-indigo-600" style={{ height: `${h * 0.4}%` }}></div>
                 {/* Tooltip */}
-                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                  R$ {h * 12},00
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
+                  R$ {h * 10},00
                 </div>
               </div>
             ))}
           </div>
-          <div className="flex justify-between mt-4 text-xs text-gray-400 font-medium">
+          <div className="flex justify-between text-xs text-gray-400 mt-2">
             <span>01 Dez</span>
-            <span>08 Dez</span>
             <span>15 Dez</span>
-            <span>22 Dez</span>
+            <span>30 Dez</span>
           </div>
         </Card>
 
-        {/* Low Performance Rules */}
-        <Card className="p-6">
-          <h3 className="font-bold text-gray-900 mb-4">Oportunidades de Melhoria</h3>
-          <p className="text-sm text-gray-500 mb-4">Estas regras estão com conversão abaixo de 5%. Considere ajustar a mensagem ou o preço.</p>
+        {/* Funnel */}
+        <Card className="lg:col-span-1 p-6">
+          <h3 className="text-lg font-bold text-gray-900 mb-6">Funil de Conversão</h3>
 
-          <div className="space-y-4">
-            {[
-              { name: 'Água s/ gás -> c/ gás', conv: '2.1%', views: 1450 },
-              { name: 'Sobremesa Almoço Executive', conv: '3.4%', views: 890 },
-              { name: 'Adicional Bacon', conv: '4.8%', views: 2100 },
-            ].map((rule, i) => (
-              <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-red-50 rounded-xl border border-red-100">
-                <div>
-                  <h4 className="font-bold text-gray-900 text-sm">{rule.name}</h4>
-                  <div className="flex gap-3 text-xs text-gray-500 mt-1">
-                    <span>{rule.views} exibições</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-red-600 font-bold bg-white px-2 py-1 rounded border border-red-100 shadow-sm">{rule.conv}</span>
-                  <Button variant="outline" size="sm" className="bg-white hover:bg-red-100 border-red-200 text-red-600 text-xs h-8">
-                    Ajustar
-                  </Button>
-                </div>
+          <div className="space-y-6 relative">
+            <div className="absolute left-6 top-4 bottom-4 w-0.5 bg-gray-100"></div>
+
+            {/* Step 1 */}
+            <div className="relative pl-12">
+              <div className="absolute left-4 top-1 w-4 h-4 rounded-full border-2 border-indigo-500 bg-white z-10"></div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-sm font-medium text-gray-500">Exibidas</span>
+                <span className="font-bold text-gray-900">12.450</span>
               </div>
-            ))}
+              <div className="w-full bg-gray-100 rounded-full h-1.5">
+                <div className="bg-indigo-500 h-1.5 rounded-full" style={{ width: '100%' }}></div>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative pl-12">
+              <div className="absolute left-4 top-1 w-4 h-4 rounded-full border-2 border-indigo-500 bg-white z-10"></div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-sm font-medium text-gray-500">Clicadas</span>
+                <span className="font-bold text-gray-900">4.200</span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-1.5">
+                <div className="bg-indigo-500 h-1.5 rounded-full" style={{ width: '33%' }}></div>
+              </div>
+              <span className="text-xs text-indigo-600 font-medium mt-1 block">33% taxa de clique</span>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative pl-12">
+              <div className="absolute left-4 top-1 w-4 h-4 rounded-full border-2 border-green-500 bg-green-500 z-10"></div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-sm font-medium text-gray-500">Aceitas/Finalizadas</span>
+                <span className="font-bold text-gray-900">2.303</span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-1.5">
+                <div className="bg-green-500 h-1.5 rounded-full" style={{ width: '18.5%' }}></div>
+              </div>
+              <span className="text-xs text-green-600 font-bold mt-1 block">18.5% conversão final</span>
+            </div>
           </div>
         </Card>
       </div>
+
+      {/* Detailed Table */}
+      <Card>
+        <div className="p-6 border-b border-gray-100">
+          <h3 className="font-bold text-gray-900">Performance por Regra</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50 text-gray-500 font-medium">
+              <tr>
+                <th className="px-6 py-4">Regra</th>
+                <th className="px-6 py-4">Tipo</th>
+                <th className="px-6 py-4">Aceites</th>
+                <th className="px-6 py-4">Taxa Conv.</th>
+                <th className="px-6 py-4 text-right">Receita Total</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {[
+                { name: 'Upgrade Batata', type: 'Tamanho', accepts: 850, conv: '22%', rev: 'R$ 1.700' },
+                { name: 'Bebida no Lanche', type: 'Cross-sell', accepts: 620, conv: '15%', rev: 'R$ 3.100' },
+                { name: 'Adicional Queijo', type: 'Upsell', accepts: 400, conv: '30%', rev: 'R$ 1.200' },
+              ].map((row, i) => (
+                <tr key={i} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 font-medium text-gray-900">{row.name}</td>
+                  <td className="px-6 py-4"><span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs">{row.type}</span></td>
+                  <td className="px-6 py-4 text-gray-600">{row.accepts}</td>
+                  <td className="px-6 py-4 font-bold text-green-600">{row.conv}</td>
+                  <td className="px-6 py-4 text-right font-medium text-gray-900">{row.rev}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
     </div>
   );
 }

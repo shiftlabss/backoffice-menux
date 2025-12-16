@@ -6,8 +6,11 @@ import {
   Scaling,
   UtensilsCrossed,
   Sparkles,
-  BarChart3
+  BarChart3,
+  Plus
 } from 'lucide-react';
+import { cn } from '../../lib/utils';
+import { Button } from '../../components/ui/Form';
 
 // Import sub-components
 import UpsellOverview from '../../components/upsell/UpsellOverview';
@@ -20,35 +23,51 @@ import UpsellReports from '../../components/upsell/UpsellReports';
 export default function UpsellPage() {
   const [activeTab, setActiveTab] = useState('overview');
 
+  // Define sidebar items
   const menuItems = [
-    { id: 'overview', label: 'Visão Geral', icon: LayoutDashboard, onClick: () => setActiveTab('overview') },
-    { id: 'rules', label: 'Regras', icon: ListFilter, onClick: () => setActiveTab('rules') },
-    { id: 'size', label: 'Tamanhos', icon: Scaling, onClick: () => setActiveTab('size') },
-    { id: 'combos', label: 'Combos', icon: UtensilsCrossed, onClick: () => setActiveTab('combos') },
-    { id: 'maestro', label: 'Maestro', icon: Sparkles, onClick: () => setActiveTab('maestro') },
-    { id: 'reports', label: 'Relatórios', icon: BarChart3, onClick: () => setActiveTab('reports') },
-  ].map(item => ({ ...item, isActive: activeTab === item.id }));
+    [
+      { id: 'overview', label: 'Visão Geral', icon: LayoutDashboard, onClick: () => setActiveTab('overview'), isActive: activeTab === 'overview' },
+      { id: 'maestro', label: 'Maestro', icon: Sparkles, onClick: () => setActiveTab('maestro'), isActive: activeTab === 'maestro' },
+    ],
+    [
+      { id: 'rules', label: 'Regras', icon: ListFilter, onClick: () => setActiveTab('rules'), isActive: activeTab === 'rules' },
+      { id: 'size', label: 'Tamanhos', icon: Scaling, onClick: () => setActiveTab('size'), isActive: activeTab === 'size' },
+      { id: 'combos', label: 'Combos', icon: UtensilsCrossed, onClick: () => setActiveTab('combos'), isActive: activeTab === 'combos' },
+      { id: 'reports', label: 'Relatórios', icon: BarChart3, onClick: () => setActiveTab('reports'), isActive: activeTab === 'reports' },
+    ]
+  ];
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'overview': return <UpsellOverview />;
+      case 'overview': return <UpsellOverview setActiveTab={setActiveTab} />;
       case 'rules': return <UpsellRules />;
       case 'size': return <UpsellSize />;
       case 'combos': return <UpsellCombos />;
       case 'maestro': return <UpsellMaestro />;
       case 'reports': return <UpsellReports />;
-      default: return <UpsellOverview />;
+      default: return <UpsellOverview setActiveTab={setActiveTab} />;
     }
   };
 
   return (
     <ModuleLayout
-      title="Upsell & Cross-sell"
-      subtitle="Gerencie suas estratégias de venda e aumente o ticket médio."
+      title="Upsell"
+      subtitle="Maximize o ticket médio com sugestões inteligentes."
       items={menuItems}
+      actions={
+        <div className="flex items-center gap-2">
+          <Button variant="primary" className="gap-2 hidden md:flex" onClick={() => setActiveTab('rules')}>
+            <Plus size={18} />
+            Nova Regra
+          </Button>
+        </div>
+      }
     >
-      <div className="animate-in fade-in space-y-6">
-        {renderContent()}
+      <div className="space-y-6 animate-in fade-in duration-500">
+        {/* Content Area */}
+        <div className="min-h-[400px]">
+          {renderContent()}
+        </div>
       </div>
     </ModuleLayout>
   );

@@ -62,8 +62,8 @@ export default function UpsellWizard({ isOpen, onClose }) {
                       key={type}
                       onClick={() => setFormData({ ...formData, triggerType: type })}
                       className={`p-3 text-sm font-medium border rounded-xl transition-all ${formData.triggerType === type
-                          ? 'border-purple-600 bg-purple-50 text-purple-700'
-                          : 'border-gray-200 hover:border-gray-300 text-gray-600'
+                        ? 'border-purple-600 bg-purple-50 text-purple-700'
+                        : 'border-gray-200 hover:border-gray-300 text-gray-600'
                         }`}
                     >
                       {type === 'item' ? 'Item Específico' : type === 'category' ? 'Uma Categoria' : 'Uma Tag'}
@@ -163,7 +163,7 @@ export default function UpsellWizard({ isOpen, onClose }) {
                   <Sparkles className="text-yellow-600 mt-1 shrink-0" size={18} />
                   <div>
                     <h5 className="font-bold text-yellow-800 text-sm">Dica do Maestro</h5>
-                    <p className="text-xs text-yellow-700 mt-1">Frases com perguntas ("Que tal...?") aumentam a conversão em 12%.</p>
+                    <p className="text-xs text-yellow-700 mt-1">Frases com perguntas (&quot;Que tal...?&quot;) aumentam a conversão em 12%.</p>
                   </div>
                 </div>
               </div>

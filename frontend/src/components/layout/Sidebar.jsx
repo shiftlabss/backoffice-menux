@@ -36,7 +36,7 @@ export default function Sidebar() {
 
     const managerLinksManagement = [
         { to: '/menu', icon: UtensilsCrossed, label: 'Cardápio' },
-        { to: '/menu/upsell', icon: TrendingUp, label: 'Upsell e Cross sell' },
+        { to: '/menu/upsell', icon: TrendingUp, label: 'Upsell' },
         { to: '/users', icon: Users, label: 'Usuários' },
         { to: '/reports', icon: FileText, label: 'Relatórios' },
         { to: '/settings', icon: Settings, label: 'Configurações' },
