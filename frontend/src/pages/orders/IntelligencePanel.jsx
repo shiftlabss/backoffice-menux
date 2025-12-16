@@ -1,5 +1,6 @@
 import React from 'react';
-import { Sparkles, Coffee, Wine, Utensils, AlertTriangle, Check, X, Clock } from 'lucide-react';
+import { Sparkles, Coffee, Wine, Utensils, AlertTriangle, Check, X, Clock, Zap, Info } from 'lucide-react';
+import { cn } from '../../lib/utils';
 
 export default function IntelligencePanel({ table, suggestions, onAction, onIgnore }) {
   if (!table) return null;
@@ -13,11 +14,23 @@ export default function IntelligencePanel({ table, suggestions, onAction, onIgno
     }
   };
 
-  const getPriorityColor = (priority) => {
+  const getPriorityConfig = (priority) => {
     switch (priority) {
-      case 'high': return 'text-red-600 bg-red-50 border-red-100';
-      case 'medium': return 'text-amber-600 bg-amber-50 border-amber-100';
-      default: return 'text-blue-600 bg-blue-50 border-blue-100';
+      case 'high': return {
+        styles: 'text-red-700 bg-red-50 border-red-100',
+        icon: AlertTriangle,
+        label: 'Alta'
+      };
+      case 'medium': return {
+        styles: 'text-amber-700 bg-amber-50 border-amber-100',
+        icon: Zap,
+        label: 'Média'
+      };
+      default: return {
+        styles: 'text-blue-700 bg-blue-50 border-blue-100',
+        icon: Info,
+        label: 'Baixa'
+      };
     }
   };
 
@@ -49,19 +62,30 @@ export default function IntelligencePanel({ table, suggestions, onAction, onIgno
         ) : (
           suggestions.map((suggestion, idx) => {
             const Icon = getActionIcon(suggestion.type);
+            const priorityConfig = getPriorityConfig(suggestion.priority);
+            const PriorityIcon = priorityConfig.icon;
+
             return (
-              <div key={idx} className="bg-white rounded-xl border border-gray-200 shadow-sm p-3 hover:shadow-md transition-shadow">
+              <div key={idx} className={cn(
+                "bg-white rounded-xl border shadow-sm p-3 hover:shadow-md transition-all group",
+                suggestion.priority === 'high' ? 'border-red-100 hover:border-red-200' :
+                  suggestion.priority === 'medium' ? 'border-amber-100 hover:border-amber-200' :
+                    'border-gray-200 hover:border-gray-300'
+              )}>
                 {/* Badge */}
                 <div className="flex justify-between items-start mb-2">
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase ${getPriorityColor(suggestion.priority)}`}>
-                    {suggestion.priority === 'high' && <AlertTriangle size={10} />}
-                    Prioridade {suggestion.priority === 'high' ? 'Alta' : suggestion.priority === 'medium' ? 'Média' : 'Baixa'}
+                  <span className={cn(
+                    "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase border",
+                    priorityConfig.styles
+                  )}>
+                    <PriorityIcon size={10} />
+                    Prioridade {priorityConfig.label}
                   </span>
                 </div>
 
                 {/* Content */}
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="p-2 bg-gray-50 rounded-lg text-gray-600">
+                  <div className="p-2 bg-gray-50 rounded-lg text-gray-600 group-hover:bg-white group-hover:shadow-sm transition-all">
                     <Icon size={18} />
                   </div>
                   <div>
@@ -72,11 +96,11 @@ export default function IntelligencePanel({ table, suggestions, onAction, onIgno
 
                 {/* Recommended Items */}
                 {suggestion.items && (
-                  <div className="mb-3 bg-gray-50 rounded-lg p-2">
-                    <p className="text-[10px] font-medium text-gray-500 uppercase mb-1">Items Sugeridos</p>
+                  <div className="mb-3 bg-gray-50/50 rounded-lg p-2 border border-dashed border-gray-200">
+                    <p className="text-[10px] font-medium text-gray-400 uppercase mb-1">Items Sugeridos</p>
                     <div className="flex flex-wrap gap-1">
                       {suggestion.items.map((item, i) => (
-                        <span key={i} className="text-xs bg-white px-2 py-1 rounded border border-gray-200 text-gray-700">
+                        <span key={i} className="text-xs bg-white px-2 py-1 rounded border border-gray-100 text-gray-600 shadow-sm">
                           {item}
                         </span>
                       ))}
@@ -88,7 +112,7 @@ export default function IntelligencePanel({ table, suggestions, onAction, onIgno
                 <div className="flex gap-2">
                   <button
                     onClick={() => onAction(table.id, suggestion)}
-                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-medium rounded-lg transition-colors"
+                    className="flex-1 flex items-center justify-center gap-1.5 py-1.5 bg-gray-900 hover:bg-black text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
                   >
                     <Check size={14} />
                     Oferecer
