@@ -2,6 +2,7 @@
 import React from 'react';
 import ModuleLayout from '../components/layout/ModuleLayout';
 import { CheckCircle, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // New Block Components
 import DashboardAIBlock from '../components/dashboard/blocks/DashboardAIBlock';
@@ -11,7 +12,19 @@ import DashboardProductsBlock from '../components/dashboard/blocks/DashboardProd
 import DashboardDiningBlock from '../components/dashboard/blocks/DashboardDiningBlock';
 import DashboardForecastBlock from '../components/dashboard/blocks/DashboardForecastBlock';
 
+// Newly Created Blocks
+import PriorityActions from '../components/dashboard/blocks/PriorityActions';
+import RevenueByShift from '../components/dashboard/blocks/RevenueByShift';
+import TopLosses from '../components/dashboard/blocks/TopLosses';
+import MenuHealth from '../components/dashboard/blocks/MenuHealth';
+import UpsellCrossSellToday from '../components/dashboard/blocks/UpsellCrossSellToday';
+import OperationTime from '../components/dashboard/blocks/OperationTime';
+
+// Legacy/Existing Imports
+import AdvancedOperations from '../components/dashboard/AdvancedOperations';
+
 export default function Dashboard() {
+    const navigate = useNavigate();
 
     return (
         <ModuleLayout
@@ -26,41 +39,71 @@ export default function Dashboard() {
         >
             <div className="space-y-6 animate-in fade-in pb-10">
 
-                {/* 1. KPIs do Dia - Full Width Grid */}
+                {/* 1. KPIs do Dia - Full Width */}
                 <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <DashboardKPIsBlock />
                 </section>
 
-                {/* 2. Maestro - Full Width */}
+                {/* 2. Ações Prioritárias (Novo) */}
+                <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-75">
+                    <PriorityActions />
+                </section>
+
+                {/* 3. Maestro AI - Full Width */}
                 <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-100">
                     <DashboardAIBlock />
                 </section>
 
-                {/* Middle Section: Funnel & Products */}
-                <section className="grid grid-cols-1 xl:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
-                    {/* Funnel - Takes 1 column on large screens */}
+                {/* 4. Financial & Funnel Row */}
+                <section className="grid grid-cols-1 xl:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
+                    {/* Col 1: Receita por Turno (Novo) */}
+                    <div className="xl:col-span-1">
+                        <RevenueByShift />
+                    </div>
+                    {/* Col 2: Funil de Vendas (Existente) */}
                     <div className="xl:col-span-1">
                         <DashboardFunnelBlock />
                     </div>
+                    {/* Col 3: Upsell Hoje (Novo) */}
+                    <div className="xl:col-span-1">
+                        <UpsellCrossSellToday />
+                    </div>
+                </section>
 
-                    {/* Products - Takes 2 columns on large screens */}
+                {/* 5. Top Perdas (Novo) */}
+                <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-200">
+                    <TopLosses />
+                </section>
+
+                {/* 6. Products & Menu Health Row */}
+                <section className="grid grid-cols-1 xl:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
+                    {/* Saúde do Cardápio (Novo) */}
+                    <div className="xl:col-span-1">
+                        <MenuHealth />
+                    </div>
+                    {/* Products Perf (Existente) */}
                     <div className="xl:col-span-2">
                         <DashboardProductsBlock />
                     </div>
                 </section>
 
-                {/* Bottom Section: Dining & Forecast */}
-                <section className="grid grid-cols-1 xl:grid-cols-2 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
-                    {/* Dining Operations */}
-                    <div className="h-full">
+                {/* 7. Bottom Section: Operational & Timing */}
+                <section className="grid grid-cols-1 xl:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 delay-500">
+                    {/* Dining/Table Map (Existente) */}
+                    <div className="xl:col-span-2 h-full">
                         <DashboardDiningBlock />
                     </div>
-
-                    {/* Forecast Charts */}
-                    <div className="h-full">
-                        <DashboardForecastBlock />
+                    {/* Timing de Mesas (Novo) */}
+                    <div className="xl:col-span-1 h-full">
+                        <OperationTime />
                     </div>
                 </section>
+
+                {/* 8. Advanced Ops Summary */}
+                <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-700">
+                    <AdvancedOperations />
+                </section>
+
             </div>
         </ModuleLayout>
     );
