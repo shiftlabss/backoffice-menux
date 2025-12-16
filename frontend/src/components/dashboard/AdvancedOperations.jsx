@@ -25,7 +25,7 @@ const tables = Array.from({ length: 24 }, (_, i) => {
     return { id: i + 1, status, time: status !== 'free' ? Math.floor(Math.random() * 90) + 'm' : null };
 });
 
-const TableNode = ({ id, status, time }) => {
+const TableNode = ({ id, status, time, onClick }) => {
     const colors = {
         free: 'bg-white border-border text-muted-foreground hover:bg-gray-50',
         occupied: 'bg-blue-50 border-blue-200 text-blue-700 shadow-blue-100',
@@ -33,14 +33,31 @@ const TableNode = ({ id, status, time }) => {
         payment: 'bg-green-50 border-green-200 text-green-700 shadow-green-100'
     };
     return (
-        <div className={`relative p-1 rounded-lg border flex flex-col items-center justify-center aspect-square text-xs transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer shadow-sm ${colors[status]}`}>
+        <div
+            onClick={() => onClick(id, status)}
+            className={`relative p-1 rounded-lg border flex flex-col items-center justify-center aspect-square text-xs transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer shadow-sm ${colors[status]}`}
+        >
             <span className="font-bold text-[10px] sm:text-xs">{id}</span>
             {time && <span className="text-[8px] mt-0.5 opacity-80 font-medium">{time}</span>}
         </div>
     );
 };
 
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+
 export default function AdvancedOperations() {
+    const navigate = useNavigate();
+
+    const handleTableClick = (id, status) => {
+        if (status === 'free') {
+            toast('Mesa Livre', { icon: '✅' });
+        } else {
+            navigate('/orders');
+            toast(`Filtrando pedidos da Mesa ${id}`, { icon: '🍽️' });
+        }
+    };
+
     return (
         <div className="space-y-6">
 
@@ -66,7 +83,13 @@ export default function AdvancedOperations() {
                     </CardHeader>
                     <CardContent className="p-4 sm:p-6">
                         <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 sm:gap-4">
-                            {tables.map(t => <TableNode key={t.id} {...t} />)}
+                            {tables.map(t => (
+                                <TableNode
+                                    key={t.id}
+                                    {...t}
+                                    onClick={handleTableClick}
+                                />
+                            ))}
                         </div>
                         <div className="flex flex-wrap gap-2 sm:gap-4 mt-6 text-[10px] font-medium text-muted-foreground justify-center bg-background py-3 rounded-xl border border-muted">
                             <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-400"></div> Ocupada</span>
@@ -95,7 +118,7 @@ export default function AdvancedOperations() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-4 space-y-3">
-                            <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-xl border border-orange-100">
+                            <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-xl border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors" onClick={() => navigate('/orders')}>
                                 <div className="p-1.5 bg-orange-200 rounded text-orange-700 mt-0.5">
                                     <Utensils className="w-3.5 h-3.5" />
                                 </div>

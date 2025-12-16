@@ -3,11 +3,20 @@ import { Card } from '../../ui/Card';
 import { TrendingUp, MousePointer2, ArrowRight } from 'lucide-react';
 import { Button } from '../../ui/Form';
 import { Badge } from '../../ui/Badge';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function UpsellCrossSellToday() {
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate('/menu/upsell');
+    toast.loading('Carregando módulo Upsell...', { duration: 1000 });
+  };
+
   return (
-    <Card className="p-0 overflow-hidden relative border-l-4 border-l-green-500 h-full">
-      <div className="p-5 pb-3">
+    <Card className="p-0 overflow-hidden relative border-l-4 border-l-green-500 h-full flex flex-col">
+      <div className="p-5 pb-3 flex-1">
         <h3 className="font-bold text-gray-900 flex items-center gap-2 mb-4">
           <TrendingUp className="w-4 h-4 text-green-600" />
           Upsell e Cross sell Hoje
@@ -30,7 +39,7 @@ export default function UpsellCrossSellToday() {
             { name: 'Batata M -> G', conv: '22%', val: 'R$ 120' },
             { name: 'Adic. Bebida', conv: '15%', val: 'R$ 80' }
           ].map((rule, i) => (
-            <div key={i} className="flex justify-between items-center text-sm border-b border-gray-50 pb-2 last:border-0">
+            <div key={i} className="flex justify-between items-center text-sm border-b border-gray-50 pb-2 last:border-0 hover:bg-gray-50 cursor-pointer p-1 rounded transition-colors" onClick={handleNavigate}>
               <span className="font-medium text-gray-700">{rule.name}</span>
               <div className="flex gap-2">
                 <Badge variant="secondary" className="text-xs h-5 px-1">{rule.conv}</Badge>
@@ -41,8 +50,13 @@ export default function UpsellCrossSellToday() {
         </div>
       </div>
 
-      <div className="bg-gray-50 p-3 border-t border-gray-100">
-        <Button variant="ghost" size="sm" className="w-full text-xs text-green-700 hover:text-green-800 hover:bg-green-50 justify-between">
+      <div className="bg-gray-50 p-3 border-t border-gray-100 mt-auto">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full text-xs text-green-700 hover:text-green-800 hover:bg-green-50 justify-between"
+          onClick={handleNavigate}
+        >
           Ver módulo Upsell <ArrowRight size={14} />
         </Button>
       </div>

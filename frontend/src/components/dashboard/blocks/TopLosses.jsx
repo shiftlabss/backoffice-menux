@@ -2,8 +2,17 @@ import React from 'react';
 import { Card } from '../../ui/Card';
 import { TrendingDown, EyeOff, ShoppingCart, Ban } from 'lucide-react';
 import { Button } from '../../ui/Form';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function TopLosses() {
+  const navigate = useNavigate();
+
+  const handleDetail = (type) => {
+    navigate('/analytics');
+    toast(`Analisando perdas: ${type}`, { icon: '📉' });
+  }
+
   return (
     <Card className="p-0 overflow-hidden border-gray-200">
       <div className="p-5 border-b border-gray-100 flex justify-between items-center">
@@ -23,20 +32,20 @@ export default function TopLosses() {
             <EyeOff size={14} /> Vistos s/ Pedido
           </h4>
           <ul className="space-y-3">
-            <li className="flex justify-between items-center group cursor-pointer">
+            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Vistos sem Pedido')}>
               <span className="text-sm text-gray-700 font-medium group-hover:text-red-600 transition-colors">Picanha Nobre</span>
               <span className="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">42 views</span>
             </li>
-            <li className="flex justify-between items-center group cursor-pointer">
+            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Vistos sem Pedido')}>
               <span className="text-sm text-gray-700 font-medium group-hover:text-red-600 transition-colors">Vinho Malbec</span>
               <span className="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">28 views</span>
             </li>
-            <li className="flex justify-between items-center group cursor-pointer">
+            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Vistos sem Pedido')}>
               <span className="text-sm text-gray-700 font-medium group-hover:text-red-600 transition-colors">Petit Gateau</span>
               <span className="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">15 views</span>
             </li>
           </ul>
-          <Button variant="ghost" size="sm" className="w-full mt-3 text-xs h-7 text-gray-400 hover:text-gray-900">Ver detalhes</Button>
+          <Button variant="ghost" size="sm" className="w-full mt-3 text-xs h-7 text-gray-400 hover:text-gray-900" onClick={() => handleDetail('Geral')}>Ver detalhes</Button>
         </div>
 
         {/* Coluna 2: Removidos do Carrinho */}
@@ -45,11 +54,11 @@ export default function TopLosses() {
             <ShoppingCart size={14} /> Abandono Carrinho
           </h4>
           <ul className="space-y-3">
-            <li className="flex justify-between items-center group cursor-pointer">
+            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Abandono')}>
               <span className="text-sm text-gray-700 font-medium group-hover:text-red-600 transition-colors">Combo Família</span>
               <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-bold">8x</span>
             </li>
-            <li className="flex justify-between items-center group cursor-pointer">
+            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Abandono')}>
               <span className="text-sm text-gray-700 font-medium group-hover:text-red-600 transition-colors">Suco Natural</span>
               <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-bold">5x</span>
             </li>
@@ -62,11 +71,11 @@ export default function TopLosses() {
             <Ban size={14} /> Queda Conversão (24h)
           </h4>
           <ul className="space-y-3">
-            <li className="flex justify-between items-center group cursor-pointer">
+            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Queda Conversão')}>
               <span className="text-sm text-gray-700 font-medium group-hover:text-red-600 transition-colors">Gin Tônica</span>
               <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold">-15%</span>
             </li>
-            <li className="flex justify-between items-center group cursor-pointer">
+            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Queda Conversão')}>
               <span className="text-sm text-gray-700 font-medium group-hover:text-red-600 transition-colors">Entrada Fria</span>
               <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold">-8%</span>
             </li>
@@ -76,3 +85,4 @@ export default function TopLosses() {
     </Card>
   );
 }
+

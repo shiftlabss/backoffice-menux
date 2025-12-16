@@ -71,7 +71,8 @@ export default function DashboardKPIsBlock() {
             change: '+12%',
             isPositive: true,
             sub: `${metrics?.orders_finalized || 0} pedidos finalizados`,
-            icon: DollarSign
+            icon: DollarSign,
+            link: '/analytics?tab=revenue&period=today'
         },
         {
             label: 'Total de Pedidos',
@@ -79,7 +80,8 @@ export default function DashboardKPIsBlock() {
             change: null,
             isPositive: true,
             sub: 'Pedidos ativos agora',
-            icon: ShoppingBag
+            icon: ShoppingBag,
+            link: '/orders?filter=today'
         },
         {
             label: 'Ticket Médio',

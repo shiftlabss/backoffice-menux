@@ -1,10 +1,14 @@
 import React from 'react';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Form';
-import { AlertCircle, ArrowRight, Zap, TrendingUp, Package, Clock } from 'lucide-react';
 import { Badge } from '../../ui/Badge';
+import { AlertCircle, ArrowRight, Zap, TrendingUp, Package, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export default function PriorityActions() {
+  const navigate = useNavigate();
+
   const actions = [
     {
       id: 1,
@@ -13,7 +17,11 @@ export default function PriorityActions() {
       impact: 'Risco de perder R$ 450,00',
       priority: 'Alta',
       type: 'estoque',
-      icon: Package
+      icon: Package,
+      action: () => {
+        toast.success('Solicitação de reposição enviada para o estoque!');
+        // Mock navigation/action
+      }
     },
     {
       id: 2,
@@ -22,7 +30,11 @@ export default function PriorityActions() {
       impact: 'Potencial de +R$ 800,00',
       priority: 'Média',
       type: 'marketing',
-      icon: Zap
+      icon: Zap,
+      action: () => {
+        navigate('/menu/upsell');
+        toast.success('Redirecionando para ativação de Combos...');
+      }
     },
     {
       id: 3,
@@ -31,7 +43,12 @@ export default function PriorityActions() {
       impact: 'Melhora SLA em 12%',
       priority: 'Média',
       type: 'operacao',
-      icon: Clock
+      icon: Clock,
+      action: () => {
+        toast.loading('Abrindo configurações de tempo...', { duration: 1500 });
+        // Mock modal opening
+        setTimeout(() => toast.success('Configurações atualizadas'), 1500);
+      }
     }
   ];
 
@@ -44,11 +61,25 @@ export default function PriorityActions() {
           </div>
           <h3 className="font-bold text-gray-900">Ações Prioritárias do Dia</h3>
         </div>
-        <Button variant="ghost" size="sm" className="text-xs h-7">Ver todas</Button>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-xs h-7"
+          onClick={() => {
+            navigate('/intelligence/recommendations');
+            toast('Visualizando todas as recomendações do Maestro');
+          }}
+        >
+          Ver todas
+        </Button>
       </div>
       <div className="divide-y divide-gray-50">
         {actions.map((action) => (
-          <div key={action.id} className="p-4 hover:bg-gray-50 transition-colors flex items-center justify-between group cursor-pointer">
+          <div
+            key={action.id}
+            className="p-4 hover:bg-gray-50 transition-colors flex items-center justify-between group cursor-pointer active:bg-gray-100"
+            onClick={action.action}
+          >
             <div className="flex items-start gap-3">
               <div className={`mt-1 p-1.5 rounded-full ${action.priority === 'Alta' ? 'bg-red-50 text-red-500' : 'bg-yellow-50 text-yellow-600'}`}>
                 <action.icon size={14} />
@@ -67,9 +98,6 @@ export default function PriorityActions() {
                 </span>
               </div>
             </div>
-            <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity text-purple-600">
-              Resolver <ArrowRight size={14} className="ml-1" />
-            </Button>
           </div>
         ))}
       </div>

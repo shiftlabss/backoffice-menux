@@ -44,13 +44,15 @@ export default function DashboardProductsBlock() {
     const handlePeriodChange = (e) => {
         const newPeriod = e.target.value;
         if (newPeriod === period) return;
+
+        setIsLoading(true);
         setPeriod(newPeriod);
+        // Simulate fetch
+        setTimeout(() => setIsLoading(false), 600);
     };
 
     const handleViewAll = () => {
-        // Mock navigation
-        // navigate('/analytics/products');
-        console.log("Navigating to full products list...");
+        navigate('/analytics');
     };
 
     const highlights = HIGHLIGHTS_DATA[period];
@@ -126,7 +128,11 @@ export default function DashboardProductsBlock() {
                         </TableHeader>
                         <TableBody>
                             {products.map((p) => (
-                                <TableRow key={p.id} className="border-b border-muted hover:bg-background">
+                                <TableRow
+                                    key={p.id}
+                                    className="border-b border-muted hover:bg-background cursor-pointer active:bg-gray-50"
+                                    onClick={() => navigate('/analytics')}
+                                >
                                     <TableCell className="py-2 font-medium text-xs">{p.name}</TableCell>
                                     <TableCell className="py-2 text-xs text-gray-500">{p.cat}</TableCell>
                                     <TableCell className="py-2 text-xs">
