@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Form';
-import { Calendar, Building2, AlertTriangle, User, ChevronRight, Activity } from 'lucide-react';
+import { Calendar, Building2, AlertTriangle, Activity } from 'lucide-react';
 import { Badge } from '../../ui/Badge';
 
 export default function DashboardHeaderContext() {
@@ -81,19 +81,38 @@ export default function DashboardHeaderContext() {
         </div>
       </Card>
 
-      {/* CARD 3: PERFIL (2 cols) */}
-      <Card className="lg:col-span-2 p-0 border-gray-200 shadow-sm bg-gray-50 flex items-center justify-center relative overflow-hidden group cursor-pointer hover:border-gray-300 transition-colors">
-        <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        <div className="relative z-10 flex flex-col items-center gap-2 p-4 text-center">
-          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center border-2 border-white shadow-sm">
-            <User className="w-5 h-5 text-gray-500" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-gray-900">Admin</span>
-            <span className="text-[10px] text-gray-500">Gerente</span>
+      {/* CARD 3: RESUMO DO TURNO (2 cols) */}
+      <Card
+        className="lg:col-span-2 p-4 flex flex-col justify-between border-gray-200 shadow-sm bg-white relative overflow-hidden cursor-pointer hover:border-gray-300 transition-colors group"
+        onClick={() => window.location.href = '/reports?shift=almoco'}
+      >
+        <div>
+          <span className="text-[10px] font-bold uppercase text-gray-400 tracking-wider">Resumo do Turno</span>
+          <div className="flex items-center justify-between mt-1">
+            <span className="text-lg font-bold text-gray-900">Almoço</span>
+            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-100 text-[10px] px-1.5 h-5 flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              Normal
+            </Badge>
           </div>
         </div>
-        <ChevronRight className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-300 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-[-4px] group-hover:translate-x-0" />
+
+        <div className="flex flex-col gap-2 mt-3">
+          <div className="space-y-1">
+            <div className="flex justify-between items-end">
+              <span className="text-[10px] font-medium text-gray-500">Meta do turno</span>
+              <span className="text-[10px] font-bold text-gray-900">68%</span>
+            </div>
+            <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+              <div className="h-full bg-blue-600 rounded-full w-[68%]" />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 pt-2 border-t border-gray-50">
+            <span className="text-[10px] text-gray-400 font-medium">Pico:</span>
+            <span className="text-xs font-bold text-gray-700">12h - 13h</span>
+          </div>
+        </div>
       </Card>
     </div>
   );
