@@ -2,6 +2,7 @@ import React from 'react';
 import { Card } from '../../ui/Card';
 import { Clock, Wine, Utensils, AlertTriangle, ArrowRight } from 'lucide-react';
 import { Button } from '../../ui/Form';
+import { Badge } from '../../ui/Badge';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -14,43 +15,50 @@ export default function OperationTime() {
   };
 
   return (
-    <Card className="p-5 h-full">
-      <h3 className="font-bold text-gray-900 flex items-center gap-2 mb-4">
-        <Clock className="w-4 h-4 text-orange-500" />
-        Timing de Mesas
-      </h3>
+    <Card className="p-4 h-full">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="font-bold text-gray-900 flex items-center gap-2 text-sm">
+          <Clock className="w-3.5 h-3.5 text-orange-500" />
+          Timing de Mesas
+        </h3>
+        <Badge variant="outline" className="text-[10px] h-5">Tempo Real</Badge>
+      </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <div className="text-center p-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => toast('Abrindo detalhes de bebidas...', { icon: '🍷' })}>
-          <Wine className="w-5 h-5 text-purple-500 mx-auto mb-2" />
-          <p className="text-xs text-gray-500">Média 2ª Bebida</p>
-          <p className="text-lg font-bold text-gray-900">18 min</p>
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="text-center p-2 rounded-lg border border-gray-100 bg-gray-50/50 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => toast('Abrindo detalhes de bebidas...', { icon: '🍷' })}>
+          <p className="text-[10px] text-gray-500 mb-0.5">Média 2ª Bebida</p>
+          <div className="flex items-center justify-center gap-1.5">
+            <Wine className="w-3.5 h-3.5 text-purple-500" />
+            <p className="text-base font-bold text-gray-900">18m</p>
+          </div>
         </div>
-        <div className="text-center p-3 rounded-xl border border-gray-100 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => toast('Abrindo detalhes de sobremesas...', { icon: '🍰' })}>
-          <Utensils className="w-5 h-5 text-orange-500 mx-auto mb-2" />
-          <p className="text-xs text-gray-500">Conv. Sobremesa</p>
-          <p className="text-lg font-bold text-gray-900">12%</p>
+        <div className="text-center p-2 rounded-lg border border-gray-100 bg-gray-50/50 hover:bg-gray-100 cursor-pointer transition-colors" onClick={() => toast('Abrindo detalhes de sobremesas...', { icon: '🍰' })}>
+          <p className="text-[10px] text-gray-500 mb-0.5">Conv. Sobremesa</p>
+          <div className="flex items-center justify-center gap-1.5">
+            <Utensils className="w-3.5 h-3.5 text-orange-500" />
+            <p className="text-base font-bold text-gray-900">12%</p>
+          </div>
         </div>
       </div>
 
       <div>
-        <h4 className="text-xs font-bold text-gray-400 uppercase mb-3 flex items-center gap-1">
-          <AlertTriangle size={12} className="text-orange-500" /> Oportunidades Abertas
+        <h4 className="text-[10px] font-bold text-gray-400 uppercase mb-2 flex items-center gap-1">
+          <AlertTriangle size={10} className="text-orange-500" /> Oportunidades Abertas
         </h4>
-        <div className="space-y-2">
-          <div className="flex justify-between items-center p-2 rounded bg-orange-50 border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors" onClick={() => handleTableClick(12)}>
-            <span className="text-sm font-bold text-orange-800">Mesa 12</span>
-            <span className="text-xs text-orange-700">35min sem pedir</span>
-            <Button size="icon" className="w-6 h-6 rounded-full bg-white text-orange-600 shadow-sm hover:bg-orange-100">
-              <ArrowRight size={12} />
-            </Button>
+        <div className="space-y-1.5">
+          <div className="flex justify-between items-center p-1.5 rounded bg-orange-50/50 border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors" onClick={() => handleTableClick(12)}>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-orange-800 bg-white px-1.5 rounded border border-orange-200">12</span>
+              <span className="text-[10px] text-orange-700">35min s/ pedir</span>
+            </div>
+            <ArrowRight size={10} className="text-orange-400" />
           </div>
-          <div className="flex justify-between items-center p-2 rounded bg-orange-50 border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors" onClick={() => handleTableClick(5)}>
-            <span className="text-sm font-bold text-orange-800">Mesa 05</span>
-            <span className="text-xs text-orange-700">Terminou prato há 15min</span>
-            <Button size="icon" className="w-6 h-6 rounded-full bg-white text-orange-600 shadow-sm hover:bg-orange-100">
-              <ArrowRight size={12} />
-            </Button>
+          <div className="flex justify-between items-center p-1.5 rounded bg-orange-50/50 border border-orange-100 cursor-pointer hover:bg-orange-100 transition-colors" onClick={() => handleTableClick(5)}>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-orange-800 bg-white px-1.5 rounded border border-orange-200">05</span>
+              <span className="text-[10px] text-orange-700">Prato finalizado</span>
+            </div>
+            <ArrowRight size={10} className="text-orange-400" />
           </div>
         </div>
       </div>

@@ -73,30 +73,33 @@ export default function PriorityActions() {
           Ver todas
         </Button>
       </div>
-      <div className="divide-y divide-gray-50">
+      <div className="flex flex-col gap-3 p-3">
         {actions.map((action) => (
           <div
             key={action.id}
-            className="p-4 hover:bg-gray-50 transition-colors flex items-center justify-between group cursor-pointer active:bg-gray-100"
+            className="p-3 bg-gray-50/80 hover:bg-white border boundary-transparent hover:border-gray-200 rounded-xl transition-all cursor-pointer group shadow-sm hover:shadow-md"
             onClick={action.action}
           >
-            <div className="flex items-start gap-3">
-              <div className={`mt-1 p-1.5 rounded-full ${action.priority === 'Alta' ? 'bg-red-50 text-red-500' : 'bg-yellow-50 text-yellow-600'}`}>
+            <div className="flex justify-between items-start mb-2">
+              <div className={`p-1.5 rounded-lg ${action.priority === 'Alta' ? 'bg-red-100 text-red-600' : 'bg-yellow-100 text-yellow-600'}`}>
                 <action.icon size={14} />
               </div>
-              <div>
-                <h4 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-                  {action.title}
-                  <Badge variant="outline" className={`text-[10px] px-1.5 h-4 ${action.priority === 'Alta' ? 'text-red-600 border-red-200 bg-red-50' : 'text-yellow-600 border-yellow-200 bg-yellow-50'
-                    }`}>
-                    {action.priority}
-                  </Badge>
-                </h4>
-                <p className="text-xs text-gray-500 mt-0.5">{action.reason}</p>
-                <span className="text-xs font-medium text-green-600 mt-1 block flex items-center gap-1">
-                  <TrendingUp size={10} /> {action.impact}
-                </span>
-              </div>
+              <Badge variant="outline" className={`text-[9px] px-1.5 h-5 ${action.priority === 'Alta' ? 'text-red-700 bg-red-50 border-red-100' : 'text-yellow-700 bg-yellow-50 border-yellow-100'}`}>
+                {action.priority}
+              </Badge>
+            </div>
+
+            <h4 className="font-bold text-gray-900 text-sm leading-tight mb-1 line-clamp-2">
+              {action.title}
+            </h4>
+
+            <div className="flex items-center justify-between mt-3">
+              <span className="text-xs font-bold text-green-600 flex items-center gap-1">
+                <TrendingUp size={10} /> {action.impact}
+              </span>
+              <Button size="icon" variant="ghost" className="h-6 w-6 rounded-full hover:bg-gray-200">
+                <ArrowRight size={12} className="text-gray-400 group-hover:text-gray-900" />
+              </Button>
             </div>
           </div>
         ))}

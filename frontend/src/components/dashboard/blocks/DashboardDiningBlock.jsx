@@ -83,56 +83,13 @@ export default function DashboardDiningBlock() {
                         >
                             <span className="font-bold text-lg">{t.id}</span>
                             {t.status !== 'free' && (
-                                <span className="text-[10px] font-medium mt-1">{t.time}m</span>
+                                <span className="text-xs font-black mt-0.5 tracking-tight">{t.time}m</span>
                             )}
                         </div>
                     ))}
                 </div>
             </Card>
 
-            {/* Status & Bottlenecks */}
-            <div className="flex flex-col gap-4">
-                <Card className="p-4 flex-1">
-                    <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-gray-500" />
-                        Status de Atendimento
-                    </h3>
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-500">Espera Mesa</span>
-                            <span className="font-bold text-foreground">12 min</span>
-                        </div>
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-500">Preparo</span>
-                            <span className="font-bold text-foreground">24 min</span>
-                        </div>
-                        <div className="pt-2 border-t border-gray-100 mt-2">
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-gray-500">SLA Atual</span>
-                                <Badge variant={94 > 95 ? 'success' : 'warning'}>94%</Badge>
-                            </div>
-                        </div>
-                    </div>
-                </Card>
-
-                <Card className="p-4 flex-1 border-red-100 bg-red-50/50">
-                    <h3 className="text-sm font-bold text-red-700 mb-3 flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4" />
-                        Gargalos Críticos
-                    </h3>
-                    <div className="space-y-2">
-                        {BOTTLENECKS.map((b) => (
-                            <div key={b.id} className="bg-white p-2 rounded-lg border border-red-100 shadow-sm">
-                                <div className="flex justify-between items-start">
-                                    <span className="text-xs font-bold text-foreground">{b.msg}</span>
-                                    {b.priority === 'high' && <span className="text-[10px] font-bold text-white bg-red-500 px-1 rounded">ALTA</span>}
-                                </div>
-                                <p className="text-[10px] text-gray-500 mt-0.5">{b.detail}</p>
-                            </div>
-                        ))}
-                    </div>
-                </Card>
-            </div>
         </div>
     );
 }

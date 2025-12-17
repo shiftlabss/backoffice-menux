@@ -91,53 +91,8 @@ export default function DashboardAIBlock() {
                 </Card>
             </div>
 
-            {/* 4. Lista de Recomendações */}
-            <Card className="p-5 overflow-hidden">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-foreground">Recomendações em Tempo Real</h3>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs text-purple-600 hover:text-purple-700"
-                        onClick={() => {
-                            toast('Navegando para histórico...', { icon: '📜' });
-                            navigate('/intelligence/recommendations');
-                        }}
-                    >
-                        Ver histórico completo
-                        <ArrowRight className="w-3 h-3 ml-1" />
-                    </Button>
-                </div>
+            {/* 4. Lista de Recomendações (MOVED TO DashboardRecommendationsBlock) */}
 
-                <div className="space-y-3">
-                    {RECOMENDACOES_MOCK.map((rec) => (
-                        <div key={rec.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-border hover:border-[#121212] transition-colors bg-background/50">
-                            <div className="flex items-start gap-3">
-                                <div className={`p-2 rounded-lg shrink-0 ${rec.type === 'upsell' ? 'bg-green-100 text-green-600' :
-                                    rec.type === 'anomalia' ? 'bg-amber-100 text-amber-600' :
-                                        'bg-red-100 text-red-600'
-                                    } `}>
-                                    {rec.type === 'upsell' ? <DollarSign className="w-4 h-4" /> :
-                                        rec.type === 'anomalia' ? <TrendingUp className="w-4 h-4" /> :
-                                            <AlertTriangle className="w-4 h-4" />}
-                                </div>
-                                <div>
-                                    <h4 className="text-sm font-bold text-foreground">{rec.title}</h4>
-                                    <p className="text-xs text-muted-foreground mt-0.5">{rec.desc}</p>
-                                </div>
-                            </div>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                className="shrink-0 text-xs h-8"
-                                onClick={() => handleAction(rec.actionType)}
-                            >
-                                {rec.action}
-                            </Button>
-                        </div>
-                    ))}
-                </div>
-            </Card>
 
             {/* Modals */}
             <Modal isOpen={activeModal === 'alert_stock'} onClose={() => setActiveModal(null)} title="Alerta de Ruptura">

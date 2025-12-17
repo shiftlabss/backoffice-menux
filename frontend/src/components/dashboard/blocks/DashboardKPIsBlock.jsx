@@ -1,158 +1,70 @@
-import React, { useState, useEffect } from 'react';
+
+import React from 'react';
 import { Card } from '../../ui/Card';
-import { Skeleton } from '../../ui/Skeleton';
-import { TrendingUp, TrendingDown, DollarSign, ShoppingBag, Clock, Target } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { dashboardService } from '../../../services/dataService';
+import { DollarSign, ShoppingBag, Clock, TrendingUp, ChevronUp, ChevronDown } from 'lucide-react';
 
 export default function DashboardKPIsBlock() {
-    const [metrics, setMetrics] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const loadMetrics = async () => {
-            try {
-                const data = await dashboardService.getMetrics();
-                setMetrics(data);
-            } catch (err) {
-                console.error('Error loading dashboard metrics:', err);
-                setError('Erro ao carregar métricas');
-                // Fallback to mock data
-                setMetrics({
-                    orders_initiated: 12,
-                    orders_finalized: 130,
-                    average_ticket: 84.50,
-                    avg_decision_time: 145
-                });
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadMetrics();
-    }, []);
-
-    const formatCurrency = (value) => {
-        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
-    };
-
-    const formatTime = (seconds) => {
-        if (!seconds) return '0m';
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
-    };
-
-    const calculateRevenue = () => {
-        if (!metrics) return 0;
-        return (metrics.orders_finalized || 0) * (metrics.average_ticket || 0);
-    };
-
-    if (loading) {
-        return (
-            <div className="space-y-4">
-                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-foreground" />
-                    Analytics
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {[1, 2, 3, 4].map(i => (
-                        <Skeleton key={i} className="h-[120px] rounded-xl" />
-                    ))}
-                </div>
-            </div>
-        );
-    }
-
-    const KPIS = [
-        {
-            label: 'Receita do Dia',
-            value: formatCurrency(calculateRevenue()),
-            change: '+12%',
-            isPositive: true,
-            sub: `${metrics?.orders_finalized || 0} pedidos finalizados`,
-            icon: DollarSign,
-            link: '/analytics?tab=revenue&period=today'
-        },
-        {
-            label: 'Total de Pedidos',
-            value: metrics?.orders_initiated || 0,
-            change: null,
-            isPositive: true,
-            sub: 'Pedidos ativos agora',
-            icon: ShoppingBag,
-            link: '/orders?filter=today'
-        },
-        {
-            label: 'Ticket Médio',
-            value: formatCurrency(metrics?.average_ticket || 0),
-            change: '-2%',
-            isPositive: false,
-            sub: 'Média por pedido',
-            icon: Target,
-            link: '/analytics?tab=average-ticket'
-        },
-        {
-            label: 'Tempo de Decisão',
-            value: formatTime(metrics?.avg_decision_time || 0),
-            change: '-15s',
-            isPositive: true,
-            sub: 'Média de conclusão',
-            icon: Clock,
-            link: '/analytics?tab=decision-time'
-        },
-    ];
-
     return (
-        <div className="space-y-4">
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-foreground" />
-                Analytics
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {KPIS.map((kpi, idx) => {
-                    const Icon = kpi.icon;
-                    // Only wrap in link if a link exists
-                    const Content = (
-                        <Card className="p-5 flex flex-col justify-between hover:shadow-md transition-shadow h-full cursor-pointer">
-                            <div className="flex justify-between items-start mb-2">
-                                <div className="flex items-center gap-2">
-                                    <div className="p-2 bg-gray-100 rounded-lg">
-                                        <Icon className="w-4 h-4 text-gray-600" />
-                                    </div>
-                                    <p className="text-sm font-medium text-muted-foreground">{kpi.label}</p>
-                                </div>
-                                {kpi.change && (
-                                    <span className={`flex items-center text-xs font-bold ${kpi.isPositive
-                                        ? 'text-green-600 bg-green-50 px-1.5 py-0.5 rounded-md'
-                                        : 'text-red-600 bg-red-50 px-1.5 py-0.5 rounded-md'
-                                        }`}>
-                                        {kpi.change}
-                                        {kpi.isPositive
-                                            ? <TrendingUp className="w-3 h-3 ml-1" />
-                                            : <TrendingDown className="w-3 h-3 ml-1" />
-                                        }
-                                    </span>
-                                )}
-                            </div>
-                            <div>
-                                <h3 className="text-2xl font-bold text-foreground tracking-tight">{kpi.value}</h3>
-                                <p className="text-xs text-muted-foreground mt-1 font-medium">{kpi.sub}</p>
-                            </div>
-                        </Card>
-                    );
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card className="p-4 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                    <div className="p-2 bg-orange-50 rounded-lg">
+                        <Clock className="w-5 h-5 text-orange-600" />
+                    </div>
+                    <span className="flex items-center text-xs font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+                        <ChevronDown className="w-3 h-3" /> 18s
+                    </span>
+                </div>
+                <div>
+                    <span className="text-xs font-medium text-gray-500 block mb-1">Tempo Decisão</span>
+                    <h3 className="text-2xl font-extrabold text-gray-900">4m 12s</h3>
+                </div>
+            </Card>
 
-                    return kpi.link ? (
-                        <Link to={kpi.link} key={idx} className="block">
-                            {Content}
-                        </Link>
-                    ) : (
-                        <div key={idx}>
-                            {Content}
-                        </div>
-                    );
-                })}
-            </div>
+            <Card className="p-4 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                    <div className="p-2 bg-blue-50 rounded-lg">
+                        <ShoppingBag className="w-5 h-5 text-blue-600" />
+                    </div>
+                    <span className="flex items-center text-xs font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+                        <ChevronUp className="w-3 h-3" /> 5%
+                    </span>
+                </div>
+                <div>
+                    <span className="text-xs font-medium text-gray-500 block mb-1">Pedidos Totais</span>
+                    <h3 className="text-2xl font-extrabold text-gray-900">342</h3>
+                </div>
+            </Card>
+
+            <Card className="p-4 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                    <div className="p-2 bg-purple-50 rounded-lg">
+                        <TrendingUp className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <span className="flex items-center text-xs font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded-full">
+                        <ChevronDown className="w-3 h-3" /> 2%
+                    </span>
+                </div>
+                <div>
+                    <span className="text-xs font-medium text-gray-500 block mb-1">Ticket Médio</span>
+                    <h3 className="text-2xl font-extrabold text-gray-900">R$ 84,50</h3>
+                </div>
+            </Card>
+
+            <Card className="p-4 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-2">
+                    <div className="p-2 bg-green-50 rounded-lg">
+                        <DollarSign className="w-5 h-5 text-green-600" />
+                    </div>
+                    <span className="flex items-center text-xs font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full">
+                        <ChevronUp className="w-3 h-3" /> 12%
+                    </span>
+                </div>
+                <div>
+                    <span className="text-xs font-medium text-gray-500 block mb-1">Receita do Dia</span>
+                    <h3 className="text-2xl font-extrabold text-gray-900">R$ 14.250</h3>
+                </div>
+            </Card>
         </div>
     );
 }
