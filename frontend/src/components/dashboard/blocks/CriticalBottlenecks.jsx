@@ -12,18 +12,18 @@ const BOTTLENECKS = [
 
 export default function CriticalBottlenecks() {
   return (
-    <Card className="p-4 h-full flex flex-col border-red-100 bg-red-50/30">
+    <Card className="p-4 h-full flex flex-col border-gray-200 shadow-sm bg-white">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-sm font-bold text-red-700 flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4" />
+        <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-red-600" />
           Gargalos Críticos
         </h3>
-        <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">3 Ativos</Badge>
+        <Badge variant="outline" className="h-5 px-1.5 text-[10px] border-red-200 text-red-700 bg-red-50">3 Ativos</Badge>
       </div>
 
       <div className="space-y-2 flex-1 overflow-y-auto pr-1">
         {BOTTLENECKS.map((b) => (
-          <div key={b.id} className="bg-white p-2.5 rounded-lg border border-red-100 shadow-sm flex items-center justify-between group cursor-pointer hover:shadow-md transition-all">
+          <div key={b.id} className="bg-gray-50 p-2.5 rounded-lg border border-gray-100 shadow-sm flex items-center justify-between group cursor-pointer hover:bg-gray-100 transition-all">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-0.5">
                 <span className="text-xs font-bold text-gray-900 truncate">{b.msg}</span>
@@ -31,7 +31,7 @@ export default function CriticalBottlenecks() {
               </div>
               <span className="text-[10px] text-gray-500 block truncate">{b.detail}</span>
             </div>
-            <ChevronRight className="w-3 h-3 text-gray-300 group-hover:text-red-500 transition-colors" />
+            <ChevronRight className="w-3 h-3 text-gray-300 group-hover:text-gray-500 transition-colors" />
           </div>
         ))}
       </div>

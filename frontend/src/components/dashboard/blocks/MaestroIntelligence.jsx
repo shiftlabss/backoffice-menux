@@ -1,57 +1,78 @@
-
 import React from 'react';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Form';
-import { Sparkles, TrendingUp, Target, ArrowRight } from 'lucide-react';
+import { Sparkles, TrendingUp, Zap, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { cn } from '../../../lib/utils';
 
 export default function MaestroIntelligence() {
   return (
-    <Card className="p-0 overflow-hidden h-full flex flex-col border-purple-500/20 shadow-lg shadow-purple-900/5 relative group">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-600/5 via-violet-600/5 to-fuchsia-600/5 group-hover:from-purple-600/10 transition-colors" />
+    <Card className="relative overflow-hidden h-full flex flex-col border border-gray-200 shadow-sm group rounded-xl bg-white">
+      <div className="relative p-6 lg:p-8 flex flex-col justify-between h-full">
 
-      <div className="relative p-8 lg:p-10 flex-1 flex flex-col justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-2 rounded-xl text-white shadow-purple-500/20 shadow-md">
-              <Sparkles className="w-5 h-5" />
+        {/* HEADER & ZONE 1: Executive Forecast */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="bg-gray-100 p-2 rounded-lg border border-gray-200">
+              <Sparkles className="w-5 h-5 text-gray-700" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900 leading-none">Maestro Intelligence</h3>
-              <p className="text-xs text-purple-600 font-medium mt-0.5">Seu analista de performance júnior</p>
+              <h3 className="text-lg font-bold text-gray-900 leading-tight">Maestro Intelligence</h3>
+              <p className="text-xs text-gray-500 font-medium">Análise operacional</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 mt-6">
-            <div>
-              <span className="text-xs font-medium text-gray-400 block mb-1">Previsão do dia</span>
-              <div className="flex items-end gap-2">
-                <span className="text-4xl font-extrabold text-gray-900">R$ 28k</span>
-                <span className="text-xs font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full mb-1">
-                  +12% vs. meta
-                </span>
-              </div>
-            </div>
-            <div>
-              <span className="text-xs font-medium text-gray-400 block mb-1">Índice de Confiança</span>
-              <div className="flex items-center gap-2 mt-2">
-                <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-purple-600 w-[92%] rounded-full shadow-[0_0_10px_theme(colors.purple.500)]" />
-                </div>
-                <span className="text-sm font-bold text-purple-700">92%</span>
-              </div>
+          <div>
+            <span className="text-sm font-medium text-gray-500 block mb-2">Hoje você deve fechar</span>
+            <div className="flex items-end gap-3">
+              <span className="text-5xl font-extrabold text-gray-900 tracking-tight">R$ 28.000</span>
+              <span className="text-sm font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 mb-2 flex items-center gap-1">
+                <TrendingUp className="w-3 h-3" /> +12% acima da meta
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 pt-4 border-t border-purple-100/50 flex items-center justify-between">
-          <p className="text-sm text-gray-600">
-            <span className="font-bold text-purple-700">Insight:</span> Aumentar oferta de vinhos hoje à noite pode elevar ticket em <span className="font-bold">8%</span>.
+        {/* ZONE 2: Reliability */}
+        <div className="space-y-2 py-6">
+          <div className="flex justify-between items-end">
+            <span className="text-xs font-semibold text-gray-500">Confiabilidade da previsão</span>
+            <span className="text-xs font-bold text-gray-900">92%</span>
+          </div>
+          <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+            <div className="h-full bg-gray-900 w-[92%] rounded-full relative overflow-hidden" />
+          </div>
+          <p className="text-xs text-gray-500 font-medium flex items-center gap-1.5 mt-1">
+            <CheckCircle2 className="w-3.5 h-3.5 text-gray-400" /> Alta confiança
           </p>
-          <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white border-0 shadow-purple-500/20">
-            Ver Detalhes <ArrowRight className="w-3 h-3 ml-2" />
+        </div>
+
+        {/* ZONE 3: Opportunity */}
+        <div className="bg-gray-50 rounded-xl p-5 border border-gray-100 relative overflow-hidden">
+          <div className="absolute left-0 top-0 w-1 h-full bg-amber-400" />
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-amber-700 mb-1">
+              <Zap className="w-4 h-4 fill-amber-400 text-amber-500" />
+              <span className="text-xs font-bold uppercase tracking-wide">Oportunidade</span>
+            </div>
+            <p className="text-base text-gray-900 font-medium leading-relaxed">
+              Aumentar oferta de <span className="font-bold text-gray-900 underline decoration-gray-300 underline-offset-2">vinhos</span> no jantar
+            </p>
+            <p className="text-sm text-gray-500">
+              Impacto estimado: <span className="font-bold text-emerald-600">+8% no ticket</span>
+            </p>
+          </div>
+        </div>
+
+        {/* ZONE 4: Action */}
+        <div className="flex items-center gap-3 pt-2">
+          <Button className="flex-1 bg-gray-900 hover:bg-black text-white font-semibold text-sm h-10 shadow-sm transition-all">
+            Aplicar agora
+          </Button>
+          <Button className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 font-medium text-sm h-10">
+            Ver detalhes
           </Button>
         </div>
+
       </div>
     </Card>
   );

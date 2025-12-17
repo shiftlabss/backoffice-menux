@@ -1,48 +1,54 @@
-
 import React from 'react';
 import { Card } from '../../ui/Card';
-import { Badge } from '../../ui/Badge';
-import { Clock, Users, Flame } from 'lucide-react';
+import { Users, Clock, Activity } from 'lucide-react';
 
 export default function ServiceStatus() {
   return (
-    <Card className="p-4 h-full flex flex-col justify-between">
-      <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-        <Clock className="w-4 h-4 text-purple-600" />
-        Status de Atendimento
-      </h3>
-
-      <div className="space-y-4">
-        <div>
-          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-            <Users className="w-3 h-3" /> Espera Mesa
-          </p>
-          <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-bold text-foreground">12</span>
-            <span className="text-xs font-medium text-muted-foreground">min</span>
-          </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 h-full">
+      {/* CARD 1: ESPERA */}
+      <Card className="p-3 flex flex-col justify-between bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wide flex items-center gap-1">
+          <Users className="w-3 h-3" /> Espera
+        </span>
+        <div className="mt-1">
+          <span className="text-2xl font-bold text-gray-900 block leading-none">12</span>
+          <span className="text-[10px] text-gray-500 font-medium ml-0.5">filas</span>
         </div>
-
-        <div>
-          <p className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
-            <Flame className="w-3 h-3" /> Tempo Preparo
-          </p>
-          <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-bold text-foreground">24</span>
-            <span className="text-xs font-medium text-muted-foreground">min</span>
-          </div>
+        <div className="w-full bg-gray-100 h-1 rounded-full mt-2 overflow-hidden">
+          <div className="bg-amber-400 h-full w-[40%]" />
         </div>
+      </Card>
 
-        <div className="pt-3 border-t border-gray-100">
-          <div className="flex justify-between items-center">
-            <span className="text-xs font-bold text-gray-600">SLA Geral</span>
-            <Badge variant="success" className="h-5 px-2 text-[10px]">94%</Badge>
-          </div>
-          <div className="w-full bg-gray-100 rounded-full h-1.5 mt-2 overflow-hidden">
-            <div className="bg-emerald-500 h-full rounded-full" style={{ width: '94%' }} />
-          </div>
+      {/* CARD 2: PREPARO */}
+      <Card className="p-3 flex flex-col justify-between bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wide flex items-center gap-1">
+          <Clock className="w-3 h-3" /> Prep
+        </span>
+        <div className="mt-1">
+          <span className="text-2xl font-bold text-gray-900 block leading-none">18<span className="text-sm font-normal text-gray-400">m</span></span>
         </div>
-      </div>
-    </Card>
+        {/* Mini Sparkline Mock */}
+        <div className="flex items-end gap-0.5 h-3 mt-2 opacity-30">
+          <div className="w-1 bg-gray-900 h-full" />
+          <div className="w-1 bg-gray-900 h-[80%]" />
+          <div className="w-1 bg-gray-900 h-[40%]" />
+          <div className="w-1 bg-gray-900 h-[60%]" />
+          <div className="w-1 bg-gray-900 h-[90%]" />
+        </div>
+      </Card>
+
+      {/* CARD 3: SLA GERAL */}
+      <Card className="p-3 flex flex-col justify-between bg-white border-gray-200 shadow-sm hover:border-gray-300 transition-colors">
+        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wide flex items-center gap-1">
+          <Activity className="w-3 h-3" /> SLA
+        </span>
+        <div className="mt-1">
+          <span className="text-2xl font-bold text-emerald-600 block leading-none">98%</span>
+        </div>
+        <span className="text-[10px] text-emerald-600 font-medium bg-emerald-50 px-1.5 py-0.5 rounded-full w-fit mt-2">
+          Dentro da meta
+        </span>
+      </Card>
+    </div>
   );
 }

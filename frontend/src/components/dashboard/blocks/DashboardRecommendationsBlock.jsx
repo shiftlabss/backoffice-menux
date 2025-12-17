@@ -1,67 +1,78 @@
-
 import React from 'react';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Form';
-import { ArrowRight, DollarSign, TrendingUp, AlertTriangle } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { Sparkles, ArrowRight, Zap, RefreshCw, Package } from 'lucide-react';
+import { Badge } from '../../ui/Badge';
 
-const RECOMENDACOES_MOCK = [
-  { id: 1, type: 'upsell', title: 'Oportunidade de Upsell', desc: 'Sugerir "Bebida Grande" no Combo Família aumenta ticket em 15%.', action: 'Criar combo', actionType: 'create_combo' },
-  { id: 2, type: 'anomalia', title: 'Anomalia de Preço', desc: 'Seu "Hamburguer Clássico" está 10% abaixo da média da região.', action: 'Ajustar preço', actionType: 'adjust_price' },
-  { id: 3, type: 'estoque', title: 'Alerta de Estoque', desc: 'Tomate atingiu nível crítico. Previsão de esgotar em 4h.', action: 'Alertar compras', actionType: 'alert_stock' },
+const RECS = [
+  {
+    id: 1,
+    type: 'upsell',
+    title: 'Ativar Combo Família no Jantar',
+    desc: 'Alta procura por combos grandes às 20h.',
+    impact: '+R$ 450/dia',
+    icon: Zap,
+    color: 'text-amber-500 bg-amber-50 border-amber-100'
+  },
+  {
+    id: 2,
+    type: 'stock',
+    title: 'Repor Coca-Cola Lata',
+    desc: 'Estoque projetado para acabar em 2h.',
+    impact: 'Evitar ruptura',
+    icon: Package,
+    color: 'text-blue-500 bg-blue-50 border-blue-100'
+  },
 ];
 
 export default function DashboardRecommendationsBlock() {
-  const navigate = useNavigate();
-
-  const handleAction = (type) => {
-    if (type === 'create_combo') {
-      navigate('/menu/upsell');
-      toast.success('Redirecionando para criação de Combo...');
-    } else if (type === 'adjust_price') {
-      navigate('/menu');
-      toast.success('Filtrando produto para ajuste...');
-    } else if (type === 'alert_stock') {
-      toast.success('Alerta enviado para compras');
-    }
-  };
-
   return (
-    <Card className="p-4 h-full flex flex-col">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="font-bold text-foreground text-sm">Recomendações em Tempo Real</h3>
-        <Button variant="ghost" size="sm" className="text-xs h-6 px-2 text-purple-600">
-          Histórico <ArrowRight className="w-3 h-3 ml-1" />
-        </Button>
+    <Card className="h-full p-6 bg-white border-gray-200 shadow-sm flex flex-col relative overflow-hidden">
+      <div className="flex justify-between items-center mb-5">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 bg-gray-900 rounded-lg">
+            <Sparkles className="w-3.5 h-3.5 text-white" />
+          </div>
+          <h3 className="font-bold text-gray-900">Recomendações</h3>
+        </div>
+        <Badge variant="outline" className="text-[10px] bg-gray-50 border-gray-200 text-gray-500">
+          2 Novas
+        </Badge>
       </div>
 
-      <div className="space-y-2 flex-1 overflow-y-auto pr-1">
-        {RECOMENDACOES_MOCK.map((rec) => (
-          <div key={rec.id} className="p-2.5 rounded-lg border border-border bg-background/50 hover:bg-background transition-colors flex flex-col gap-2">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <div className={`p-1.5 rounded-md shrink-0 ${rec.type === 'upsell' ? 'bg-green-100 text-green-600' :
-                    rec.type === 'anomalia' ? 'bg-amber-100 text-amber-600' :
-                      'bg-red-100 text-red-600'
-                  }`}>
-                  {rec.type === 'upsell' ? <DollarSign className="w-3.5 h-3.5" /> :
-                    rec.type === 'anomalia' ? <TrendingUp className="w-3.5 h-3.5" /> :
-                      <AlertTriangle className="w-3.5 h-3.5" />}
+      <div className="flex-1 space-y-3 overflow-y-auto pr-1">
+        {RECS.map((rec) => {
+          const Icon = rec.icon;
+          return (
+            <div key={rec.id} className="p-3 rounded-xl border border-gray-100 bg-white shadow-sm hover:border-gray-300 hover:shadow-md transition-all group cursor-pointer">
+              <div className="flex justify-between items-start mb-2">
+                <div className={`p-1.5 rounded-md border ${rec.color}`}>
+                  <Icon className="w-3.5 h-3.5" />
                 </div>
-                <div className="min-w-0">
-                  <h4 className="text-xs font-bold text-foreground truncate">{rec.title}</h4>
-                  <p className="text-[10px] text-muted-foreground line-clamp-1">{rec.desc}</p>
-                </div>
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                  {rec.impact}
+                </span>
               </div>
-            </div>
-            <div className="flex justify-end">
-              <Button size="sm" variant="outline" className="h-6 text-[10px] px-2 w-auto" onClick={() => handleAction(rec.actionType)}>
-                {rec.action}
+
+              <h4 className="text-sm font-bold text-gray-900 mb-1 leading-tight group-hover:text-black">
+                {rec.title}
+              </h4>
+              <p className="text-xs text-gray-500 line-clamp-1 mb-3">
+                {rec.desc}
+              </p>
+
+              <Button size="sm" className="w-full h-8 text-xs font-semibold bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200 shadow-sm">
+                Aplicar Sugestão
               </Button>
             </div>
-          </div>
-        ))}
+          );
+        })}
+      </div>
+
+      <div className="mt-2 text-center">
+        <button className="text-[10px] font-bold text-gray-400 hover:text-gray-600 flex items-center justify-center gap-1 mx-auto transition-colors">
+          <RefreshCw className="w-3 h-3" /> Atualizar Análise
+        </button>
       </div>
     </Card>
   );
