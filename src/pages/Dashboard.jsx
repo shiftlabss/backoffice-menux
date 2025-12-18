@@ -92,14 +92,14 @@ export default function Dashboard() {
                         <span className="h-[1px] flex-1 bg-gray-200 ml-4 max-w-[100px] hidden sm:block" />
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-6 items-start">
                         {/* 2.1 Ações Prioritárias (Hero List) - 4 cols */}
-                        <div className="lg:col-span-4 h-full min-h-[380px]">
+                        <div className="md:col-span-1 xl:col-span-4 h-full min-h-[380px]">
                             <PriorityActions />
                         </div>
 
                         {/* 2.2 Status & Gargalos - 4 cols */}
-                        <div className="lg:col-span-4 flex flex-col gap-6 h-full min-h-[380px]">
+                        <div className="md:col-span-1 xl:col-span-4 flex flex-col gap-6 h-full min-h-[380px]">
                             <div className="flex-1">
                                 <ServiceStatus />
                             </div>
@@ -109,7 +109,7 @@ export default function Dashboard() {
                         </div>
 
                         {/* 2.3 Mapa de Mesas - 4 cols */}
-                        <div className="lg:col-span-4 h-full min-h-[380px]">
+                        <div className="md:col-span-2 xl:col-span-4 h-full min-h-[380px]">
                             <DashboardDiningBlock />
                         </div>
                     </div>
@@ -119,7 +119,7 @@ export default function Dashboard() {
                 <section>
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
                         {/* Maestro AI - 8 cols */}
-                        <div className="lg:col-span-8">
+                        <div className="lg:col-span-12 xl:col-span-8">
                             <h2 className="text-lg font-bold text-gray-900 mb-4 px-1 flex items-center gap-2">
                                 Maestro AI
                                 <span className="text-[10px] uppercase font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100">Beta</span>
@@ -130,7 +130,7 @@ export default function Dashboard() {
                         </div>
 
                         {/* Impacto Real - 4 cols */}
-                        <div className="lg:col-span-4 flex flex-col justify-end">
+                        <div className="lg:col-span-12 xl:col-span-4 flex flex-col justify-end">
                             <div className="h-[340px]">
                                 <MaestroSales />
                             </div>
@@ -172,16 +172,18 @@ export default function Dashboard() {
                     </div>
 
                     {/* Secondary Metrics Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="lg:col-span-2">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                        <div className="md:col-span-2 xl:col-span-2">
                             <UpsellCrossSellToday />
                         </div>
-                        <TopLosses />
-                        <div className="md:col-span-2 lg:col-span-1">
+                        <div className="md:col-span-1 xl:col-span-1 h-full">
+                            <TopLosses />
+                        </div>
+                        <div className="md:col-span-1 xl:col-span-1">
                             <MenuHealth />
                         </div>
                         {/* OperationTime / Others can be fitted largely here */}
-                        <div className="md:col-span-2 lg:col-span-4">
+                        <div className="md:col-span-2 xl:col-span-4">
                             <OperationTime />
                         </div>
                     </div>

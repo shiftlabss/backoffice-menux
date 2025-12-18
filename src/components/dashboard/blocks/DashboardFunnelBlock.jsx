@@ -86,40 +86,43 @@ export default function DashboardFunnelBlock() {
         <Card className="h-full flex flex-col bg-white border-none shadow-sm ring-1 ring-gray-100 relative overflow-hidden">
 
             {/* Top Bar: Minimalist & Fluid */}
-            <div className="px-6 py-5 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h3 className="font-bold text-gray-900 text-lg tracking-tight">Conversão</h3>
-                    <p className="text-sm text-gray-400 font-medium">Visão em tempo real</p>
+            <div className="px-6 py-5 flex flex-col gap-4">
+                {/* Row 1: Title & Controls */}
+                <div className="flex justify-between items-start md:items-center">
+                    <div>
+                        <h3 className="text-base font-semibold text-gray-900 tracking-tight">Conversão</h3>
+                        <p className="text-xs font-normal text-gray-400">Visão em tempo real</p>
+                    </div>
+
+                    {/* Period Selector */}
+                    <div className="hidden md:flex bg-gray-50 rounded-full p-1 ring-1 ring-gray-100 shrink-0">
+                        {['Hoje', 'Ontem', 'Mês'].map(p => (
+                            <button
+                                key={p}
+                                onClick={() => setPeriod(p)}
+                                className={cn(
+                                    "text-xs font-medium px-3 py-1 rounded-full transition-all",
+                                    period === p
+                                        ? "bg-white text-gray-900 shadow-sm ring-1 ring-black/5"
+                                        : "text-gray-400 hover:text-gray-600"
+                                )}
+                            >
+                                {p}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                {/* Metrics Pill */}
-                <div className="flex items-center gap-6 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
+                {/* Row 2: Metrics */}
+                <div className="flex flex-wrap items-center gap-x-8 gap-y-4 pb-2 border-b border-gray-50 md:border-none">
                     {METRICS.map((m, i) => (
-                        <div key={i} className="flex flex-col items-start min-w-[max-content]">
-                            <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider flex items-center gap-1.5">
+                        <div key={i} className="flex flex-col items-start min-w-[80px]">
+                            <span className="text-xs font-medium uppercase tracking-wide text-gray-400 flex items-center gap-1.5">
                                 <m.icon className="w-3 h-3" />
                                 {m.label}
                             </span>
-                            <span className="text-lg font-bold text-gray-900 tracking-tight">{m.value}</span>
+                            <span className="text-[22px] font-bold text-gray-900 tracking-tight">{m.value}</span>
                         </div>
-                    ))}
-                </div>
-
-                {/* Period Selector (Subtle) */}
-                <div className="hidden md:flex bg-gray-50 rounded-full p-1 ring-1 ring-gray-100">
-                    {['Hoje', 'Ontem', 'Mês'].map(p => (
-                        <button
-                            key={p}
-                            onClick={() => setPeriod(p)}
-                            className={cn(
-                                "text-[10px] font-bold px-3 py-1 rounded-full transition-all",
-                                period === p
-                                    ? "bg-white text-gray-900 shadow-sm ring-1 ring-black/5"
-                                    : "text-gray-400 hover:text-gray-600"
-                            )}
-                        >
-                            {p}
-                        </button>
                     ))}
                 </div>
             </div>
@@ -128,11 +131,11 @@ export default function DashboardFunnelBlock() {
             <div className="flex-1 px-6 pb-2 md:pb-0 flex flex-col justify-center relative">
 
                 {/* Connecting Line Background */}
-                <div className="absolute left-6 right-6 top-1/2 h-0.5 bg-gray-50 -translate-y-1/2 hidden md:block" />
+                <div className="absolute left-6 right-6 top-1/2 h-0.5 bg-gray-50 -translate-y-1/2 hidden lg:block" />
 
-                <div className="flex items-center justify-between gap-2 overflow-x-auto pb-6 md:pb-0 scrollbar-none relative z-10">
+                <div className="flex flex-col md:grid md:grid-cols-2 lg:flex-row items-stretch lg:items-center justify-between gap-4 lg:gap-2 relative z-10 w-full">
                     {FUNNEL_STEPS.map((step, index) => (
-                        <div key={step.id} className="flex items-center min-w-[140px] md:min-w-0 flex-1 group">
+                        <div key={step.id} className="flex items-center w-full lg:w-auto lg:flex-1 group">
 
                             {/* Funnel Card */}
                             <div className={cn(
@@ -148,7 +151,7 @@ export default function DashboardFunnelBlock() {
                                         {index + 1}
                                     </span>
                                     <span className={cn(
-                                        "text-[10px] font-bold px-1.5 py-0.5 rounded-full",
+                                        "text-[10px] font-medium px-1.5 py-0.5 rounded-full",
                                         step.trendUp ? "text-emerald-600 bg-emerald-50" : "text-red-600 bg-red-50"
                                     )}>
                                         {step.trend}
@@ -156,9 +159,9 @@ export default function DashboardFunnelBlock() {
                                 </div>
 
                                 <div className="space-y-0.5">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider">{step.label}</h4>
+                                    <h4 className="text-xs font-medium uppercase tracking-wide text-gray-400">{step.label}</h4>
                                     <div className="flex items-baseline gap-1">
-                                        <span className="text-2xl font-bold text-gray-900 tracking-tight">{step.count}</span>
+                                        <span className="text-[22px] font-bold text-gray-900 tracking-tight">{step.count}</span>
                                     </div>
                                 </div>
 
@@ -176,7 +179,7 @@ export default function DashboardFunnelBlock() {
 
                             {/* Connector */}
                             {index < FUNNEL_STEPS.length - 1 && (
-                                <div className="px-2 text-gray-200 hidden md:block">
+                                <div className="px-2 text-gray-200 hidden lg:block">
                                     <ArrowRight className="w-4 h-4 opacity-50" />
                                 </div>
                             )}

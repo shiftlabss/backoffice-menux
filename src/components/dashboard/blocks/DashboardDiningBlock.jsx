@@ -17,7 +17,7 @@ export default function DashboardDiningBlock() {
         <Card className="h-full p-4 lg:p-6 bg-white border-gray-200 shadow-sm flex flex-col relative overflow-hidden">
             {/* Header */}
             <div className="flex justify-between items-center mb-4 lg:mb-6">
-                <h3 className="font-bold text-gray-900">Mapa de Mesas</h3>
+                <h3 className="text-base font-semibold text-gray-900">Mapa de Mesas</h3>
                 <div className="flex gap-3 text-[10px] font-medium text-gray-500">
                     <div className="flex items-center gap-1.5">
                         <div className="w-2 h-2 rounded-full bg-gray-200 border border-gray-300"></div> Livre
@@ -32,13 +32,13 @@ export default function DashboardDiningBlock() {
             </div>
 
             {/* Grid */}
-            <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-6 gap-3 lg:gap-4 flex-1 content-start">
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-3 lg:gap-4 flex-1 content-start">
                 {TABLES.map((table) => (
                     <div
                         key={table.id}
                         onClick={() => navigate('/orders')}
                         className={cn(
-                            "aspect-square rounded-2xl flex flex-col items-center justify-center relative cursor-pointer transition-all hover:scale-105 border-2",
+                            "w-full aspect-square rounded-xl flex flex-col items-center justify-center relative cursor-pointer transition-all hover:scale-105 border-2",
                             table.status === 'free' && "bg-gray-50 border-gray-100 text-gray-400 hover:border-gray-300",
                             table.status === 'occupied' && "bg-white border-emerald-500 text-gray-900 shadow-sm",
                             table.status === 'risk' && "bg-red-50 border-red-500 text-red-900"

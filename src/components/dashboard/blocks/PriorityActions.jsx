@@ -51,11 +51,11 @@ export default function PriorityActions() {
         <Card className="h-full flex flex-col bg-white border-gray-200 shadow-sm overflow-hidden" >
             <div className="p-5 border-b border-gray-100 flex justify-between items-center">
                 <div>
-                    <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                    <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
                         <AlertCircle className="w-4 h-4 text-gray-900" />
                         Ações Prioritárias
                     </h3>
-                    <p className="text-xs text-gray-500 mt-1">4 pendências requerem atenção</p>
+                    <p className="text-xs font-normal text-gray-500 mt-1">4 pendências requerem atenção</p>
                 </div>
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 text-xs font-bold text-red-600">
                     4
@@ -72,14 +72,14 @@ export default function PriorityActions() {
                         <div className={cn("absolute left-0 top-0 bottom-0 w-1 rounded-l-lg", priorityConfig[action.priority].color)} />
 
                         <div className="pl-3 flex flex-col gap-1">
-                            <span className="text-sm font-bold text-gray-900 leading-tight group-hover:text-black">
+                            <span className="text-sm font-semibold text-gray-900 leading-tight group-hover:text-black line-clamp-1">
                                 {action.title}
                             </span>
                             <div className="flex items-center gap-3">
-                                <span className={cn("text-[10px] font-bold px-1.5 py-0.5 rounded-sm bg-gray-100 text-gray-600 border border-gray-200")}>
+                                <span className={cn("text-xs font-medium px-1.5 py-0.5 rounded-sm bg-gray-100 text-gray-600 border border-gray-200")}>
                                     {action.impact}
                                 </span>
-                                <span className="flex items-center gap-1 text-[10px] text-gray-400 font-medium">
+                                <span className="flex items-center gap-1 text-xs font-normal text-gray-400">
                                     <Clock className="w-3 h-3" /> {action.time} atraso
                                 </span>
                             </div>

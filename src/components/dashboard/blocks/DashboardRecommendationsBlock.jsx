@@ -33,9 +33,9 @@ export default function DashboardRecommendationsBlock() {
           <div className="p-1.5 bg-gray-900 rounded-lg">
             <Sparkles className="w-3.5 h-3.5 text-white" />
           </div>
-          <h3 className="font-bold text-gray-900">Recomendações</h3>
+          <h3 className="text-base font-semibold text-gray-900">Recomendações</h3>
         </div>
-        <Badge variant="outline" className="text-[10px] bg-gray-50 border-gray-200 text-gray-500">
+        <Badge variant="outline" className="text-xs font-medium bg-gray-50 border-gray-200 text-gray-500">
           2 Novas
         </Badge>
       </div>
@@ -49,15 +49,15 @@ export default function DashboardRecommendationsBlock() {
                 <div className={`p-1.5 rounded-md border ${rec.color}`}>
                   <Icon className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                <span className="text-xs font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
                   {rec.impact}
                 </span>
               </div>
 
-              <h4 className="text-sm font-bold text-gray-900 mb-1 leading-tight group-hover:text-black">
+              <h4 className="text-sm font-semibold text-gray-900 mb-1 leading-tight group-hover:text-black">
                 {rec.title}
               </h4>
-              <p className="text-xs text-gray-500 line-clamp-1 mb-3">
+              <p className="text-xs font-normal text-gray-500 line-clamp-1 mb-3">
                 {rec.desc}
               </p>
 

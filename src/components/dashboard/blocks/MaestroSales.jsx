@@ -14,18 +14,18 @@ export default function MaestroSales() {
                   <Target className="w-4 h-4 text-gray-900" />
                </div>
                <div>
-                  <h3 className="text-base font-bold text-gray-900">Impacto Real</h3>
-                  <p className="text-[10px] text-gray-500 font-medium">Performance assistida por IA</p>
+                  <h3 className="text-base font-semibold text-gray-900">Impacto Real</h3>
+                  <p className="text-xs text-gray-500 font-normal">Performance assistida por IA</p>
                </div>
             </div>
 
             <div className="flex items-baseline gap-2 mb-1">
-               <span className="text-4xl font-extrabold text-gray-900 tracking-tight">R$ 3.450</span>
-               <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 shadow-sm">
+               <span className="text-[28px] font-bold text-gray-900 tracking-tight">R$ 3.450</span>
+               <span className="text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 shadow-sm">
                   +18%
                </span>
             </div>
-            <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">Receita Adicional Hoje</p>
+            <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">Receita Adicional Hoje</p>
          </div>
 
          <div className="flex-1 flex flex-col justify-end space-y-3 mt-4">
@@ -36,8 +36,8 @@ export default function MaestroSales() {
                      <ShoppingBag className="w-3.5 h-3.5" />
                   </div>
                   <div className="flex flex-col">
-                     <span className="text-sm font-bold text-gray-900">142</span>
-                     <span className="text-[9px] text-gray-500 uppercase font-bold tracking-wide">Pedidos influenciados</span>
+                     <span className="text-lg font-semibold text-gray-900">142</span>
+                     <span className="text-xs text-gray-500 uppercase font-medium tracking-wide">Pedidos influenciados</span>
                   </div>
                </div>
                <div className="h-8 w-16 flex items-end justify-end gap-0.5 opacity-40">

@@ -18,11 +18,11 @@ export default function MenuHealth() {
     <Card className="p-5 h-full flex flex-col">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="font-bold text-gray-900 flex items-center gap-2">
+          <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
             <Activity className="w-4 h-4 text-blue-500" />
             Saúde do Cardápio
           </h3>
-          <p className="text-xs text-gray-500 mt-1">Qualidade do cadastro afeta a conversão.</p>
+          <p className="text-xs font-normal text-gray-500 mt-1">Qualidade do cadastro afeta a conversão.</p>
         </div>
         <div className="text-center">
           <div className="radial-progress text-blue-600 text-xs font-bold relative w-10 h-10 flex items-center justify-center rounded-full border-2 border-blue-100 bg-blue-50 transition-all hover:scale-105 cursor-pointer" onClick={() => handleResolve('Geral')}>

@@ -106,10 +106,10 @@ function FunnelMetric({ icon: Icon, label, value, colorClass = "text-gray-400" }
 
 function ProductRow({ item, index }) {
     return (
-        <div className="group relative grid grid-cols-12 gap-4 p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50/50 hover:shadow-sm transition-all duration-200">
+        <div className="group relative flex flex-col md:grid md:grid-cols-12 gap-4 p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50/50 hover:shadow-sm transition-all duration-200">
 
-            {/* COL 1: PRODUCT INFO (4 cols) */}
-            <div className="col-span-12 md:col-span-4 flex items-center gap-3">
+            {/* COL 1: PRODUCT INFO */}
+            <div className="w-full md:col-span-5 lg:col-span-4 flex items-center gap-3">
                 <div className="relative w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden border border-gray-100 bg-white shadow-sm group-hover:scale-105 transition-transform">
                     <img
                         src={item.image}
@@ -127,12 +127,12 @@ function ProductRow({ item, index }) {
                     </div>
                 </div>
 
-                <div className="min-w-0">
-                    <h4 className="font-bold text-sm text-gray-900 truncate group-hover:text-primary transition-colors">{item.name}</h4>
+                <div className="min-w-0 flex-1">
+                    <h4 className="font-semibold text-sm text-gray-900 truncate group-hover:text-primary transition-colors">{item.name}</h4>
                     <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-gray-500 font-medium">{item.cat}</span>
+                        <span className="text-xs text-gray-500 font-normal">{item.cat}</span>
                         {item.margin.level === 'high' && (
-                            <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 rounded-full border border-emerald-100">
+                            <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 rounded-full border border-emerald-100">
                                 Alta Margem
                             </span>
                         )}
@@ -140,8 +140,8 @@ function ProductRow({ item, index }) {
                 </div>
             </div>
 
-            {/* COL 2: FUNNEL METRICS (3 cols) - Hidden on mobile */}
-            <div className="hidden md:flex col-span-3 items-center justify-between px-2 border-l border-r border-gray-100/50">
+            {/* COL 2: FUNNEL METRICS (Hidden on Tablet & Mobile) */}
+            <div className="hidden lg:flex col-span-3 items-center justify-between px-2 border-l border-r border-gray-100/50">
                 <FunnelMetric icon={Eye} value={item.funnel.views} label="Visualizações" />
                 <div className="w-px h-6 bg-gray-100" />
                 <FunnelMetric icon={MousePointer2} value={item.funnel.clicks} label="Cliques" />
@@ -151,26 +151,30 @@ function ProductRow({ item, index }) {
                 <FunnelMetric icon={Receipt} value={item.funnel.orders} label="Pedidos" colorClass="text-emerald-500" />
             </div>
 
-            {/* COL 3: CONVERSION & TREND (2 cols) */}
-            <div className="col-span-6 md:col-span-2 flex flex-col justify-center items-end md:items-start pl-2">
-                <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-gray-900">{item.conversion.rate}%</span>
-                    <TrendBadge value={item.conversion.delta} trend={item.conversion.trend} />
+            {/* MOBILE / TABLET STATS ROW */}
+            <div className="flex items-center justify-between md:contents">
+
+                {/* COL 3: CONVERSION & TREND */}
+                <div className="md:col-span-3 lg:col-span-2 flex flex-col justify-center items-start pl-0 md:pl-2">
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-gray-900">{item.conversion.rate}%</span>
+                        <TrendBadge value={item.conversion.delta} trend={item.conversion.trend} />
+                    </div>
+                    <span className="text-xs text-gray-400 font-normal mt-0.5">Conversão</span>
                 </div>
-                <span className="text-[10px] text-gray-400 font-medium mt-0.5">Conversão</span>
+
+                {/* COL 4: REVENUE */}
+                <div className="md:col-span-3 lg:col-span-2 flex flex-col justify-center items-end pr-0 md:pr-2">
+                    <span className="text-sm font-semibold text-gray-900">
+                        R$ {item.financial.revenue.toLocaleString('pt-BR')}
+                    </span>
+                    <span className="text-xs text-gray-400 font-normal mt-0.5">
+                        Ticket: R$ {item.financial.ticket.toLocaleString('pt-BR')}
+                    </span>
+                </div>
             </div>
 
-            {/* COL 4: REVENUE (2 cols) */}
-            <div className="col-span-6 md:col-span-2 flex flex-col justify-center items-end pr-2">
-                <span className="text-sm font-bold text-gray-900">
-                    R$ {item.financial.revenue.toLocaleString('pt-BR')}
-                </span>
-                <span className="text-[10px] text-gray-400 font-medium mt-0.5">
-                    Ticket: R$ {item.financial.ticket.toLocaleString('pt-BR')}
-                </span>
-            </div>
-
-            {/* COL 5: ACTIONS (1 col) - Hover only on desktop */}
+            {/* COL 5: ACTIONS (Hover only on desktop) */}
             <div className="hidden md:flex col-span-1 items-center justify-end">
                 <Button variant="ghost" size="icon" className="w-8 h-8 text-gray-400 hover:text-gray-900 hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity">
                     <MoreVertical className="w-4 h-4" />
@@ -179,10 +183,13 @@ function ProductRow({ item, index }) {
 
             {/* Mobile Actions Hint */}
             <div className="md:hidden absolute right-2 top-2">
-                <MoreVertical className="w-4 h-4 text-gray-300" />
+                <Button variant="ghost" size="icon" className="w-8 h-8 text-gray-300">
+                    <MoreVertical className="w-4 h-4" />
+                </Button>
             </div>
         </div>
     );
+
 }
 
 export default function DashboardProductsBlock() {
@@ -205,8 +212,8 @@ export default function DashboardProductsBlock() {
             {/* HEADER */}
             <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h3 className="text-lg font-bold text-gray-900">Top Vendas e Conversão</h3>
-                    <p className="text-sm text-gray-500 mt-1">Ranking dos itens com melhor performance</p>
+                    <h3 className="text-base font-semibold text-gray-900">Top Vendas e Conversão</h3>
+                    <p className="text-xs font-normal text-gray-500 mt-1">Ranking dos itens com melhor performance</p>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -214,7 +221,7 @@ export default function DashboardProductsBlock() {
                     <select
                         value={period}
                         onChange={handlePeriodChange}
-                        className="bg-gray-50 border border-gray-200 text-gray-700 text-xs font-bold rounded-lg px-3 py-2 cursor-pointer outline-none focus:ring-2 focus:ring-primary/20 hover:bg-gray-100 transition-colors"
+                        className="bg-gray-50 border border-gray-200 text-gray-700 text-xs font-medium rounded-lg px-3 py-2 cursor-pointer outline-none focus:ring-2 focus:ring-primary/20 hover:bg-gray-100 transition-colors"
                     >
                         <option value="Hoje">Hoje</option>
                         <option value="7 dias">7 dias</option>
@@ -225,7 +232,7 @@ export default function DashboardProductsBlock() {
                     <Button
                         size="sm"
                         variant="ghost"
-                        className="hidden sm:flex text-primary hover:bg-primary/5 hover:text-primary font-bold text-xs gap-1"
+                        className="hidden sm:flex text-primary hover:bg-primary/5 hover:text-primary font-semibold text-xs gap-1"
                         onClick={() => navigate('/analytics/products')}
                     >
                         Relatório
@@ -242,7 +249,7 @@ export default function DashboardProductsBlock() {
             ) : (
                 <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                     {/* Column Headers (Desktop Only) */}
-                    <div className="hidden md:grid grid-cols-12 gap-4 px-4 pb-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                    <div className="hidden md:grid grid-cols-12 gap-4 px-4 pb-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">
                         <div className="col-span-4">Produto / Categoria</div>
                         <div className="col-span-3 text-center">Funil (Vis / Cliq / Carr / Ped)</div>
                         <div className="col-span-2">Conversão</div>

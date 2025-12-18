@@ -16,16 +16,16 @@ export default function MaestroIntelligence() {
               <Sparkles className="w-5 h-5 text-gray-900" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900 leading-tight">Maestro Intelligence</h3>
-              <p className="text-xs text-gray-500 font-medium mt-0.5">Análise operacional em tempo real</p>
+              <h3 className="text-base font-semibold text-gray-900 leading-tight">Maestro Intelligence</h3>
+              <p className="text-xs font-normal text-gray-500 mt-0.5">Análise operacional em tempo real</p>
             </div>
           </div>
 
           <div className="mt-2">
-            <span className="text-sm font-medium text-gray-400 block mb-3 uppercase tracking-wider text-[10px]">Previsão de Fechamento</span>
+            <span className="text-xs font-medium uppercase tracking-wide text-gray-400 block mb-3">Previsão de Fechamento</span>
             <div className="flex items-baseline gap-4">
-              <span className="text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tighter">R$ 28k</span>
-              <span className="text-sm font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 flex items-center gap-1.5 shadow-sm transform translate-y-[-4px]">
+              <span className="text-[28px] font-bold text-gray-900 tracking-tight">R$ 28k</span>
+              <span className="text-xs font-medium text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-100 flex items-center gap-1.5 shadow-sm transform translate-y-[-4px]">
                 <TrendingUp className="w-3.5 h-3.5" /> +12% meta
               </span>
             </div>
@@ -35,13 +35,13 @@ export default function MaestroIntelligence() {
         {/* ZONE 2: Reliability */}
         <div className="space-y-3 py-4">
           <div className="flex justify-between items-end">
-            <span className="text-xs font-semibold text-gray-500">Confiabilidade da previsão</span>
-            <span className="text-sm font-bold text-gray-900">92%</span>
+            <span className="text-xs font-medium text-gray-500">Confiabilidade da previsão</span>
+            <span className="text-[22px] font-bold text-gray-900">92%</span>
           </div>
           <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden">
             <div className="h-full bg-gray-900 w-[92%] rounded-full relative overflow-hidden" />
           </div>
-          <p className="text-xs text-gray-500 font-medium flex items-center gap-1.5 mt-1">
+          <p className="text-xs text-gray-500 font-normal flex items-center gap-1.5 mt-1">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Alta confiança nos dados
           </p>
         </div>
@@ -53,10 +53,10 @@ export default function MaestroIntelligence() {
               <div className="p-1 bg-amber-100 rounded-full">
                 <Zap className="w-3.5 h-3.5 fill-amber-500 text-amber-600" />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-widest">Oportunidade Detectada</span>
+              <span className="text-xs font-medium uppercase tracking-wide">Oportunidade Detectada</span>
             </div>
-            <p className="text-lg text-gray-900 font-medium leading-relaxed">
-              Ofertar <span className="font-bold underline decoration-amber-300 underline-offset-4">Vinhos Tintos</span> no jantar de hoje.
+            <p className="text-sm font-normal text-gray-900 leading-relaxed">
+              Ofertar <span className="font-semibold underline decoration-amber-300 underline-offset-4">Vinhos Tintos</span> no jantar de hoje.
             </p>
             <div className="pt-2 flex items-center gap-2">
               <span className="text-xs font-bold text-emerald-600 bg-white px-2 py-1 rounded-md border border-emerald-100 shadow-sm">

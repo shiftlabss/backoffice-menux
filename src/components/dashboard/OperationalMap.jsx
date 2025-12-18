@@ -10,26 +10,26 @@ const tables = Array.from({ length: 12 }, (_, i) => {
 
 export default function OperationalMap() {
     return (
-        <Card className="border-border h-full">
+        <Card className="border-border h-full overflow-hidden">
             <CardHeader className="border-b border-muted py-4">
                 <CardTitle className="text-base">Mapa Operacional</CardTitle>
             </CardHeader>
             <CardContent className="p-4">
-                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
                     {tables.map(table => (
                         <div
                             key={table.id}
                             className={`
-                                relative p-3 rounded-xl border flex flex-col items-center justify-center aspect-square transition-all cursor-pointer hover:scale-105
+                                relative p-2 sm:p-3 rounded-xl border flex flex-col items-center justify-center aspect-square transition-all cursor-pointer hover:scale-105
                                 ${table.status === 'free' ? 'bg-background border-border text-muted-foreground hover:border-[#121212]' : ''}
                                 ${table.status === 'occupied' ? 'bg-blue-50 border-blue-200 text-blue-700' : ''}
                                 ${table.status === 'alert' ? 'bg-red-50 border-red-200 text-red-700 animate-pulse' : ''}
                             `}
                         >
-                            <span className="text-sm font-bold">T{table.id}</span>
+                            <span className="text-xs sm:text-sm font-bold">T{table.id}</span>
                             {table.time && (
-                                <div className="flex items-center gap-1 text-xs mt-1 font-medium bg-white/50 px-1.5 py-0.5 rounded-md">
-                                    <Clock className="w-3 h-3" />
+                                <div className="flex items-center gap-1 text-[10px] sm:text-xs mt-1 font-medium bg-white/50 px-1.5 py-0.5 rounded-md">
+                                    <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                     {table.time}
                                 </div>
                             )}
