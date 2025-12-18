@@ -11,6 +11,19 @@ export const AuthProvider = ({ children }) => {
         const loadUser = async () => {
             const token = localStorage.getItem('token');
             if (token) {
+                // MOCK AUTH: Check for mock token first
+                if (token === 'mock-token-admin-123') {
+                    setUser({
+                        id: 'mock-admin-id',
+                        name: 'Admin User',
+                        email: 'admin@admin.com',
+                        role: 'admin',
+                        restaurant_id: 'mock-restaurant-id'
+                    });
+                    setLoading(false);
+                    return;
+                }
+
                 try {
                     const response = await api.get('/auth/me');
                     setUser(response.data);
@@ -24,6 +37,21 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
+        // MOCK AUTH: Bypass backend for specific credentials
+        if (email === 'admin@admin.com' && password === 'admin') {
+            console.log("Using Mock Auth for Admin");
+            const mockToken = 'mock-token-admin-123';
+            localStorage.setItem('token', mockToken);
+            setUser({
+                id: 'mock-admin-id',
+                name: 'Admin User',
+                email: 'admin@admin.com',
+                role: 'admin',
+                restaurant_id: 'mock-restaurant-id'
+            });
+            return;
+        }
+
         const response = await api.post('/auth/login', { email, password });
         const { access_token } = response.data;
         localStorage.setItem('token', access_token);
