@@ -14,8 +14,7 @@ import CriticalBottlenecks from '../components/dashboard/blocks/CriticalBottlene
 import DashboardDiningBlock from '../components/dashboard/blocks/DashboardDiningBlock';
 
 // 2. Intelligence & Results
-import MaestroIntelligence from '../components/dashboard/blocks/MaestroIntelligence';
-import MaestroSales from '../components/dashboard/blocks/MaestroSales';
+import MaestroSection from '../components/dashboard/blocks/MaestroSection';
 import DashboardKPIsBlock from '../components/dashboard/blocks/DashboardKPIsBlock';
 
 // 3. Performance & Analysis
@@ -116,27 +115,7 @@ export default function Dashboard() {
                 </section>
 
                 {/* --- SEÇÃO 3: MAESTRO & RESULTADOS (Intelligence Layer) --- */}
-                <section>
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-                        {/* Maestro AI - 8 cols */}
-                        <div className="lg:col-span-12 xl:col-span-8">
-                            <h2 className="text-lg font-bold text-gray-900 mb-4 px-1 flex items-center gap-2">
-                                Maestro AI
-                                <span className="text-[10px] uppercase font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-100">Beta</span>
-                            </h2>
-                            <div className="h-[340px]">
-                                <MaestroIntelligence />
-                            </div>
-                        </div>
-
-                        {/* Impacto Real - 4 cols */}
-                        <div className="lg:col-span-12 xl:col-span-4 flex flex-col justify-end">
-                            <div className="h-[340px]">
-                                <MaestroSales />
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                <MaestroSection />
 
                 {/* --- SEÇÃO 4: KPI & PRODUCTS showcase --- */}
                 <section>
