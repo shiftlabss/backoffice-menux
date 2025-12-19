@@ -5,7 +5,7 @@ import { Button } from '../../components/ui/Form';
 import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
 import { useNavigate } from 'react-router-dom';
-import api from '../../services/api';
+import { intelligenceService } from '../../services/dataService';
 import { toast } from 'react-hot-toast';
 import {
   Sparkles,
@@ -58,17 +58,17 @@ export default function IntelligenceOverview() {
     try {
       setLoading(true);
       const [forecastRes, insightRes, kpisRes, recsRes] = await Promise.all([
-        api.get('/intelligence/overview/forecast'),
-        api.get('/intelligence/insight-of-the-day'),
-        api.get(`/intelligence/overview/kpis?period=${kpiPeriod}`),
-        api.get('/intelligence/recommendations?limit=5')
+        intelligenceService.getForecast(),
+        intelligenceService.getInsight(),
+        intelligenceService.getKPIs(kpiPeriod),
+        intelligenceService.getRecommendations({ limit: 5 })
       ]);
 
       setData({
-        forecast: forecastRes.data,
-        insight: insightRes.data,
-        kpis: kpisRes.data,
-        recommendations: recsRes.data
+        forecast: forecastRes,
+        insight: insightRes,
+        kpis: kpisRes,
+        recommendations: recsRes
       });
     } catch (error) {
       console.warn("API Error, using mock data:", error);
@@ -88,8 +88,8 @@ export default function IntelligenceOverview() {
   const refreshForecast = async () => {
     setIsRefreshingForecast(true);
     try {
-      const res = await api.get('/intelligence/overview/forecast');
-      setData(prev => ({ ...prev, forecast: res.data }));
+      const data = await intelligenceService.getForecast();
+      setData(prev => ({ ...prev, forecast: data }));
     } catch (err) {
       console.error("Error refreshing forecast", err);
     } finally {
@@ -111,7 +111,7 @@ export default function IntelligenceOverview() {
       }));
       setActiveModal(null);
       toast.success("Recomendação aplicada com sucesso!");
-      await api.post(`/intelligence/recommendations/${id}/apply`);
+      await intelligenceService.applyRecommendation(id);
     } catch (err) {
       toast.error("Erro ao aplicar recomendação.");
       fetchData(); // Rollback on error
@@ -126,7 +126,7 @@ export default function IntelligenceOverview() {
       }));
       setActiveModal(null);
       toast('Recomendação ignorada.', { icon: '🚫' });
-      await api.post(`/intelligence/recommendations/${id}/ignore`);
+      await intelligenceService.ignoreRecommendation(id);
     } catch (err) {
       toast.error("Erro ao ignorar.");
       fetchData();

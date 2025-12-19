@@ -4,7 +4,7 @@ import ModuleLayout from '../../components/layout/ModuleLayout';
 import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
 import { TrendingUp, DollarSign, ShoppingBag, ArrowUpRight, ArrowDownRight, Loader2 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import api from '../../services/api';
+import { intelligenceService } from '../../services/dataService';
 import { toast } from 'react-hot-toast';
 import { cn } from '../../lib/utils';
 
@@ -20,8 +20,8 @@ export default function IntelligenceImpact() {
   const fetchImpact = async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/intelligence/impact?period=${period}`);
-      setData(res.data);
+      const data = await intelligenceService.getImpact(period);
+      setData(data);
     } catch (err) {
       toast.error("Erro ao carregar dados de impacto.");
     } finally {

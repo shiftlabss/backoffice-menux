@@ -7,7 +7,7 @@ import { AlertTriangle, CheckCircle2, Clock, AlertCircle, Loader2 } from 'lucide
 import { cn } from '../../lib/utils';
 import ModuleLayout from '../../components/layout/ModuleLayout';
 import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
-import api from '../../services/api';
+import { intelligenceService } from '../../services/dataService';
 import { toast } from 'react-hot-toast';
 
 export default function IntelligenceAlerts() {
@@ -23,8 +23,8 @@ export default function IntelligenceAlerts() {
   const fetchAlerts = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/intelligence/alerts');
-      setAlerts(res.data || []);
+      const data = await intelligenceService.getAlerts();
+      setAlerts(data || []);
     } catch (err) {
       toast.error("Erro ao carregar alertas.");
     } finally {
@@ -37,7 +37,7 @@ export default function IntelligenceAlerts() {
       setAlerts(prev => prev.map(a => a.id === id ? { ...a, status: 'Resolvido' } : a));
       setActiveModal(null);
       toast.success("Alerta resolvido!");
-      await api.post(`/intelligence/alerts/${id}/resolve`);
+      await intelligenceService.resolveAlert(id);
     } catch (err) {
       toast.error("Erro ao resolver alerta.");
       fetchAlerts();

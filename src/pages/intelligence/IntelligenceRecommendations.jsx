@@ -3,7 +3,7 @@ import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Form';
 import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
-import api from '../../services/api';
+import { intelligenceService } from '../../services/dataService';
 import { toast } from 'react-hot-toast';
 import {
   Sparkles,
@@ -51,13 +51,12 @@ export default function IntelligenceRecommendations() {
   const fetchRecommendations = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filterPeriod) params.append('period', filterPeriod);
-      if (filterType !== 'all') params.append('type', filterType);
-      if (filterStatus !== 'all') params.append('status', filterStatus);
-
-      const response = await api.get(`/intelligence/recommendations?${params.toString()}`);
-      setRecommendations(response.data || []);
+      const data = await intelligenceService.getRecommendations({
+        period: filterPeriod,
+        type: filterType,
+        status: filterStatus
+      });
+      setRecommendations(data || []);
     } catch (error) {
       toast.error("Erro ao carregar recomendações.");
     } finally {
@@ -75,7 +74,7 @@ export default function IntelligenceRecommendations() {
     try {
       setRecommendations(prev => prev.map(r => r.id === id ? { ...r, status: 'Aplicada' } : r));
       toast.success("Recomendação aplicada!");
-      await api.post(`/intelligence/recommendations/${id}/apply`);
+      await intelligenceService.applyRecommendation(id);
     } catch (err) {
       toast.error("Erro ao aplicar.");
       fetchRecommendations();
@@ -87,7 +86,7 @@ export default function IntelligenceRecommendations() {
     try {
       setRecommendations(prev => prev.map(r => r.id === id ? { ...r, status: 'Ignorada' } : r));
       toast('Recomendação ignorada.', { icon: '🚫' });
-      await api.post(`/intelligence/recommendations/${id}/ignore`);
+      await intelligenceService.ignoreRecommendation(id);
     } catch (err) {
       toast.error("Erro ao ignorar.");
       fetchRecommendations();

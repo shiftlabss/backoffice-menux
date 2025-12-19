@@ -5,7 +5,7 @@ import { Badge } from '../../components/ui/Badge';
 import { Package, Sparkles, TrendingUp, Layers, Loader2 } from 'lucide-react';
 import ModuleLayout from '../../components/layout/ModuleLayout';
 import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
-import api from '../../services/api';
+import { intelligenceService } from '../../services/dataService';
 import { toast } from 'react-hot-toast';
 
 export default function IntelligenceProducts() {
@@ -26,8 +26,8 @@ export default function IntelligenceProducts() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await api.get('/intelligence/products');
-      setProducts(res.data || []);
+      const data = await intelligenceService.getProducts();
+      setProducts(data || []);
     } catch (err) {
       toast.error("Erro ao carregar produtos.");
     } finally {
