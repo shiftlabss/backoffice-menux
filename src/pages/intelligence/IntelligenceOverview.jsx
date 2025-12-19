@@ -22,6 +22,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { MOCK_FORECAST, MOCK_INSIGHT, MOCK_KPIS, MOCK_RECOMMENDATIONS } from '../../services/mockIntelligence';
 
 export default function IntelligenceOverview() {
   const navigate = useNavigate();
@@ -68,8 +69,15 @@ export default function IntelligenceOverview() {
         recommendations: recsRes.data
       });
     } catch (error) {
-      console.error("Error fetching intelligence data:", error);
-      toast.error("Erro ao carregar dados de inteligência.");
+      console.warn("API Error, using mock data:", error);
+      // Fallback to mock data
+      setData({
+        forecast: MOCK_FORECAST,
+        insight: MOCK_INSIGHT,
+        kpis: MOCK_KPIS,
+        recommendations: MOCK_RECOMMENDATIONS
+      });
+      toast.success("Modo de Demonstração (Dados Simulados)");
     } finally {
       setLoading(false);
     }
