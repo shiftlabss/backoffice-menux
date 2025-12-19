@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ModuleLayout from '../components/layout/ModuleLayout';
-import { Search, Bell, Menu } from 'lucide-react';
+import { Search, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "../components/ui/Form";
 
@@ -24,7 +24,7 @@ import TopLosses from '../components/dashboard/blocks/TopLosses';
 import MenuHealth from '../components/dashboard/blocks/MenuHealth';
 import OperationTime from '../components/dashboard/blocks/OperationTime';
 
-const PERIOD_CHIPS = ['Hoje', '7 dias', '30 dias', '3 meses'];
+const PERIOD_CHIPS = ['Hoje', 'Ontem', '7 dias', '30 dias'];
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -60,11 +60,7 @@ export default function Dashboard() {
                 />
             </div>
 
-            {/* Notifications Shortcut */}
-            <Button variant="ghost" size="icon" className="h-9 w-9 text-gray-500 hover:text-gray-900 relative">
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white" />
-            </Button>
+
         </div>
     );
 
