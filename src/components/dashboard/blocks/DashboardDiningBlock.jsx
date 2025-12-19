@@ -4,7 +4,7 @@ import { Clock, AlertCircle } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { useNavigate } from 'react-router-dom';
 
-const TABLES = Array(12).fill(null).map((_, i) => ({
+const TABLES = Array(20).fill(null).map((_, i) => ({
     id: i + 1,
     status: i === 3 || i === 7 ? 'risk' : i % 3 === 0 ? 'free' : 'occupied',
     time: i % 3 === 0 ? 0 : Math.floor(Math.random() * 45) + 5
@@ -16,7 +16,7 @@ export default function DashboardDiningBlock() {
     return (
         <Card className="h-full p-4 lg:p-6 bg-white border-gray-200 shadow-sm flex flex-col relative overflow-hidden">
             {/* Header */}
-            <div className="flex justify-between items-center mb-4 lg:mb-6">
+            <div className="flex justify-between items-center mb-4 lg:mb-6 shrink-0">
                 <h3 className="text-base font-semibold text-gray-900">Mapa de Mesas</h3>
                 <div className="flex gap-3 text-[10px] font-medium text-gray-500">
                     <div className="flex items-center gap-1.5">
@@ -32,7 +32,7 @@ export default function DashboardDiningBlock() {
             </div>
 
             {/* Grid */}
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-3 lg:gap-4 flex-1 content-start">
+            <div className="grid grid-cols-3 gap-3 lg:gap-4 flex-1 content-start overflow-y-auto pr-2 custom-scrollbar max-h-[320px]">
                 {TABLES.map((table) => (
                     <div
                         key={table.id}

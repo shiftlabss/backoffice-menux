@@ -4,8 +4,7 @@ import { Search, Bell, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "../components/ui/Form";
 
-// 0. Overview Components
-import DashboardHeaderContext from '../components/dashboard/blocks/DashboardHeaderContext';
+
 
 // 1. Operation Components
 import PriorityActions from '../components/dashboard/blocks/PriorityActions';
@@ -19,8 +18,7 @@ import DashboardKPIsBlock from '../components/dashboard/blocks/DashboardKPIsBloc
 
 // 3. Performance & Analysis
 import DashboardProductsBlock from '../components/dashboard/blocks/DashboardProductsBlock';
-import DashboardFunnelBlock from '../components/dashboard/blocks/DashboardFunnelBlock';
-import DashboardRecommendationsBlock from '../components/dashboard/blocks/DashboardRecommendationsBlock';
+
 import UpsellCrossSellToday from '../components/dashboard/blocks/UpsellCrossSellToday';
 import TopLosses from '../components/dashboard/blocks/TopLosses';
 import MenuHealth from '../components/dashboard/blocks/MenuHealth';
@@ -79,12 +77,23 @@ export default function Dashboard() {
         >
             <div className="flex flex-col gap-6 animate-in fade-in pb-12 max-w-[1600px] mx-auto">
 
-                {/* --- SEÇÃO 1: VISÃO GERAL (Contexto) --- */}
+
+
+                {/* --- SEÇÃO 2: KPI & PRODUCTS showcase (Resultado do Dia) --- */}
                 <section>
-                    <DashboardHeaderContext />
+                    <h2 className="text-lg font-bold text-gray-900 mb-4 px-1">Resultado do Dia</h2>
+                    <div className="space-y-6">
+                        <DashboardKPIsBlock />
+
+                        {/* Products Block (Bento Showcase) */}
+                        <DashboardProductsBlock />
+                    </div>
                 </section>
 
-                {/* --- SEÇÃO 2: OPERAÇÃO AGORA (Critical Layout) --- */}
+                {/* --- SEÇÃO 3: MAESTRO & RESULTADOS (Intelligence Layer) --- */}
+                <MaestroSection />
+
+                {/* --- SEÇÃO 4: OPERAÇÃO AGORA (Critical Layout) --- */}
                 <section>
                     <div className="flex items-center justify-between mb-4 px-1">
                         <h2 className="text-lg font-bold text-gray-900">Operação Agora</h2>
@@ -114,20 +123,6 @@ export default function Dashboard() {
                     </div>
                 </section>
 
-                {/* --- SEÇÃO 3: MAESTRO & RESULTADOS (Intelligence Layer) --- */}
-                <MaestroSection />
-
-                {/* --- SEÇÃO 4: KPI & PRODUCTS showcase --- */}
-                <section>
-                    <h2 className="text-lg font-bold text-gray-900 mb-4 px-1">Resultado do Dia</h2>
-                    <div className="space-y-6">
-                        <DashboardKPIsBlock />
-
-                        {/* Products Block (Bento Showcase) */}
-                        <DashboardProductsBlock />
-                    </div>
-                </section>
-
                 {/* --- SEÇÃO 5: ANÁLISES & EXTENSÃO (Collapsible on Mobile) --- */}
                 <div className="lg:hidden my-4">
                     <Button
@@ -140,15 +135,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className={`space-y-6 ${showAnalysis ? 'block' : 'hidden lg:block'}`}>
-                    {/* Funnel & Recs */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div className="h-[280px]">
-                            <DashboardFunnelBlock />
-                        </div>
-                        <div className="h-[280px]">
-                            <DashboardRecommendationsBlock />
-                        </div>
-                    </div>
+
 
                     {/* Secondary Metrics Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
