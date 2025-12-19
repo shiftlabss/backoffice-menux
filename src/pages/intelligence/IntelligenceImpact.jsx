@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/ui/Card';
+import ModuleLayout from '../../components/layout/ModuleLayout';
+import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
 import { TrendingUp, DollarSign, ShoppingBag, ArrowUpRight, ArrowDownRight, Loader2 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import api from '../../services/api';
@@ -41,16 +43,11 @@ export default function IntelligenceImpact() {
   ];
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-purple-600" />
-            Impacto nas Vendas
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">Análise da contribuição da IA na receita do restaurante.</p>
-        </div>
+    <ModuleLayout
+      title="Maestro"
+      subtitle="Impacto nas Vendas"
+      items={intelligenceSidebarItems}
+      actions={
         <div className="flex bg-white border border-border rounded-lg p-1">
           {['7d', '30d'].map(t => (
             <button
@@ -65,77 +62,79 @@ export default function IntelligenceImpact() {
             </button>
           ))}
         </div>
-      </div>
+      }
+    >
+      <div className="space-y-6 max-w-7xl mx-auto pb-8">
+        {/* KPIs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {kpis.map((kpi, i) => (
+            <Card key={i} className="p-4 border-border">
+              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">{kpi.label}</p>
+              <div className="mt-2 flex items-baseline justify-between">
+                <h3 className="text-2xl font-bold text-foreground">{kpi.value}</h3>
+                <span className={`text-xs font-bold flex items-center gap-0.5 ${kpi.isUp ? 'text-green-600' : 'text-gray-500'}`}>
+                  {kpi.isUp && <ArrowUpRight className="w-3 h-3" />}
+                  {kpi.change}
+                </span>
+              </div>
+            </Card>
+          ))}
+        </div>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {kpis.map((kpi, i) => (
-          <Card key={i} className="p-4 border-border">
-            <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">{kpi.label}</p>
-            <div className="mt-2 flex items-baseline justify-between">
-              <h3 className="text-2xl font-bold text-foreground">{kpi.value}</h3>
-              <span className={`text-xs font-bold flex items-center gap-0.5 ${kpi.isUp ? 'text-green-600' : 'text-gray-500'}`}>
-                {kpi.isUp && <ArrowUpRight className="w-3 h-3" />}
-                {kpi.change}
-              </span>
+        {/* Main Chart */}
+        <Card className="p-6 border-border">
+          <h3 className="font-bold text-foreground mb-6">Evolução da Receita (IA)</h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={data?.chart_data || []}>
+                <defs>
+                  <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#9333ea" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#9333ea" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#737373', fontSize: 12 }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#737373', fontSize: 12 }} />
+                <Tooltip
+                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                />
+                <Area type="monotone" dataKey="value" stroke="#9333ea" strokeWidth={2} fill="url(#colorValue)" name="Receita IA" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        {/* Additional Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="p-6 border-border">
+            <h3 className="font-bold text-foreground mb-4">Conversão Geral</h3>
+            <div className="flex items-center justify-center p-8">
+              <div className="text-center">
+                <p className="text-4xl font-black text-purple-600">+{data?.conversion_lift}%</p>
+                <p className="text-gray-500 mt-2">Aumento na conversão de produtos recomendados</p>
+              </div>
             </div>
           </Card>
-        ))}
-      </div>
 
-      {/* Main Chart */}
-      <Card className="p-6 border-border">
-        <h3 className="font-bold text-foreground mb-6">Evolução da Receita (IA)</h3>
-        <div className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data?.chart_data || []}>
-              <defs>
-                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#9333ea" stopOpacity={0.2} />
-                  <stop offset="95%" stopColor="#9333ea" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#737373', fontSize: 12 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#737373', fontSize: 12 }} />
-              <Tooltip
-                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-              />
-              <Area type="monotone" dataKey="value" stroke="#9333ea" strokeWidth={2} fill="url(#colorValue)" name="Receita IA" />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
-
-      {/* Additional Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card className="p-6 border-border">
-          <h3 className="font-bold text-foreground mb-4">Conversão Geral</h3>
-          <div className="flex items-center justify-center p-8">
-            <div className="text-center">
-              <p className="text-4xl font-black text-purple-600">+{data?.conversion_lift}%</p>
-              <p className="text-gray-500 mt-2">Aumento na conversão de produtos recomendados</p>
+          <Card className="p-6 border-border flex flex-col justify-center items-center text-center">
+            <div className="p-4 bg-purple-50 rounded-full mb-4">
+              <ShoppingBag className="w-8 h-8 text-purple-600" />
             </div>
-          </div>
-        </Card>
-
-        <Card className="p-6 border-border flex flex-col justify-center items-center text-center">
-          <div className="p-4 bg-purple-50 rounded-full mb-4">
-            <ShoppingBag className="w-8 h-8 text-purple-600" />
-          </div>
-          <h3 className="font-bold text-foreground">Produtos Mais Influenciados</h3>
-          <p className="text-sm text-gray-500 mb-6 max-w-xs">
-            Estes são os itens que mais convertem quando sugeridos pela IA.
-          </p>
-          <div className="w-full space-y-2">
-            {['Coca-Cola Zero', 'Batata Frita G', 'Pudim'].map((p, i) => (
-              <div key={i} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg text-sm">
-                <span className="font-medium text-gray-700">{p}</span>
-                <span className="text-green-600 font-bold text-xs">Alta Conversão</span>
-              </div>
-            ))}
-          </div>
-        </Card>
+            <h3 className="font-bold text-foreground">Produtos Mais Influenciados</h3>
+            <p className="text-sm text-gray-500 mb-6 max-w-xs">
+              Estes são os itens que mais convertem quando sugeridos pela IA.
+            </p>
+            <div className="w-full space-y-2">
+              {['Coca-Cola Zero', 'Batata Frita G', 'Pudim'].map((p, i) => (
+                <div key={i} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-lg text-sm">
+                  <span className="font-medium text-gray-700">{p}</span>
+                  <span className="text-green-600 font-bold text-xs">Alta Conversão</span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
       </div>
-    </div>
+    </ModuleLayout>
   );
 }

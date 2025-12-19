@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ModuleLayout from '../components/layout/ModuleLayout';
-import { Search, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "../components/ui/Form";
 
@@ -50,15 +50,7 @@ export default function Dashboard() {
                 ))}
             </div>
 
-            {/* Micro Search */}
-            <div className="hidden lg:flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-gray-200 w-48 transition-colors focus-within:border-gray-300">
-                <Search className="w-3.5 h-3.5 text-gray-400" />
-                <input
-                    type="text"
-                    placeholder="Buscar mesa, produto..."
-                    className="bg-transparent border-none outline-none text-xs font-medium placeholder:text-gray-400 w-full"
-                />
-            </div>
+
 
 
         </div>

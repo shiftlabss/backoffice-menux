@@ -12,7 +12,7 @@ import { Button } from '../components/ui/Form';
 import { toast } from 'react-hot-toast';
 
 export default function Analytics() {
-    const [dateRange, setDateRange] = React.useState('Últimos 7 dias');
+    const [dateRange, setDateRange] = React.useState('Hoje');
     const [isDateDropdownOpen, setIsDateDropdownOpen] = React.useState(false);
 
     const handleDateRangeChange = (range) => {
@@ -45,34 +45,21 @@ export default function Analytics() {
             title="Analytics"
             subtitle="Visão estratégica do seu negócio em tempo real."
             actions={
-                <div className="relative">
-                    <button
-                        onClick={() => setIsDateDropdownOpen(!isDateDropdownOpen)}
-                        className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border border-border shadow-sm cursor-pointer hover:bg-gray-50 transition-colors"
-                    >
-                        <Calendar className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm font-medium text-foreground">{dateRange}</span>
-                    </button>
-
-                    {isDateDropdownOpen && (
-                        <>
-                            <div className="fixed inset-0 z-10" onClick={() => setIsDateDropdownOpen(false)}></div>
-                            <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-border p-1 z-20 animate-in fade-in zoom-in-95 duration-200">
-                                {['Hoje', 'Últimos 7 dias', 'Últimos 15 dias', 'Últimos 30 dias'].map((option) => (
-                                    <button
-                                        key={option}
-                                        onClick={() => handleDateRangeChange(option)}
-                                        className={`w-full text-left px-3 py-2 text-sm rounded-lg transition-colors ${dateRange === option
-                                            ? 'bg-gray-100 text-foreground font-medium'
-                                            : 'text-muted-foreground hover:bg-gray-50 hover:text-foreground'
-                                            }`}
-                                    >
-                                        {option}
-                                    </button>
-                                ))}
-                            </div>
-                        </>
-                    )}
+                <div className="flex items-center gap-4">
+                    <div className="hidden md:flex bg-gray-100/50 p-1 rounded-lg border border-gray-200/50">
+                        {['Hoje', 'Ontem', '7 dias', '30 dias'].map((option) => (
+                            <button
+                                key={option}
+                                onClick={() => handleDateRangeChange(option)}
+                                className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${dateRange === option
+                                    ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                                    : 'text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                {option}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             }
         >
