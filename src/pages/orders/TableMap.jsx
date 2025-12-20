@@ -5,7 +5,7 @@ import IntelligencePanel from './IntelligencePanel';
 import { cn } from '../../lib/utils';
 
 export default function TableMap({ orders, onTableSelect, selectedTable }) {
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(true);
     const [autoFilter, setAutoFilter] = useState(true);
     const [tables, setTables] = useState([]);
 
@@ -135,16 +135,7 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
         setTables(newTables);
     }, [orders, intelligenceEnabled, ignoredSuggestions]);
 
-    // Responsive behavior
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 1024) setIsExpanded(true);
-            else setIsExpanded(false);
-        };
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    // Responsive behavior removed to keep it collapsed by default
 
     const handleTableClick = (tableId) => {
         if (autoFilter) {
