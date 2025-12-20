@@ -19,7 +19,7 @@ export default function UpsellCrossSellToday() {
       <div className="p-5 pb-3 flex-1">
         <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2 mb-4">
           <TrendingUp className="w-4 h-4 text-green-600" />
-          Upsell e Cross sell Hoje
+          Upsell Hoje
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">

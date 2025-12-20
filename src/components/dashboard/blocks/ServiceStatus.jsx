@@ -45,7 +45,7 @@ export default function ServiceStatus() {
         <div className="mt-1">
           <span className="text-2xl md:text-[28px] font-bold text-emerald-600 block leading-none">98%</span>
         </div>
-        <span className="text-xs text-emerald-600 font-medium bg-emerald-50 px-1.5 py-0.5 rounded-full w-fit mt-2">
+        <span className="text-[10px] text-emerald-600 font-medium bg-emerald-50 px-1 py-0.5 rounded-full w-fit mt-2 text-center leading-tight">
           Dentro da meta
         </span>
       </Card>
