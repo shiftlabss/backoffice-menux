@@ -82,7 +82,7 @@ export default function App() {
 
                                 {/* Maestro Module */}
                                 <Route path="intelligence" element={<IntelligenceLayout />}>
-                                    <Route index element={<Navigate to="overview" replace />} />
+                                    <Route index element={<Navigate to="impact" replace />} />
                                     <Route path="overview" element={<IntelligenceOverview />} />
                                     <Route path="recommendations" element={<IntelligenceRecommendations />} />
                                     <Route path="impact" element={<IntelligenceImpact />} />

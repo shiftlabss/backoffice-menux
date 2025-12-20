@@ -55,7 +55,6 @@ const generateTrendData = () => {
 const funnelData = [
   { stage: 'Sugestões Exibidas', value: 12543, conversion: '100%', dropoff: '0%' },
   { stage: 'Interações (Cliques)', value: 8420, conversion: '67%', dropoff: '33%' },
-  { stage: 'Adições ao Carrinho', value: 5894, conversion: '70% (do anterior)', dropoff: '30%' },
   { stage: 'Pedidos Finalizados', value: 4125, conversion: '70% (do anterior)', dropoff: '30%' },
 ];
 
@@ -532,38 +531,42 @@ const IntelligenceImpact = () => {
             </CardContent>
           </Card>
 
-          {/* Actionable Recommendations */}
-          <Card className="shadow-sm border-l-4 border-l-purple-500">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg font-semibold text-slate-800">Ações Recomendadas</CardTitle>
-              <CardDescription>Oportunidades de alto impacto identificadas agora</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {recommendationsData.map((rec) => (
-                <div key={rec.id} className="p-3 bg-slate-50 rounded-lg border border-slate-100 hover:border-purple-200 transition-colors cursor-pointer group">
-                  <div className="flex items-start justify-between mb-2">
-                    <Badge variant="outline" className={cn(
-                      "text-xs bg-white",
-                      rec.type === 'success' ? "text-emerald-700 border-emerald-200" :
-                        rec.type === 'warning' ? "text-amber-700 border-amber-200" :
-                          "text-blue-700 border-blue-200"
-                    )}>
-                      {rec.impact}
-                    </Badge>
-                    <ChevronRight size={16} className="text-slate-300 group-hover:text-purple-500 transition-colors" />
-                  </div>
-                  <h4 className="text-sm font-semibold text-slate-800 mb-1 leading-tight group-hover:text-purple-700 transition-colors">{rec.title}</h4>
-                  <p className="text-xs text-slate-500 line-clamp-2">{rec.diagnosis}</p>
-                </div>
-              ))}
-              <Button variant="outline" className="w-full text-purple-600 border-purple-200 hover:bg-purple-50 mt-2">
-                Ver todas recomendações
-              </Button>
-            </CardContent>
-          </Card>
-
+          {/* Actionable Recommendations - MOVED TO BOTTOM */}
         </div>
       </div>
+
+      {/* Actionable Recommendations - Full Width Bottom */}
+      <Card className="shadow-sm border-l-4 border-l-purple-500">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-lg font-semibold text-slate-800">Ações Recomendadas</CardTitle>
+          <CardDescription>Oportunidades de alto impacto identificadas agora</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {recommendationsData.map((rec) => (
+              <div key={rec.id} className="p-3 bg-slate-50 rounded-lg border border-slate-100 hover:border-purple-200 transition-colors cursor-pointer group h-full flex flex-col">
+                <div className="flex items-start justify-between mb-2">
+                  <Badge variant="outline" className={cn(
+                    "text-xs bg-white",
+                    rec.type === 'success' ? "text-emerald-700 border-emerald-200" :
+                      rec.type === 'warning' ? "text-amber-700 border-amber-200" :
+                        "text-blue-700 border-blue-200"
+                  )}>
+                    {rec.impact}
+                  </Badge>
+                  <ChevronRight size={16} className="text-slate-300 group-hover:text-purple-500 transition-colors" />
+                </div>
+                <h4 className="text-sm font-semibold text-slate-800 mb-1 leading-tight group-hover:text-purple-700 transition-colors">{rec.title}</h4>
+                <p className="text-xs text-slate-500 line-clamp-2 mt-auto">{rec.diagnosis}</p>
+              </div>
+            ))}
+          </div>
+          <Button variant="outline" className="w-full text-purple-600 border-purple-200 hover:bg-purple-50 mt-2">
+            Ver todas recomendações
+          </Button>
+        </CardContent>
+      </Card>
+
     </div>
   );
 
