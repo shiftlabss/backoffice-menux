@@ -15,7 +15,9 @@ import {
     ChevronRight,
     PanelLeft,
     TrendingUp,
-    FileText
+
+    FileText,
+    User
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useMenux } from '../../context/MenuxContext';
@@ -37,6 +39,7 @@ export default function Sidebar() {
     const managerLinksManagement = [
         { to: '/menu', icon: UtensilsCrossed, label: 'Cardápio' },
         { to: '/menu/upsell', icon: TrendingUp, label: 'Upsell' },
+        { to: '/customers', icon: User, label: 'Clientes' },
         { to: '/users', icon: Users, label: 'Usuários' },
         { to: '/reports', icon: FileText, label: 'Relatórios' },
         { to: '/settings', icon: Settings, label: 'Configurações' },
