@@ -570,15 +570,7 @@ const IntelligenceImpact = () => {
     </div>
   );
 
-  return (
-    <ModuleLayout
-      title="Maestro"
-      subtitle="Inteligência Artificial"
-      items={intelligenceSidebarItems}
-    >
-      {content}
-    </ModuleLayout>
-  );
+  return content;
 };
 
 export default IntelligenceImpact;
