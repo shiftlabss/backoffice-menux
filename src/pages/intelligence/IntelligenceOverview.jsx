@@ -8,46 +8,33 @@ import { useNavigate } from 'react-router-dom';
 import { intelligenceService } from '../../services/dataService';
 import { toast } from 'react-hot-toast';
 import {
-  Sparkles,
   TrendingUp,
-  Zap,
   ArrowRight,
   DollarSign,
   ShoppingBag,
   Percent,
   CheckCircle2,
   Clock,
-  AlertCircle,
   AlertTriangle,
   Loader2,
-  RefreshCw
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { MOCK_FORECAST, MOCK_INSIGHT, MOCK_KPIS, MOCK_RECOMMENDATIONS } from '../../services/mockIntelligence';
+import { MOCK_FORECAST, MOCK_KPIS, MOCK_RECOMMENDATIONS } from '../../services/mockIntelligence';
 import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
-import { WeatherCard } from '../../components/maestro/WeatherCard';
-import { MaestroWeatherInsights } from '../../components/maestro/MaestroWeatherInsights';
-import { weatherService } from '../../services/weatherService';
 
 export default function IntelligenceOverview() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({
     forecast: null,
-    insight: null,
     kpis: null,
     recommendations: []
   });
 
-  const [activeModal, setActiveModal] = useState(null); // 'insight' | 'recommendation'
+  const [activeModal, setActiveModal] = useState(null); // 'recommendation'
   const [selectedRecommendation, setSelectedRecommendation] = useState(null);
   const [kpiPeriod, setKpiPeriod] = useState('7d');
   const [isRefreshingForecast, setIsRefreshingForecast] = useState(false);
-
-  // Weather State
-  const [weatherData, setWeatherData] = useState(null);
-  const [weatherInsights, setWeatherInsights] = useState(null);
-  const [weatherLoading, setWeatherLoading] = useState(true);
 
   // Fetch initial data
   useEffect(() => {
@@ -62,41 +49,17 @@ export default function IntelligenceOverview() {
     return () => clearInterval(interval);
   }, []);
 
-  // Weather Fetch
-  useEffect(() => {
-    fetchWeather();
-  }, []);
-
-  const fetchWeather = async (lat, lon, cityName) => {
-    try {
-      setWeatherLoading(true);
-      // Default to Sao Paulo if no coords provided, or update with new coords
-      const data = await weatherService.getWeather(lat, lon, cityName);
-      setWeatherData(data);
-
-      const insights = weatherService.generateInsights(data);
-      setWeatherInsights(insights);
-    } catch (err) {
-      console.error("Weather error", err);
-      // Silent fail or toast? for now silent + console
-    } finally {
-      setWeatherLoading(false);
-    }
-  };
-
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [forecastRes, insightRes, kpisRes, recsRes] = await Promise.all([
+      const [forecastRes, kpisRes, recsRes] = await Promise.all([
         intelligenceService.getForecast(),
-        intelligenceService.getInsight(),
         intelligenceService.getKPIs(kpiPeriod),
         intelligenceService.getRecommendations({ limit: 5 })
       ]);
 
       setData({
         forecast: forecastRes,
-        insight: insightRes,
         kpis: kpisRes,
         recommendations: recsRes
       });
@@ -105,7 +68,6 @@ export default function IntelligenceOverview() {
       // Fallback to mock data
       setData({
         forecast: MOCK_FORECAST,
-        insight: MOCK_INSIGHT,
         kpis: MOCK_KPIS,
         recommendations: MOCK_RECOMMENDATIONS
       });
@@ -181,14 +143,9 @@ export default function IntelligenceOverview() {
     );
   }
 
-  const { forecast, insight, kpis, recommendations } = data;
+  const { forecast, kpis, recommendations } = data;
 
-  const kpiItems = [
-    { label: 'Pedidos com IA', value: kpis?.ai_orders || 0, icon: ShoppingBag, color: 'text-purple-600', bg: 'bg-purple-50', sub: kpis?.previous_period_comparison?.ai_orders },
-    { label: 'Conversão', value: `${(kpis?.conversion_rate || 0).toFixed(1)}%`, icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50', sub: kpis?.previous_period_comparison?.conversion_rate },
-    { label: '% Faturamento', value: `${kpis?.ai_revenue_pct || 0}%`, icon: Percent, color: 'text-blue-600', bg: 'bg-blue-50', sub: null },
-    { label: 'Receita via IA', value: `R$ ${(kpis?.ai_revenue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: DollarSign, color: 'text-green-600', bg: 'bg-green-50', sub: kpis?.previous_period_comparison?.ai_revenue },
-  ];
+
 
   return (
     <ModuleLayout
@@ -219,194 +176,10 @@ export default function IntelligenceOverview() {
       <div className="space-y-6 max-w-7xl mx-auto pb-8">
 
 
-        {/* Block 3: Metrics Grid (Moved to top by request) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {kpiItems.map((item, idx) => {
-            const Icon = item.icon;
-            return (
-              <Card key={idx} className="p-4 flex flex-col gap-3 hover:shadow-md transition-shadow duration-200 border-border">
-                <div className="flex justify-between items-start">
-                  <div className={cn("p-2 rounded-lg", item.bg, item.color)}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 font-medium">{item.label}</p>
-                  <div className="flex items-end gap-2">
-                    <p className="text-xl font-bold text-foreground mt-1">{item.value}</p>
-                    {item.sub && <p className="text-[10px] text-green-600 mb-1 font-medium">{item.sub}</p>}
-                  </div>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
 
 
-        {/* Block 1: Forecast, Weather & Projections */}
-        <div className="grid grid-cols-1 gap-4">
-          <WeatherCard
-            weatherData={weatherData}
-            loading={weatherLoading}
-            onLocationChange={(city) => fetchWeather(city.lat, city.lon, city.name)}
-          />
-        </div>
-
-        {/* Weather Insights Section */}
-        {weatherInsights && (
-          <MaestroWeatherInsights
-            weatherScenario={weatherInsights}
-            insights={weatherInsights.insights}
-            loading={weatherLoading}
-          />
-        )}
-
-        {/* Block 2: Insight of the Day */}
-        {insight && (
-          <Card className="relative overflow-hidden border-purple-100 bg-purple-50/30 transition-all hover:bg-purple-50/50">
-            <div className="absolute top-0 right-0 p-3 opacity-10 pointer-events-none">
-              <Sparkles className="w-32 h-32 text-purple-600" />
-            </div>
-            <div className="p-6 relative z-10 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
-              <div className="p-3 bg-purple-100 rounded-2xl shrink-0 shadow-sm">
-                <Sparkles className="w-8 h-8 text-purple-600" />
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-bold text-lg text-foreground">Insight do Dia</h3>
-                  {insight.is_new && <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200 text-[10px] h-5">Novo</Badge>}
-                </div>
-                <p className="text-sm text-gray-600 leading-relaxed max-w-2xl">
-                  {insight.description}
-                </p>
-              </div>
-              <Button onClick={() => setActiveModal('insight')} className="bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-200 w-full sm:w-auto">
-                Ver detalhes
-              </Button>
-            </div>
-          </Card>
-        )}
 
 
-        {/* Block 4: Recent Recommendations List */}
-        <Card className="border-border overflow-hidden">
-          <div className="px-6 py-4 border-b border-muted flex justify-between items-center bg-gray-50/50">
-            <h3 className="font-bold text-foreground text-sm">Últimas Recomendações</h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs text-purple-600 hover:text-purple-700 hover:bg-purple-50"
-              onClick={() => navigate('/intelligence/recommendations')}
-            >
-              Ver histórico completo <ArrowRight className="w-3 h-3 ml-1" />
-            </Button>
-          </div>
-          <div className="divide-y divide-[#F5F5F5]">
-            {recommendations.length === 0 ? (
-              <div className="p-8 text-center text-gray-500 text-sm">Nenhuma recomendação recente.</div>
-            ) : (
-              recommendations.map((rec) => (
-                <div key={rec.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
-                  <div className="flex items-start gap-4">
-                    <div className={cn(
-                      "p-2 rounded-full shrink-0 mt-0.5",
-                      rec.type === 'Upsell' ? "bg-blue-50 text-blue-600" :
-                        rec.type === 'Preço' ? "bg-green-50 text-green-600" :
-                          "bg-orange-50 text-orange-600"
-                    )}>
-                      {rec.type === 'Upsell' ? <TrendingUp className="w-4 h-4" /> :
-                        rec.type === 'Preço' ? <DollarSign className="w-4 h-4" /> :
-                          <AlertTriangle className="w-4 h-4" />}
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-bold text-foreground">{rec.title}</h4>
-                      <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className="text-xs text-gray-700 font-medium px-1.5 py-0.5 bg-gray-100 rounded">{rec.entity}</span>
-                        <span className="text-gray-300 hidden sm:inline">•</span>
-                        <span className="text-xs text-gray-400 flex items-center gap-1">
-                          <Clock className="w-3 h-3" /> {new Date(rec.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 pl-12 sm:pl-0">
-                    {getStatusBadge(rec.status)}
-                    {rec.status === 'Pendente' && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 text-xs hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200"
-                        onClick={() => handleReviewRecommendation(rec)}
-                      >
-                        Revisar
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </Card>
-
-        {/* Insight Modal */}
-        <Modal
-          isOpen={activeModal === 'insight'}
-          onClose={() => setActiveModal(null)}
-          title="Detalhes do Insight"
-        >
-          {insight && (
-            <div className="space-y-6">
-              <div className="bg-purple-50 p-5 rounded-xl border border-purple-100 shadow-inner">
-                <h4 className="font-bold text-purple-950 mb-3 flex items-center gap-2 text-lg">
-                  <Sparkles className="w-5 h-5 text-purple-700" /> {insight.title}
-                </h4>
-                <p className="text-sm text-purple-900 leading-relaxed">
-                  {insight.full_description}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 border border-gray-100 rounded-lg bg-gray-50/50">
-                  <p className="text-xs text-gray-500 uppercase font-semibold">Volume Analisado</p>
-                  <p className="text-lg font-bold text-foreground">{insight.order_volume} pedidos</p>
-                </div>
-                <div className="p-3 border border-gray-100 rounded-lg bg-gray-50/50">
-                  <p className="text-xs text-gray-500 uppercase font-semibold">Impacto Conversão</p>
-                  <p className="text-lg font-bold text-green-600">+{insight.conversion_increase}%</p>
-                </div>
-              </div>
-
-              <div>
-                <h5 className="text-sm font-bold text-gray-900 mb-2">Ação Sugerida</h5>
-                <p className="text-sm text-gray-600 mb-6 bg-white border border-gray-200 p-3 rounded-lg">
-                  Criar oferta combinada ou destacar estes itens no topo do cardápio digital hoje.
-                </p>
-
-                <div className="flex gap-3 flex-col sm:flex-row">
-                  <Button
-                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-white h-11"
-                    onClick={() => {
-                      toast.success("Sugestão aplicada!");
-                      setActiveModal(null);
-                    }}
-                  >
-                    Aplicar Sugestão Agora
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1 h-11"
-                    onClick={() => {
-                      navigate(`/intelligence/recommendations?insightId=${insight.id}`);
-                      setActiveModal(null);
-                    }}
-                  >
-                    Ver recomendações relacionadas
-                  </Button>
-                </div>
-              </div>
-            </div>
-          )}
-        </Modal>
 
         {/* Recommendation Review Modal */}
         <Modal

@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/ui/Card';
 import ModuleLayout from '../../components/layout/ModuleLayout';
 import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
-import { TrendingUp, DollarSign, ShoppingBag, ArrowUpRight, ArrowDownRight, Loader2 } from 'lucide-react';
+import { TrendingUp, DollarSign, ShoppingBag, ArrowUpRight, ArrowDownRight, Loader2, Percent } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { intelligenceService } from '../../services/dataService';
 import { toast } from 'react-hot-toast';
 import { cn } from '../../lib/utils';
+import { MOCK_KPIS } from '../../services/mockIntelligence';
 
 export default function IntelligenceImpact() {
   const [period, setPeriod] = useState('30d');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
+  const [kpis, setKpis] = useState(null);
 
   useEffect(() => {
     fetchImpact();
@@ -20,10 +22,19 @@ export default function IntelligenceImpact() {
   const fetchImpact = async () => {
     setLoading(true);
     try {
-      const data = await intelligenceService.getImpact(period);
-      setData(data);
+      // Fetch both Impact data and detailed KPIs to replicate the overview block exactly
+      const [impactData, kpisData] = await Promise.all([
+        intelligenceService.getImpact(period),
+        intelligenceService.getKPIs(period)
+      ]);
+
+      setData(impactData);
+      setKpis(kpisData);
     } catch (err) {
+      console.error(err);
       toast.error("Erro ao carregar dados de impacto.");
+      // Fallback
+      setKpis(MOCK_KPIS);
     } finally {
       setLoading(false);
     }
@@ -35,11 +46,12 @@ export default function IntelligenceImpact() {
     );
   }
 
-  const kpis = [
-    { label: 'Receita via IA', value: `R$ ${data?.revenue_generated?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, change: '+12.5%', isUp: true },
-    { label: '% da Receita Total', value: `${data?.revenue_pct}%`, change: '+2.1%', isUp: true },
-    { label: 'Ticket Médio (com IA)', value: `R$ ${data?.ticket_with_ai?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, change: `+${((data?.ticket_with_ai - data?.ticket_without_ai) / data?.ticket_without_ai * 100).toFixed(1)}%`, isUp: true },
-    { label: 'Ticket Médio (sem IA)', value: `R$ ${data?.ticket_without_ai?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, change: 'Ref', isUp: false },
+  // KPI Items mirrored from Overview
+  const kpiItems = [
+    { label: 'Pedidos com IA', value: kpis?.ai_orders || 0, icon: ShoppingBag, color: 'text-purple-600', bg: 'bg-purple-50', sub: kpis?.previous_period_comparison?.ai_orders },
+    { label: 'Conversão', value: `${(kpis?.conversion_rate || 0).toFixed(1)}%`, icon: TrendingUp, color: 'text-orange-600', bg: 'bg-orange-50', sub: kpis?.previous_period_comparison?.conversion_rate },
+    { label: '% Faturamento', value: `${kpis?.ai_revenue_pct || 0}%`, icon: Percent, color: 'text-blue-600', bg: 'bg-blue-50', sub: null },
+    { label: 'Receita via IA', value: `R$ ${(kpis?.ai_revenue || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, icon: DollarSign, color: 'text-green-600', bg: 'bg-green-50', sub: kpis?.previous_period_comparison?.ai_revenue },
   ];
 
   return (
@@ -65,20 +77,28 @@ export default function IntelligenceImpact() {
       }
     >
       <div className="space-y-6 max-w-7xl mx-auto pb-8">
-        {/* KPIs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {kpis.map((kpi, i) => (
-            <Card key={i} className="p-4 border-border">
-              <p className="text-xs text-gray-500 font-medium uppercase tracking-wider">{kpi.label}</p>
-              <div className="mt-2 flex items-baseline justify-between">
-                <h3 className="text-2xl font-bold text-foreground">{kpi.value}</h3>
-                <span className={`text-xs font-bold flex items-center gap-0.5 ${kpi.isUp ? 'text-green-600' : 'text-gray-500'}`}>
-                  {kpi.isUp && <ArrowUpRight className="w-3 h-3" />}
-                  {kpi.change}
-                </span>
-              </div>
-            </Card>
-          ))}
+
+        {/* Metric Grid (Moved from Overview) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {kpiItems.map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <Card key={idx} className="p-4 flex flex-col gap-3 hover:shadow-md transition-shadow duration-200 border-border">
+                <div className="flex justify-between items-start">
+                  <div className={cn("p-2 rounded-lg", item.bg, item.color)}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 font-medium">{item.label}</p>
+                  <div className="flex items-end gap-2">
+                    <p className="text-xl font-bold text-foreground mt-1">{item.value}</p>
+                    {item.sub && <p className="text-[10px] text-green-600 mb-1 font-medium">{item.sub}</p>}
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Main Chart */}

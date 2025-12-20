@@ -7,13 +7,7 @@ import {
 } from 'lucide-react';
 
 export const intelligenceSidebarItems = [
-  {
-    label: 'Visão Geral',
-    subtitle: 'Resumo da operação',
-    to: '/intelligence/overview',
-    icon: LayoutDashboard,
-    exact: true
-  },
+
   {
     label: 'Impacto nas Vendas',
     subtitle: 'Análise de conversão',

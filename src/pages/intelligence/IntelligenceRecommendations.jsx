@@ -4,11 +4,11 @@ import { Button } from '../../components/ui/Form';
 import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
 import { intelligenceService } from '../../services/dataService';
+import { weatherService } from '../../services/weatherService';
 import { toast } from 'react-hot-toast';
 import {
   Sparkles,
   Search,
-  Calendar,
   DollarSign,
   TrendingUp,
   AlertTriangle,
@@ -19,33 +19,48 @@ import {
   Filter
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import ModuleLayout from '../../components/layout/ModuleLayout';
 import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
+import { WeatherCard } from '../../components/maestro/WeatherCard';
+import { MaestroWeatherInsights } from '../../components/maestro/MaestroWeatherInsights';
+import { MOCK_INSIGHT } from '../../services/mockIntelligence';
 
 export default function IntelligenceRecommendations() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Kept state for potential future use or if URL params need them, 
+  // though the UI filter bar was removed.
   const [filterPeriod, setFilterPeriod] = useState('7d');
   const [filterType, setFilterType] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [search, setSearch] = useState('');
 
-  const [activeModal, setActiveModal] = useState(null);
+  const [activeModal, setActiveModal] = useState(null); // 'review' | 'insight'
   const [selectedRec, setSelectedRec] = useState(null);
+
+  // Weather & Insight State
+  const [weatherData, setWeatherData] = useState(null);
+  const [weatherInsights, setWeatherInsights] = useState(null);
+  const [weatherLoading, setWeatherLoading] = useState(true);
+  const [insight, setInsight] = useState(null);
+
 
   useEffect(() => {
     // If navigated from Insight Overview
     const insightId = searchParams.get('insightId');
     if (insightId) {
-      // In a real app we would set a specific filter or call a specific endpoint
       setSearch('Insight related...');
     }
   }, [searchParams]);
 
   useEffect(() => {
     fetchRecommendations();
+    fetchWeather();
+    fetchInsight();
   }, [filterPeriod, filterType, filterStatus]);
 
   const fetchRecommendations = async () => {
@@ -63,6 +78,30 @@ export default function IntelligenceRecommendations() {
       setLoading(false);
     }
   };
+
+  const fetchWeather = async (lat, lon, cityName) => {
+    try {
+      setWeatherLoading(true);
+      const data = await weatherService.getWeather(lat, lon, cityName);
+      setWeatherData(data);
+
+      const insights = weatherService.generateInsights(data);
+      setWeatherInsights(insights);
+    } catch (err) {
+      console.error("Weather error", err);
+    } finally {
+      setWeatherLoading(false);
+    }
+  };
+
+  const fetchInsight = async () => {
+    try {
+      const data = await intelligenceService.getInsight();
+      setInsight(data);
+    } catch (err) {
+      setInsight(MOCK_INSIGHT);
+    }
+  }
 
   const filteredRecs = recommendations.filter(rec =>
     rec.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -107,12 +146,12 @@ export default function IntelligenceRecommendations() {
     }
   };
 
-  const getStatusParams = (status) => {
+  const getStatusBadge = (status) => {
     switch (status) {
-      case 'Pendente': return { label: 'Pendente', color: 'bg-yellow-50 text-yellow-700 border-yellow-200', icon: Clock };
-      case 'Aplicada': return { label: 'Aplicada', color: 'bg-green-50 text-green-700 border-green-200', icon: CheckCircle2 };
-      case 'Ignorada': return { label: 'Ignorada', color: 'bg-gray-50 text-gray-500 border-gray-200', icon: XCircle };
-      default: return { label: status, color: 'bg-gray-100', icon: Sparkles };
+      case 'Pendente': return <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">Pendente</Badge>;
+      case 'Aplicada': return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">Aplicada</Badge>;
+      case 'Ignorada': return <Badge variant="outline" className="bg-gray-50 text-gray-500 border-gray-200">Ignorada</Badge>;
+      default: return <Badge variant="outline">{status}</Badge>;
     }
   };
 
@@ -124,175 +163,176 @@ export default function IntelligenceRecommendations() {
     >
       <div className="space-y-6 max-w-7xl mx-auto pb-8">
 
-        {/* Filters Bar */}
-        <Card className="p-4 flex flex-col md:flex-row gap-4 items-center bg-gray-50/50 border-border">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar por título, produto..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-border rounded-lg focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all bg-white"
-            />
+        {/* --- MOVED BLOCKS START --- */}
+
+        {/* Block 1: Weather & Projections */}
+        <div className="grid grid-cols-1 gap-4">
+          <WeatherCard
+            weatherData={weatherData}
+            loading={weatherLoading}
+            onLocationChange={(city) => fetchWeather(city.lat, city.lon, city.name)}
+          />
+        </div>
+
+        {/* Weather Insights Section */}
+        {weatherInsights && (
+          <MaestroWeatherInsights
+            weatherScenario={weatherInsights}
+            insights={weatherInsights.insights}
+            loading={weatherLoading}
+          />
+        )}
+
+        {/* Block 2: Insight of the Day */}
+        {insight && (
+          <Card className="relative overflow-hidden border-purple-100 bg-purple-50/30 transition-all hover:bg-purple-50/50">
+            <div className="absolute top-0 right-0 p-3 opacity-10 pointer-events-none">
+              <Sparkles className="w-32 h-32 text-purple-600" />
+            </div>
+            <div className="p-6 relative z-10 flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+              <div className="p-3 bg-purple-100 rounded-2xl shrink-0 shadow-sm">
+                <Sparkles className="w-8 h-8 text-purple-600" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <h3 className="font-bold text-lg text-foreground">Insight do Dia</h3>
+                  {insight.is_new && <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-purple-200 text-[10px] h-5">Novo</Badge>}
+                </div>
+                <p className="text-sm text-gray-600 leading-relaxed max-w-2xl">
+                  {insight.description}
+                </p>
+              </div>
+              <Button onClick={() => setActiveModal('insight')} className="bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-200 w-full sm:w-auto">
+                Ver detalhes
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {/* --- MOVED BLOCKS END --- */}
+
+        {/* Recommendations List (New Design) */}
+        <Card className="border-border overflow-hidden">
+          <div className="px-6 py-4 border-b border-muted flex justify-between items-center bg-gray-50/50">
+            <h3 className="font-bold text-foreground text-sm">Últimas Recomendações</h3>
+            {/* 'Ver histórico completo' removed as this IS the history page/full list */}
           </div>
+          <div className="divide-y divide-[#F5F5F5]">
+            {loading ? (
+              <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-purple-600" /></div>
+            ) : filteredRecs.length === 0 ? (
+              <div className="p-8 text-center text-gray-500 text-sm">Nenhuma recomendação encontrada.</div>
+            ) : (
+              filteredRecs.map((rec) => {
+                const { icon: Icon, color, bg } = getIcon(rec.type);
 
-          <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-            <select
-              value={filterPeriod}
-              onChange={(e) => setFilterPeriod(e.target.value)}
-              className="px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-purple-500 cursor-pointer"
-            >
-              <option value="today">Hoje</option>
-              <option value="7d">7 Dias</option>
-              <option value="30d">30 Dias</option>
-            </select>
-
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-purple-500 cursor-pointer"
-            >
-              <option value="all">Tipos</option>
-              <option value="Upsell">Upsell</option>
-              <option value="Cross-sell">Cross-sell</option>
-              <option value="Preço">Preço</option>
-              <option value="Estoque">Estoque</option>
-            </select>
-
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 text-sm border border-border rounded-lg bg-white focus:outline-none focus:border-purple-500 cursor-pointer"
-            >
-              <option value="all">Status</option>
-              <option value="Pendente">Pendente</option>
-              <option value="Aplicada">Aplicada</option>
-              <option value="Ignorada">Ignorada</option>
-            </select>
-
-            <Button
-              variant="outline"
-              onClick={() => {
-                setFilterType('all');
-                setFilterStatus('all');
-                setSearch('');
-              }}
-              title="Limpar Filtros"
-              className="px-3"
-            >
-              <Filter className="w-4 h-4" />
-            </Button>
+                return (
+                  <div key={rec.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50 transition-colors">
+                    <div className="flex items-start gap-4">
+                      <div className={cn(
+                        "p-2 rounded-full shrink-0 mt-0.5",
+                        rec.type === 'Upsell' ? "bg-blue-50 text-blue-600" :
+                          rec.type === 'Preço' ? "bg-green-50 text-green-600" :
+                            "bg-orange-50 text-orange-600"
+                      )}>
+                        {rec.type === 'Upsell' ? <TrendingUp className="w-4 h-4" /> :
+                          rec.type === 'Preço' ? <DollarSign className="w-4 h-4" /> :
+                            <AlertTriangle className="w-4 h-4" />}
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-foreground">{rec.title}</h4>
+                        <div className="flex items-center gap-2 mt-1 flex-wrap">
+                          <span className="text-xs text-gray-700 font-medium px-1.5 py-0.5 bg-gray-100 rounded">{rec.entity}</span>
+                          <span className="text-gray-300 hidden sm:inline">•</span>
+                          <span className="text-xs text-gray-400 flex items-center gap-1">
+                            <Clock className="w-3 h-3" /> {new Date(rec.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 pl-12 sm:pl-0">
+                      {getStatusBadge(rec.status)}
+                      {rec.status === 'Pendente' && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 text-xs hover:bg-white hover:shadow-sm border border-transparent hover:border-gray-200"
+                          onClick={() => openReviewModal(rec)}
+                        >
+                          Revisar
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </Card>
 
-        {/* Recommendations List */}
-        <div className="space-y-4">
-          {loading ? (
-            <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-purple-600" /></div>
-          ) : filteredRecs.length === 0 ? (
-            <div className="text-center py-12 text-gray-400 bg-white rounded-2xl border border-dashed border-gray-200">
-              <Sparkles className="w-12 h-12 mx-auto mb-3 opacity-20" />
-              <p>Nenhuma recomendação encontrada.</p>
+        {/* --- MODALS --- */}
+
+        {/* Insight Modal */}
+        <Modal
+          isOpen={activeModal === 'insight'}
+          onClose={() => setActiveModal(null)}
+          title="Detalhes do Insight"
+        >
+          {insight && (
+            <div className="space-y-6">
+              <div className="bg-purple-50 p-5 rounded-xl border border-purple-100 shadow-inner">
+                <h4 className="font-bold text-purple-950 mb-3 flex items-center gap-2 text-lg">
+                  <Sparkles className="w-5 h-5 text-purple-700" /> {insight.title}
+                </h4>
+                <p className="text-sm text-purple-900 leading-relaxed">
+                  {insight.full_description}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-3 border border-gray-100 rounded-lg bg-gray-50/50">
+                  <p className="text-xs text-gray-500 uppercase font-semibold">Volume Analisado</p>
+                  <p className="text-lg font-bold text-foreground">{insight.order_volume} pedidos</p>
+                </div>
+                <div className="p-3 border border-gray-100 rounded-lg bg-gray-50/50">
+                  <p className="text-xs text-gray-500 uppercase font-semibold">Impacto Conversão</p>
+                  <p className="text-lg font-bold text-green-600">+{insight.conversion_increase}%</p>
+                </div>
+              </div>
+
+              <div>
+                <h5 className="text-sm font-bold text-gray-900 mb-2">Ação Sugerida</h5>
+                <p className="text-sm text-gray-600 mb-6 bg-white border border-gray-200 p-3 rounded-lg">
+                  Criar oferta combinada ou destacar estes itens no topo do cardápio digital hoje.
+                </p>
+
+                <div className="flex gap-3 flex-col sm:flex-row">
+                  <Button
+                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-white h-11"
+                    onClick={() => {
+                      toast.success("Sugestão aplicada!");
+                      setActiveModal(null);
+                    }}
+                  >
+                    Aplicar Sugestão Agora
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="flex-1 h-11"
+                    onClick={() => {
+                      // navigate(`/intelligence/recommendations?insightId=${insight.id}`);
+                      // Already IN recommendations, so maybe just filter?
+                      setSearch('Insight related...');
+                      setActiveModal(null);
+                    }}
+                  >
+                    Ver recomendações relacionadas
+                  </Button>
+                </div>
+              </div>
             </div>
-          ) : (
-            filteredRecs.map((rec) => {
-              const { icon: Icon, color, bg } = getIcon(rec.type);
-              const status = getStatusParams(rec.status);
-              const isPending = rec.status === 'Pendente';
-
-              return (
-                <Card key={rec.id} className="group p-5 border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg bg-surface relative overflow-hidden">
-
-                  {/* Decorative Background Gradient (subtle) */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/5 to-transparent rounded-bl-full -mr-10 -mt-10 transition-opacity opacity-0 group-hover:opacity-100" />
-
-                  <div className="relative flex flex-col gap-4">
-
-                    {/* Header Section: Product First */}
-                    <div className="flex justify-between items-start gap-4">
-                      <div className="flex items-start gap-4">
-                        {/* Icon Box */}
-                        <div className={cn("p-3 rounded-2xl shrink-0 transition-colors shadow-sm mt-1", bg, color, "group-hover:scale-110 duration-300")}>
-                          <Icon className="w-6 h-6" />
-                        </div>
-
-                        <div>
-                          {/* Primary: Product Name */}
-                          <h3 className="text-xl font-bold text-gray-900 tracking-tight leading-tight mb-1">
-                            {rec.entity}
-                          </h3>
-
-                          {/* Secondary: Action Badge */}
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200 uppercase tracking-wide">
-                              {rec.title}
-                            </span>
-                            <span className="text-xs text-text-tertiary">
-                              • {new Date(rec.timestamp).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Status Badge (Top Right) */}
-                      <div className={cn(
-                        "hidden sm:flex px-3 py-1 rounded-full border text-[10px] font-bold uppercase tracking-wider items-center gap-1.5",
-                        status.color.replace('bg-', 'bg-opacity-10 bg-')
-                      )}>
-                        <status.icon className="w-3 h-3" />
-                        {status.label}
-                      </div>
-                    </div>
-
-                    {/* Context & Impact */}
-                    <div className="pl-[4.5rem]">
-                      <p className="text-sm text-text-secondary leading-relaxed mb-3 max-w-2xl">
-                        {rec.context}
-                      </p>
-
-                      <div className="flex flex-wrap items-center gap-4">
-                        {/* Impact Metric */}
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 shadow-sm">
-                          <TrendingUp className="w-4 h-4" />
-                          <span>Impacto Estimado: <span className="text-sm">{rec.impact_estimate}</span></span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Actions Footer */}
-                    <div className="flex items-center justify-end gap-3 pt-2 mt-2 border-t border-border/50">
-                      {isPending ? (
-                        <>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="text-text-secondary hover:text-text-primary text-xs"
-                            onClick={() => openReviewModal(rec)}
-                          >
-                            Ver detalhes
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="bg-primary text-white hover:bg-primary-hover shadow-sm hover:shadow-md transition-all text-xs h-9 px-4"
-                            onClick={(e) => handleApply(rec.id, e)}
-                          >
-                            Aplicar Sugestão
-                          </Button>
-                        </>
-                      ) : (
-                        <span className="text-xs font-medium text-text-tertiary italic px-2 py-1.5">
-                          Ação {rec.status.toLowerCase()}
-                        </span>
-                      )}
-                    </div>
-
-                  </div>
-                </Card>
-              );
-            })
           )}
-        </div>
+        </Modal>
 
         {/* Review Modal */}
         <Modal
