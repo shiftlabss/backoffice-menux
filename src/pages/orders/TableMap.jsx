@@ -94,6 +94,17 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
             );
 
             const isOccupied = tableOrders.length > 0;
+            const totalValue = tableOrders.reduce((sum, order) => {
+                let val = 0;
+                if (typeof order.total === 'string') {
+                    // Remove "R$", trim, replace "." with nothing (thousand separator), replace "," with "."
+                    const cleanStr = order.total.replace('R$', '').trim().replace(/\./g, '').replace(',', '.');
+                    val = parseFloat(cleanStr) || 0;
+                } else if (typeof order.total === 'number') {
+                    val = order.total;
+                }
+                return sum + val;
+            }, 0);
 
             // Determine status
             let status = 'free'; // free, occupied, risk
@@ -121,6 +132,7 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                 status,
                 time,
                 orderCount: tableOrders.length,
+                totalValue,
                 suggestions: currentSuggestions,
                 // Helper to get highest priority
                 highestPriority: currentSuggestions.reduce((highest, curr) => {
@@ -215,7 +227,7 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
     };
 
     const getTableCardStyles = (status, isSelected, priority) => {
-        const base = "relative p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between h-32";
+        const base = "relative p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between h-24";
 
         let styles = `${base} bg-white`;
 
@@ -247,26 +259,28 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
         return styles;
     };
 
+    const grandTotal = tables.reduce((acc, t) => acc + (t.totalValue || 0), 0);
+
     return (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6 flex flex-col lg:flex-row transition-all duration-300 ease-in-out">
             {/* Main Map Content - Flexible Width */}
-            <div className={`flex-1 flex flex-col transition-all duration-300`}>
+            <div className={`flex-1 flex flex-col transition-all duration-300 min-w-0`}>
                 {/* Header */}
                 <div
-                    className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between bg-white border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors gap-4"
+                    className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between bg-white border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors gap-4 overflow-x-auto"
                     onClick={(e) => {
                         // Don't toggle if clicking interactive elements
                         if (e.target.closest('button') || e.target.closest('.interactive')) return;
                         setIsExpanded(!isExpanded);
                     }}
                 >
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4 min-w-max">
                         <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
                             <LayoutGrid size={20} />
                         </div>
                         <div>
-                            <h3 className="text-sm font-semibold text-gray-900">Mapa de Mesas</h3>
-                            <p className="text-xs text-gray-500">
+                            <h3 className="text-sm font-semibold text-gray-900 whitespace-nowrap">Mapa de Mesas</h3>
+                            <p className="text-xs text-gray-500 whitespace-nowrap">
                                 {tables.filter(t => t.status !== 'free').length} mesas ocupadas
                             </p>
                         </div>
@@ -278,42 +292,19 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3 interactive">
-                        {/* Maestro Toggle */}
-                        <div
-                            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border cursor-pointer transition-all ${intelligenceEnabled ? 'bg-indigo-50 border-indigo-200' : 'bg-gray-50 border-gray-200'
-                                }`}
-                            onClick={() => setIntelligenceEnabled(!intelligenceEnabled)}
-                        >
-                            <Sparkles size={14} className={intelligenceEnabled ? "text-indigo-600" : "text-gray-400"} />
-                            <div className="flex flex-col items-start leading-none opacity-80">
-                                <span className={`text-[10px] uppercase font-bold ${intelligenceEnabled ? 'text-indigo-700' : 'text-gray-500'}`}>
-                                    Maestro
-                                </span>
-                                <span className="text-[10px] text-gray-500 font-medium">
-                                    {intelligenceEnabled ? 'Ativo' : 'Pausado'}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div
-                            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 border border-gray-200 hover:bg-white cursor-pointer"
-                            onClick={(e) => { e.stopPropagation(); setAutoFilter(!autoFilter); }}
-                        >
-                            <Filter size={14} className={autoFilter ? "text-indigo-600" : "text-gray-400"} />
-                            <span className="text-xs font-medium text-gray-600 hidden sm:inline">Auto filtrar</span>
-                            <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${autoFilter ? 'bg-indigo-500' : 'bg-gray-300'}`}>
-                                <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${autoFilter ? 'translate-x-4' : 'translate-x-0'}`} />
-                            </div>
-                        </div>
-                        {isExpanded ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+                    <div className="flex flex-col items-end interactive min-w-max">
+                        <span className="text-xs text-gray-500 font-medium whitespace-nowrap">Valor em Aberto</span>
+                        <span className="text-lg font-bold text-gray-900 whitespace-nowrap">R$ {grandTotal.toFixed(2)}</span>
                     </div>
                 </div>
 
                 {/* Grid Content */}
                 {isExpanded && (
                     <div className="p-6 bg-gray-50/50 flex-1 animate-in slide-in-from-top-2 duration-200">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        <div className={`grid gap-4 ${selectedTable && intelligenceEnabled
+                            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                            : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'
+                            }`}>
                             {tables.map((table) => {
                                 const priority = table.highestPriority;
                                 const pStyles = priority ? getPriorityStyles(priority) : null;
@@ -369,21 +360,33 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                                     {/* If has priority, explain why briefly or show count */}
                                                     {priority ? (
                                                         <div className="flex flex-col">
-                                                            <span className="text-[10px] text-gray-500 font-medium">Sugestão ativa:</span>
-                                                            <span className="text-xs font-semibold text-gray-900 truncate">
-                                                                {table.suggestions[0]?.title}
-                                                            </span>
+                                                            <div className="flex justify-between items-end">
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[10px] text-gray-500 font-medium">Sugestão ativa:</span>
+                                                                    <span className="text-xs font-semibold text-gray-900 truncate max-w-[100px]">
+                                                                        {table.suggestions[0]?.title}
+                                                                    </span>
+                                                                </div>
+                                                                <span className="text-xs font-bold text-gray-900">
+                                                                    R$ {table.totalValue.toFixed(2)}
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     ) : (
                                                         <div className="flex justify-between items-center">
                                                             <span className="text-[10px] text-gray-500 font-medium bg-white/50 px-1.5 py-0.5 rounded-md border border-gray-100">
                                                                 {table.orderCount} pedido(s)
                                                             </span>
-                                                            {table.status === 'risk' && (
-                                                                <span className="text-[10px] font-bold text-red-600 flex items-center gap-1">
-                                                                    <AlertTriangle size={10} /> Atencão
+                                                            <div className="flex items-center gap-2">
+                                                                {table.status === 'risk' && (
+                                                                    <span className="text-[10px] font-bold text-red-600 flex items-center gap-1">
+                                                                        <AlertTriangle size={10} /> Atencão
+                                                                    </span>
+                                                                )}
+                                                                <span className="text-xs font-bold text-gray-900">
+                                                                    R$ {table.totalValue.toFixed(2)}
                                                                 </span>
-                                                            )}
+                                                            </div>
                                                         </div>
                                                     )}
                                                 </div>

@@ -120,46 +120,47 @@ export default function Orders() {
         <ModuleLayout
             title="Pedidos"
             subtitle="Gerencie os pedidos em tempo real da sua operação."
-            actions={
-                <div className="bg-gray-100 p-1 rounded-lg flex items-center">
-                    <button
-                        onClick={() => setViewMode('list')}
-                        className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
-                        title="Lista"
-                    >
-                        <LayoutList size={20} />
-                    </button>
-                    <button
-                        onClick={() => setViewMode('kanban')}
-                        className={`p-2 rounded-md transition-all ${viewMode === 'kanban' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
-                        title="Kanban"
-                    >
-                        <KanbanIcon size={20} />
-                    </button>
-                </div>
-            }
         >
             <div className="space-y-6 animate-in fade-in">
-                {/* Quick Filters */}
-                <div className="flex gap-2 overflow-x-auto pb-2">
-                    {[
-                        { id: 'all', label: 'Todos' },
-                        { id: 'pending', label: 'Pendentes', icon: AlertCircle },
-                        { id: 'preparing', label: 'Em Preparo', icon: Clock },
-                        { id: 'ready', label: 'Prontos', icon: CheckCircle2 }
-                    ].map(filter => (
+                {/* Quick Filters + View Toggles */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+                    <div className="flex gap-2 overflow-x-auto">
+                        {[
+                            { id: 'all', label: 'Todos' },
+                            { id: 'pending', label: 'Pendentes', icon: AlertCircle },
+                            { id: 'preparing', label: 'Em Preparo', icon: Clock },
+                            { id: 'ready', label: 'Prontos', icon: CheckCircle2 }
+                        ].map(filter => (
+                            <button
+                                key={filter.id}
+                                onClick={() => setFilterStatus(filter.id)}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-all ${filterStatus === filter.id
+                                    ? 'bg-gray-900 text-white border-gray-900'
+                                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                                    }`}
+                            >
+                                {filter.icon && <filter.icon size={16} />}
+                                {filter.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="bg-gray-100 p-1 rounded-lg flex items-center self-start sm:self-auto">
                         <button
-                            key={filter.id}
-                            onClick={() => setFilterStatus(filter.id)}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-medium whitespace-nowrap transition-all ${filterStatus === filter.id
-                                ? 'bg-gray-900 text-white border-gray-900'
-                                : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
-                                }`}
+                            onClick={() => setViewMode('list')}
+                            className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+                            title="Lista"
                         >
-                            {filter.icon && <filter.icon size={16} />}
-                            {filter.label}
+                            <LayoutList size={20} />
                         </button>
-                    ))}
+                        <button
+                            onClick={() => setViewMode('kanban')}
+                            className={`p-2 rounded-md transition-all ${viewMode === 'kanban' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-900'}`}
+                            title="Kanban"
+                        >
+                            <KanbanIcon size={20} />
+                        </button>
+                    </div>
                 </div>
 
                 {/* Table Map Block */}
