@@ -25,50 +25,10 @@ export default function Row3_SmartRanking() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-      {/* Smart Ranking Table - Spans 8 cols */}
-      <Card className="md:col-span-8 border-border shadow-sm">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-bold flex items-center gap-2">
-            <span className="w-1 h-4 bg-primary rounded-full"></span>
-            Ranking Inteligente de Itens
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50 text-xs">
-                <TableHead>Item</TableHead>
-                <TableHead>Categoria</TableHead>
-                <TableHead className="text-right">Vis.</TableHead>
-                <TableHead className="text-right">Conv.%</TableHead>
-                <TableHead className="text-right">Receita</TableHead>
-                <TableHead className="text-center">Score</TableHead>
-                <TableHead className="text-right">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {smartRanking.map((item) => (
-                <TableRow key={item.id} className="text-xs hover:bg-muted/30">
-                  <TableCell className="font-medium">{item.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{item.category}</TableCell>
-                  <TableCell className="text-right">{item.views}</TableCell>
-                  <TableCell className="text-right font-bold text-green-600">{item.conversion}%</TableCell>
-                  <TableCell className="text-right">R$ {item.revenue}</TableCell>
-                  <TableCell className="text-center">
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold mx-auto">
-                      {item.score}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right"><StatusBadge status={item.status} /></TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
 
-      {/* AI Insights Column - Spans 4 cols */}
-      <div className="md:col-span-4 space-y-6">
+
+      {/* AI Insights Column - Spans 12 cols */}
+      <div className="md:col-span-12 grid md:grid-cols-2 gap-6">
         {/* High Interest / Low Conversion */}
         <Card className="border-border shadow-sm border-l-4 border-l-red-400">
           <CardContent className="p-4">
