@@ -26,7 +26,8 @@ import {
   BarChart3
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import { MOCK_INSIGHT, MOCK_FORECAST } from '../../services/mockIntelligence'; // Fallback mocks
+import { MOCK_INSIGHT, MOCK_FORECAST, MOCK_KANBAN_DATA } from '../../services/mockIntelligence'; // Fallback mocks
+import { KanbanBoard } from '../../components/maestro/kanban/KanbanBoard';
 
 export default function IntelligenceRecommendations() {
   // State
@@ -237,185 +238,133 @@ export default function IntelligenceRecommendations() {
           </div>
         </div>
 
-        {/* Bloco 3: Oportunidades Priorizadas */}
+        {/* Bloco 3: Oportunidades Priorizadas (Kanban) */}
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-slate-900">Oportunidades Priorizadas</h2>
             <div className="text-sm text-slate-500">
-              {groupedRecs.high.length + groupedRecs.medium.length} sugestões ativas
+              Gerencie suas oportunidades por prioridade
             </div>
           </div>
 
-          {/* High Priority */}
-          <div className="space-y-3 mb-6">
-            <button
-              onClick={() => toggleSection('high')}
-              className="flex items-center gap-2 w-full text-left"
-            >
-              {collapsedSections.high ? <ChevronRight size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
-              <h3 className="text-sm font-bold text-red-600 uppercase tracking-wider flex items-center gap-2">
-                Prioridade Alta <Badge variant="secondary" className="bg-red-50 text-red-700 h-5 px-1.5">{groupedRecs.high.length}</Badge>
-              </h3>
-            </button>
-
-            {!collapsedSections.high && (
-              <div className="grid gap-3 animate-in slide-in-from-top-2 duration-300">
-                {groupedRecs.high.map((rec) => (
-                  <RecommendationRow
-                    key={rec.id}
-                    rec={rec}
-                    onApply={handleApply}
-                    onIgnore={handleIgnore}
-                    onViewEvidence={(r) => { setSelectedRec(r); setDrawerOpen('evidence'); }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Medium Priority */}
-          <div className="space-y-3">
-            <button
-              onClick={() => toggleSection('medium')}
-              className="flex items-center gap-2 w-full text-left"
-            >
-              {collapsedSections.medium ? <ChevronRight size={16} className="text-slate-400" /> : <ChevronDown size={16} className="text-slate-400" />}
-              <h3 className="text-sm font-bold text-orange-600 uppercase tracking-wider flex items-center gap-2">
-                Prioridade Média <Badge variant="secondary" className="bg-orange-50 text-orange-700 h-5 px-1.5">{groupedRecs.medium.length}</Badge>
-              </h3>
-            </button>
-
-            {!collapsedSections.medium && (
-              <div className="grid gap-3 animate-in slide-in-from-top-2 duration-300">
-                {groupedRecs.medium.map((rec) => (
-                  <RecommendationRow
-                    key={rec.id}
-                    rec={rec}
-                    onApply={handleApply}
-                    onIgnore={handleIgnore}
-                    onViewEvidence={(r) => { setSelectedRec(r); setDrawerOpen('evidence'); }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
+          <KanbanBoard data={MOCK_KANBAN_DATA} />
         </div>
+
+
+
+        {/* --- Drawers --- */}
+
+        {/* Evidence Drawer */}
+        <Drawer
+          isOpen={drawerOpen === 'evidence'}
+          onClose={() => { setDrawerOpen(null); setSelectedRec(null); }}
+          title="Evidência da Sugestão"
+          size="md" // changed from lg to md for cleaner look
+        >
+          <div className="space-y-6">
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+              <h4 className="font-bold text-slate-800 text-lg mb-1">{selectedRec?.title || "Análise de Contexto"}</h4>
+              <p className="text-sm text-slate-600">{selectedRec?.context || "Análise detalhada do cenário atual comparado com a média histórica."}</p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-4 border rounded-lg">
+                <p className="text-xs text-slate-500 uppercase font-semibold">Impacto Estimado</p>
+                <p className="text-xl font-bold text-emerald-600 mt-1">{selectedRec?.impact_estimate || "+ R$ 450,00"}</p>
+              </div>
+              <div className="p-4 border rounded-lg">
+                <p className="text-xs text-slate-500 uppercase font-semibold">Confiança</p>
+                <p className="text-xl font-bold text-blue-600 mt-1">Alta (92%)</p>
+              </div>
+            </div>
+
+            <div>
+              <h5 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                <BarChart3 size={18} className="text-purple-600" /> Comparativo Histórico
+              </h5>
+              {/* Mock Mini Chart */}
+              <div className="h-40 bg-slate-50 rounded-lg flex items-end justify-between p-4 px-8 border border-slate-100">
+                <div className="w-8 bg-slate-300 h-[40%] rounded-t mx-auto relative group">
+                  <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-500 opacity-0 group-hover:opacity-100">Sem IA</span>
+                </div>
+                <div className="w-8 bg-purple-500 h-[75%] rounded-t mx-auto relative group">
+                  <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-purple-600 opacity-0 group-hover:opacity-100">Com IA</span>
+                </div>
+              </div>
+              <div className="flex justify-between px-8 mt-2 text-xs text-slate-500 font-medium text-center">
+                <span className="w-8 mx-auto">Média</span>
+                <span className="w-8 mx-auto">Hoje</span>
+              </div>
+            </div>
+
+            <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
+              <p className="text-xs font-bold text-amber-800 uppercase mb-1">Por que aplicar agora?</p>
+              <p className="text-sm text-amber-900/80">O pico de movimento começa em 30 minutos. Aplicar agora maximiza a exposição.</p>
+            </div>
+
+            <div className="pt-4 flex gap-3">
+              <Button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white" onClick={() => { toast.success("Aplicado!"); setDrawerOpen(null); }}>
+                Aplicar Agora
+              </Button>
+              <Button variant="outline" className="flex-1" onClick={() => setDrawerOpen(null)}>
+                Fechar
+              </Button>
+            </div>
+          </div>
+        </Drawer>
+
+        {/* Forecast Drawer */}
+        <Drawer
+          isOpen={drawerOpen === 'forecast'}
+          onClose={() => setDrawerOpen(null)}
+          title="Clima: Próximas Horas"
+          size="sm"
+        >
+          <div className="space-y-4">
+            <p className="text-sm text-slate-600">Previsão hora-a-hora para planejamento operacional.</p>
+            <div className="space-y-2">
+              {[1, 2, 3, 4, 5, 6].map(i => {
+                const hour = new Date().getHours() + i;
+                return (
+                  <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+                    <span className="text-sm font-bold text-slate-700">{hour > 23 ? hour - 24 : hour}:00</span>
+                    <div className="flex items-center gap-2">
+                      <CloudRain size={16} className="text-blue-400" />
+                      <span className="text-sm font-medium text-slate-600">22°C</span>
+                    </div>
+                    <span className="text-xs text-slate-400">Rain risk: 60%</span>
+                  </div>
+                )
+              })}
+            </div>
+            <div className="p-4 bg-blue-50 rounded-lg text-blue-800 text-sm mt-4">
+              <strong>Resumo:</strong> Chuva deve intensificar às 20h. Prepare reforço para embalagens de delivery.
+            </div>
+          </div>
+        </Drawer>
+
+        {/* Filter Drawer (Placeholder) */}
+        <Drawer
+          isOpen={drawerOpen === 'filters'}
+          onClose={() => setDrawerOpen(null)}
+          title="Filtros Avançados"
+          size="sm"
+        >
+          <div className="space-y-4">
+            <p className="text-sm text-slate-500">Filtrar oportunidades por:</p>
+            {/* Filter Controls would go here */}
+            <div className="space-y-2">
+              <Button variant="outline" className="w-full justify-start font-normal text-slate-600">Categoria do Produto</Button>
+              <Button variant="outline" className="w-full justify-start font-normal text-slate-600">Tipo de Oportunidade</Button>
+              <Button variant="outline" className="w-full justify-start font-normal text-slate-600">Impacto Mínimo (R$)</Button>
+            </div>
+            <div className="pt-20">
+              <Button className="w-full" onClick={() => setDrawerOpen(null)}>Aplicar Filtros</Button>
+            </div>
+          </div>
+        </Drawer>
 
       </div>
-
-      {/* --- Drawers --- */}
-
-      {/* Evidence Drawer */}
-      <Drawer
-        isOpen={drawerOpen === 'evidence'}
-        onClose={() => { setDrawerOpen(null); setSelectedRec(null); }}
-        title="Evidência da Sugestão"
-        size="md" // changed from lg to md for cleaner look
-      >
-        <div className="space-y-6">
-          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-            <h4 className="font-bold text-slate-800 text-lg mb-1">{selectedRec?.title || "Análise de Contexto"}</h4>
-            <p className="text-sm text-slate-600">{selectedRec?.context || "Análise detalhada do cenário atual comparado com a média histórica."}</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 border rounded-lg">
-              <p className="text-xs text-slate-500 uppercase font-semibold">Impacto Estimado</p>
-              <p className="text-xl font-bold text-emerald-600 mt-1">{selectedRec?.impact_estimate || "+ R$ 450,00"}</p>
-            </div>
-            <div className="p-4 border rounded-lg">
-              <p className="text-xs text-slate-500 uppercase font-semibold">Confiança</p>
-              <p className="text-xl font-bold text-blue-600 mt-1">Alta (92%)</p>
-            </div>
-          </div>
-
-          <div>
-            <h5 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
-              <BarChart3 size={18} className="text-purple-600" /> Comparativo Histórico
-            </h5>
-            {/* Mock Mini Chart */}
-            <div className="h-40 bg-slate-50 rounded-lg flex items-end justify-between p-4 px-8 border border-slate-100">
-              <div className="w-8 bg-slate-300 h-[40%] rounded-t mx-auto relative group">
-                <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-500 opacity-0 group-hover:opacity-100">Sem IA</span>
-              </div>
-              <div className="w-8 bg-purple-500 h-[75%] rounded-t mx-auto relative group">
-                <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-purple-600 opacity-0 group-hover:opacity-100">Com IA</span>
-              </div>
-            </div>
-            <div className="flex justify-between px-8 mt-2 text-xs text-slate-500 font-medium text-center">
-              <span className="w-8 mx-auto">Média</span>
-              <span className="w-8 mx-auto">Hoje</span>
-            </div>
-          </div>
-
-          <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
-            <p className="text-xs font-bold text-amber-800 uppercase mb-1">Por que aplicar agora?</p>
-            <p className="text-sm text-amber-900/80">O pico de movimento começa em 30 minutos. Aplicar agora maximiza a exposição.</p>
-          </div>
-
-          <div className="pt-4 flex gap-3">
-            <Button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white" onClick={() => { toast.success("Aplicado!"); setDrawerOpen(null); }}>
-              Aplicar Agora
-            </Button>
-            <Button variant="outline" className="flex-1" onClick={() => setDrawerOpen(null)}>
-              Fechar
-            </Button>
-          </div>
-        </div>
-      </Drawer>
-
-      {/* Forecast Drawer */}
-      <Drawer
-        isOpen={drawerOpen === 'forecast'}
-        onClose={() => setDrawerOpen(null)}
-        title="Clima: Próximas Horas"
-        size="sm"
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-slate-600">Previsão hora-a-hora para planejamento operacional.</p>
-          <div className="space-y-2">
-            {[1, 2, 3, 4, 5, 6].map(i => {
-              const hour = new Date().getHours() + i;
-              return (
-                <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
-                  <span className="text-sm font-bold text-slate-700">{hour > 23 ? hour - 24 : hour}:00</span>
-                  <div className="flex items-center gap-2">
-                    <CloudRain size={16} className="text-blue-400" />
-                    <span className="text-sm font-medium text-slate-600">22°C</span>
-                  </div>
-                  <span className="text-xs text-slate-400">Rain risk: 60%</span>
-                </div>
-              )
-            })}
-          </div>
-          <div className="p-4 bg-blue-50 rounded-lg text-blue-800 text-sm mt-4">
-            <strong>Resumo:</strong> Chuva deve intensificar às 20h. Prepare reforço para embalagens de delivery.
-          </div>
-        </div>
-      </Drawer>
-
-      {/* Filter Drawer (Placeholder) */}
-      <Drawer
-        isOpen={drawerOpen === 'filters'}
-        onClose={() => setDrawerOpen(null)}
-        title="Filtros Avançados"
-        size="sm"
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-slate-500">Filtrar oportunidades por:</p>
-          {/* Filter Controls would go here */}
-          <div className="space-y-2">
-            <Button variant="outline" className="w-full justify-start font-normal text-slate-600">Categoria do Produto</Button>
-            <Button variant="outline" className="w-full justify-start font-normal text-slate-600">Tipo de Oportunidade</Button>
-            <Button variant="outline" className="w-full justify-start font-normal text-slate-600">Impacto Mínimo (R$)</Button>
-          </div>
-          <div className="pt-20">
-            <Button className="w-full" onClick={() => setDrawerOpen(null)}>Aplicar Filtros</Button>
-          </div>
-        </div>
-      </Drawer>
-
     </div>
   );
 }

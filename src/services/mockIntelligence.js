@@ -223,3 +223,92 @@ export const getProductsData = () => {
 export const getAlertsData = () => {
   return [...MOCK_ALERTS];
 };
+
+export const MOCK_KANBAN_DATA = {
+  high: [
+    {
+      id: 'rec-k1',
+      title: 'Sugerir Batata Frita Grande',
+      type: 'upsell',
+      target: 'Hamburguer Artesanal',
+      moment: 'Pedido',
+      channel: 'App',
+      impact_order: '+ R$ 2,50',
+      impact_day_est: '+ R$ 150,00',
+      confidence_level: 'Alta',
+      confidence_base: 450,
+      execution_time: 2,
+      evidence_text: '30% dos clientes aceitam quando ofertado.',
+      requires_approval: false,
+      priority: 'high'
+    },
+    {
+      id: 'rec-k2',
+      title: 'Sugerir Bebida',
+      type: 'cross-sell',
+      target: 'Pizza Calabresa',
+      moment: 'Carrinho',
+      channel: 'Site',
+      impact_order: '+ R$ 8,00',
+      impact_day_est: '+ R$ 320,00',
+      confidence_level: 'Alta',
+      confidence_base: 1200,
+      execution_time: 5,
+      evidence_text: 'Aumenta ticket médio em 15%.',
+      requires_approval: true,
+      priority: 'high'
+    }
+  ],
+  medium: [
+    {
+      id: 'rec-k3',
+      title: 'Combo Família',
+      type: 'combo',
+      target: 'Geral',
+      moment: 'Cardápio',
+      channel: 'Todos',
+      impact_order: '+ R$ 15,00',
+      impact_day_est: '+ R$ 450,00',
+      confidence_level: 'Média',
+      confidence_base: 120,
+      execution_time: 10,
+      evidence_text: 'Boa aceitação nos fins de semana.',
+      requires_approval: false,
+      priority: 'medium'
+    },
+    {
+      id: 'rec-k4',
+      title: 'Adicional de Bacon',
+      type: 'upsell',
+      target: 'X-Salada',
+      moment: 'Pedido',
+      channel: 'App',
+      impact_order: '+ R$ 4,00',
+      impact_day_est: '+ R$ 80,00',
+      confidence_level: 'Média',
+      confidence_base: 80,
+      execution_time: 1,
+      evidence_text: 'Item de alta margem.',
+      requires_approval: false,
+      priority: 'medium'
+    }
+  ],
+  low: [
+    {
+      id: 'rec-k5',
+      title: 'Promoção de Sobremesa',
+      type: 'promo',
+      target: 'Almoço',
+      moment: 'Checkout',
+      channel: 'Loja',
+      impact_order: '+ R$ 12,00',
+      impact_day_est: '+ R$ 60,00',
+      confidence_level: 'Baixa',
+      confidence_base: 30,
+      execution_time: 15,
+      evidence_text: 'Teste inicial em loja física.',
+      requires_approval: true,
+      priority: 'low'
+    }
+  ]
+};
