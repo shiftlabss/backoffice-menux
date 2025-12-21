@@ -70,147 +70,143 @@ export default function IntelligenceProducts() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
+    <div className="space-y-8">
 
+      {/* Block 1: Executive KPIs */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <KPICard title="Receita Atribuída" value={`R$ ${MOCK_KPIS.ai_revenue}`} trend="+12%" icon={DollarSign} color="text-emerald-600" />
+        <KPICard title="Produtos Influenciados" value="12" trend="+3" icon={Package} color="text-purple-600" />
+        <KPICard title="Lift de Conversão" value="+15%" trend="vs média" icon={TrendingUp} color="text-blue-600" />
+        <KPICard title="Ticket Médio (Com IA)" value="R$ 85,50" trend="+18%" icon={ArrowUpRight} color="text-orange-600" />
+        <KPICard title="Vendas de Combos" value="450" trend="+5%" icon={Layers} color="text-pink-600" />
+        <KPICard title="Margem Média" value="32%" trend="-1%" icon={Utensils} color="text-slate-600" />
+      </div>
 
+      {/* Block 3: Combos e Pares (Moved up for visibility or kept down? Layout says "Block 3", but logic often flow better if combos are highlighted. I'll stick to plan: KPIs -> Table -> Combos) */}
 
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {/* Block 2 (Table) & Block 3 (Combos) Container */}
+      <div className="flex flex-col gap-8">
 
-        {/* Block 1: Executive KPIs */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          <KPICard title="Receita Atribuída" value={`R$ ${MOCK_KPIS.ai_revenue}`} trend="+12%" icon={DollarSign} color="text-emerald-600" />
-          <KPICard title="Produtos Influenciados" value="12" trend="+3" icon={Package} color="text-purple-600" />
-          <KPICard title="Lift de Conversão" value="+15%" trend="vs média" icon={TrendingUp} color="text-blue-600" />
-          <KPICard title="Ticket Médio (Com IA)" value="R$ 85,50" trend="+18%" icon={ArrowUpRight} color="text-orange-600" />
-          <KPICard title="Vendas de Combos" value="450" trend="+5%" icon={Layers} color="text-pink-600" />
-          <KPICard title="Margem Média" value="32%" trend="-1%" icon={Utensils} color="text-slate-600" />
-        </div>
-
-        {/* Block 3: Combos e Pares (Moved up for visibility or kept down? Layout says "Block 3", but logic often flow better if combos are highlighted. I'll stick to plan: KPIs -> Table -> Combos) */}
-
-        {/* Block 2 (Table) & Block 3 (Combos) Container */}
-        <div className="flex flex-col gap-8">
-
-          {/* Products Table (Span 2) */}
-          <div className="w-full flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-900">Performance por Produto</h2>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Buscar produto..."
-                  className="pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-100 w-64"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+        {/* Products Table (Span 2) */}
+        <div className="w-full flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900">Performance por Produto</h2>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Buscar produto..."
+                className="pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-100 w-64"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-
-            <Card className="border-border overflow-hidden bg-white shadow-sm">
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader className="bg-slate-50/50">
-                    <TableRow className="border-b border-slate-100 hover:bg-transparent">
-                      <TableHead className="w-[30%]">Produto</TableHead>
-                      <TableHead>Categoria</TableHead>
-                      <TableHead className="text-center">Conv.</TableHead>
-                      <TableHead className="text-right">Receita</TableHead>
-                      <TableHead className="text-right">Lift</TableHead>
-                      <TableHead className="w-[50px]"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {loading ? (
-                      <TableRow><TableCell colSpan={6} className="h-40 text-center"><Loader2 className="animate-spin w-8 h-8 mx-auto text-purple-600" /></TableCell></TableRow>
-                    ) : filteredProducts.length === 0 ? (
-                      <TableRow><TableCell colSpan={6} className="h-40 text-center text-slate-500">Nenhum produto encontrado.</TableCell></TableRow>
-                    ) : (
-                      filteredProducts.map((p) => (
-                        <TableRow key={p.id} className="border-b border-slate-50 hover:bg-slate-50/50 cursor-pointer group" onClick={() => { setSelectedProduct(p); setActiveDrawer('product-detail'); }}>
-                          <TableCell className="font-medium text-slate-900">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-400">
-                                <Utensils size={14} />
-                              </div>
-                              <div>
-                                <div>{p.name}</div>
-                                {p.recommendations_count > 0 && (
-                                  <div className="flex items-center gap-1 text-[10px] text-purple-600 font-medium">
-                                    <Sparkles size={10} /> {p.recommendations_count} oportunidades
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-slate-500">{p.category}</TableCell>
-                          <TableCell className="text-center font-bold text-slate-700">{p.conversion_rate?.toFixed(1)}%</TableCell>
-                          <TableCell className="text-right font-medium text-emerald-600">
-                            R$ {p.revenue_attributed?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                          </TableCell>
-                          <TableCell className="text-right font-bold text-blue-600 text-xs">+12%</TableCell>
-                          <TableCell>
-                            <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
-                              <ChevronRight size={16} className="text-slate-400" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </Card>
           </div>
 
-          {/* Combos & Suggestions (Span 1) */}
-          <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            {/* Action Card */}
-            <div className="bg-purple-900 rounded-xl p-6 text-white relative overflow-hidden shadow-lg shadow-purple-900/20">
-              <div className="relative z-10">
-                <h3 className="font-bold text-lg mb-2">Criar Novo Combo</h3>
-                <p className="text-purple-100 text-sm mb-4">Aumente o ticket médio combinando itens com alta afinidade.</p>
-                <Button
-                  className="w-full bg-white text-purple-900 hover:bg-purple-50 hover:text-purple-950 font-bold"
-                  onClick={() => setActiveDrawer('new-combo')}
-                >
-                  <Plus size={16} className="mr-2" />
-                  Iniciar Assistente
-                </Button>
-              </div>
-              <Sparkles className="absolute -bottom-4 -right-4 w-32 h-32 text-purple-800 opacity-50" />
+          <Card className="border-border overflow-hidden bg-white shadow-sm">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader className="bg-slate-50/50">
+                  <TableRow className="border-b border-slate-100 hover:bg-transparent">
+                    <TableHead className="w-[30%]">Produto</TableHead>
+                    <TableHead>Categoria</TableHead>
+                    <TableHead className="text-center">Conv.</TableHead>
+                    <TableHead className="text-right">Receita</TableHead>
+                    <TableHead className="text-right">Lift</TableHead>
+                    <TableHead className="w-[50px]"></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    <TableRow><TableCell colSpan={6} className="h-40 text-center"><Loader2 className="animate-spin w-8 h-8 mx-auto text-purple-600" /></TableCell></TableRow>
+                  ) : filteredProducts.length === 0 ? (
+                    <TableRow><TableCell colSpan={6} className="h-40 text-center text-slate-500">Nenhum produto encontrado.</TableCell></TableRow>
+                  ) : (
+                    filteredProducts.map((p) => (
+                      <TableRow key={p.id} className="border-b border-slate-50 hover:bg-slate-50/50 cursor-pointer group" onClick={() => { setSelectedProduct(p); setActiveDrawer('product-detail'); }}>
+                        <TableCell className="font-medium text-slate-900">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-400">
+                              <Utensils size={14} />
+                            </div>
+                            <div>
+                              <div>{p.name}</div>
+                              {p.recommendations_count > 0 && (
+                                <div className="flex items-center gap-1 text-[10px] text-purple-600 font-medium">
+                                  <Sparkles size={10} /> {p.recommendations_count} oportunidades
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-slate-500">{p.category}</TableCell>
+                        <TableCell className="text-center font-bold text-slate-700">{p.conversion_rate?.toFixed(1)}%</TableCell>
+                        <TableCell className="text-right font-medium text-emerald-600">
+                          R$ {p.revenue_attributed?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        </TableCell>
+                        <TableCell className="text-right font-bold text-blue-600 text-xs">+12%</TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ChevronRight size={16} className="text-slate-400" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
             </div>
+          </Card>
+        </div>
 
-            <div className="lg:col-span-2">
-              <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                <Layers size={18} className="text-slate-500" /> Combos Ativos
-              </h3>
-              <div className="space-y-4">
-                {combos.map((combo, i) => (
-                  <Card key={i} className="p-4 border border-slate-200 hover:border-purple-200 transition-colors group">
-                    <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-bold text-slate-800 text-sm group-hover:text-purple-700 transition-colors">{combo.name}</h4>
-                      <Badge variant="outline" className={cn("text-[10px]",
-                        combo.status === 'Ativo' ? "bg-green-50 text-green-700 border-green-200" : "bg-purple-50 text-purple-700 border-purple-200")}>
-                        {combo.status}
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-slate-500 mb-3 line-clamp-2">{combo.items.join(' + ')}</p>
-                    <div className="flex items-center justify-between pt-2 border-t border-slate-50">
-                      <span className="text-xs font-bold text-emerald-600">{combo.revenue}</span>
-                      <span className="text-[10px] text-slate-400">{combo.ticketVar} Ticket</span>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+        {/* Combos & Suggestions (Span 1) */}
+        <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* Action Card */}
+          <div className="bg-purple-900 rounded-xl p-6 text-white relative overflow-hidden shadow-lg shadow-purple-900/20">
+            <div className="relative z-10">
+              <h3 className="font-bold text-lg mb-2">Criar Novo Combo</h3>
+              <p className="text-purple-100 text-sm mb-4">Aumente o ticket médio combinando itens com alta afinidade.</p>
+              <Button
+                className="w-full bg-white text-purple-900 hover:bg-purple-50 hover:text-purple-950 font-bold"
+                onClick={() => setActiveDrawer('new-combo')}
+              >
+                <Plus size={16} className="mr-2" />
+                Iniciar Assistente
+              </Button>
             </div>
+            <Sparkles className="absolute -bottom-4 -right-4 w-32 h-32 text-purple-800 opacity-50" />
+          </div>
 
+          <div className="lg:col-span-2">
+            <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+              <Layers size={18} className="text-slate-500" /> Combos Ativos
+            </h3>
+            <div className="space-y-4">
+              {combos.map((combo, i) => (
+                <Card key={i} className="p-4 border border-slate-200 hover:border-purple-200 transition-colors group">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-bold text-slate-800 text-sm group-hover:text-purple-700 transition-colors">{combo.name}</h4>
+                    <Badge variant="outline" className={cn("text-[10px]",
+                      combo.status === 'Ativo' ? "bg-green-50 text-green-700 border-green-200" : "bg-purple-50 text-purple-700 border-purple-200")}>
+                      {combo.status}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-slate-500 mb-3 line-clamp-2">{combo.items.join(' + ')}</p>
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-50">
+                    <span className="text-xs font-bold text-emerald-600">{combo.revenue}</span>
+                    <span className="text-[10px] text-slate-400">{combo.ticketVar} Ticket</span>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
 
         </div>
 
       </div>
+
+
 
       {/* --- Drawers --- */}
 
@@ -311,7 +307,7 @@ export default function IntelligenceProducts() {
         </div>
       </Drawer>
 
-    </div>
+    </div >
   );
 }
 

@@ -5,8 +5,7 @@ import { arrayMove } from '@dnd-kit/sortable';
 import { menuService } from '../services/menuService';
 import ModuleLayout from '../components/layout/ModuleLayout';
 import { SecondaryNavigation } from '../components/ui/SecondaryNavigation';
-import MenuOverview from '../components/menu/MenuOverview';
-import MenuInsights from '../components/menu/MenuInsights';
+
 import MenuCategoryAccordion from '../components/menu/MenuCategoryAccordion';
 import MenuProducts from '../components/menu/MenuProducts';
 import MenuWineList from '../components/menu/MenuWineList';
@@ -16,13 +15,12 @@ import { Modal } from '../components/ui/Modal';
 import { Button, Input } from '../components/ui/Form';
 import { toast } from 'react-hot-toast';
 import {
-    LayoutDashboard,
+
+    Plus,
+
     Layers,
     Coffee,
-    Wine,
-    Zap,
-    Plus,
-    TrendingUp
+    Wine
 } from 'lucide-react';
 
 // ... (SubComponents like SimpleFormModal, SubCategoryModal can remain here or be moved)
@@ -81,7 +79,7 @@ export default function Menu() {
     const navigate = useNavigate();
     const location = useLocation();
     // Top-Level State
-    const [activeView, setActiveView] = useState('overview');
+    const [activeView, setActiveView] = useState('categories');
     const [categories, setCategories] = useState([]);
 
     // View-Specific State (Selection)
@@ -166,19 +164,16 @@ export default function Menu() {
     // Navigation configuration for ModuleLayout
     // Navigation configuration for ModuleLayout
     const navItems = [
-        { id: 'overview', label: 'Visão Geral', icon: LayoutDashboard, onClick: () => setActiveView('overview'), isActive: activeView === 'overview' },
-        { id: 'insights', label: 'Insights IA', icon: Zap, onClick: () => setActiveView('insights'), isActive: activeView === 'insights' },
+
         { id: 'categories', label: 'Categorias', icon: Layers, onClick: () => setActiveView('categories'), isActive: activeView === 'categories' },
         { id: 'products', label: 'Produtos', icon: Coffee, onClick: () => setActiveView('products'), isActive: activeView === 'products' },
         { id: 'wine_list', label: 'Carta de Vinhos', icon: Wine, onClick: () => setActiveView('wine_list'), isActive: activeView === 'wine_list' },
-        { id: 'upsell', label: 'Upsell', icon: TrendingUp, to: '/menu/upsell', isActive: location.pathname === '/menu/upsell' }
+
     ];
 
     // Render Logic
     const renderContent = () => {
         switch (activeView) {
-            case 'overview': return <MenuOverview data={categories} onAction={handleSidebarAction} />;
-            case 'insights': return <MenuInsights data={categories} onAction={handleSidebarAction} />;
             case 'categories': return (
                 <MenuCategoryAccordion
                     categories={categories}

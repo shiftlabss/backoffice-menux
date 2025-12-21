@@ -67,132 +67,126 @@ export default function IntelligenceAlerts() {
   const criticalCount = alerts.filter(a => a.severity === 'Alta' && a.status === 'Aberto').length;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
+    <div className="space-y-8">
 
+      {/* Block 1: Critical Alerts & Timing */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-
-
-
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-
-        {/* Block 1: Critical Alerts & Timing */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          {/* Critical Alerts List */}
-          <Card className="lg:col-span-2 border-l-4 border-l-red-500 p-0 overflow-hidden">
-            <div className="p-4 bg-red-50/50 border-b border-red-100 flex justify-between items-center">
-              <h3 className="font-bold text-red-900 flex items-center gap-2">
-                <AlertCircle size={20} /> Alertas Críticos
-              </h3>
-              <Badge variant="destructive" className="bg-red-100 text-red-700 hover:bg-red-200 border-red-200">{criticalCount} Pendentes</Badge>
-            </div>
-            <div className="divide-y divide-slate-50">
-              {loading ? (
-                <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-red-500" /></div>
-              ) : alerts.filter(a => a.status === 'Aberto').slice(0, 3).map(alert => (
-                <div key={alert.id} className="p-4 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Badge variant="outline" className={cn("text-[10px]",
-                        alert.severity === 'Alta' ? "bg-red-50 text-red-700 border-red-200" : "bg-orange-50 text-orange-700 border-orange-200"
-                      )}>{alert.type}</Badge>
-                      <span className="text-xs text-slate-400 flex items-center gap-1"><Clock size={12} /> 12min</span>
-                    </div>
-                    <p className="font-bold text-slate-800 text-sm">{alert.description}</p>
-                    <p className="text-xs text-slate-500 mt-1">{alert.recommendation}</p>
-                  </div>
-                  <Button size="sm" variant="outline" className="shrink-0 text-xs border-red-200 text-red-700 hover:bg-red-50"
-                    onClick={() => { setSelectedItem(alert); setActiveDrawer('alert-playbook'); }}>
-                    Resolver Agora
-                  </Button>
-                </div>
-              ))}
-              {alerts.filter(a => a.status === 'Aberto').length === 0 && !loading && (
-                <div className="p-8 text-center text-slate-500 text-sm">
-                  <CheckCircle2 className="mx-auto text-emerald-500 mb-2" size={32} />
-                  Operação fluindo sem alertas críticos.
-                </div>
-              )}
-            </div>
-          </Card>
-
-          {/* Operational Timing KPIs */}
-          <div className="space-y-4">
-            <TimingCard title="Tempo Médio Bebidas" value="4m 30s" target="5m" status="ok" />
-            <TimingCard title="Tempo Médio Cozinha" value="22m 15s" target="20m" status="warning" />
-            <TimingCard title="Tempo Mesa Ocupada" value="1h 12m" target="1h 30m" status="ok" />
-          </div>
-
-        </div>
-
-        {/* Block 2: Smart Table Map */}
-        <div>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2"><Armchair size={20} className="text-slate-500" /> Mapa de Mesas Inteligente</h2>
-            <div className="flex gap-4 text-xs">
-              <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-slate-200 block"></span> Livre</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-purple-100 border border-purple-200 block"></span> Ocupada</span>
-              <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-100 border border-red-300 block"></span> Atenção</span>
-            </div>
-          </div>
-
-          <Card className="p-6 bg-white border-slate-200">
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-3">
-              {tables.map(table => (
-                <button
-                  key={table.id}
-                  onClick={() => { setSelectedItem(table); setActiveDrawer('table-detail'); }}
-                  className={cn(
-                    "aspect-square rounded-lg flex flex-col items-center justify-center p-1 transition-all hover:scale-105 active:scale-95 border",
-                    table.status === 'free' ? "bg-slate-50 border-slate-100 text-slate-400 hover:bg-slate-100" :
-                      table.status === 'occupied' ? "bg-purple-50 border-purple-100 text-purple-700 hover:bg-purple-100 shadow-sm" :
-                        "bg-red-50 border-red-200 text-red-700 hover:bg-red-100 shadow-sm ring-1 ring-red-200 animate-pulse"
-                  )}
-                >
-                  <span className="text-xs font-bold">{table.id}</span>
-                  {table.status !== 'free' && (
-                    <span className="text-[10px] items-center flex gap-0.5 mt-1 font-medium">
-                      {table.time}'
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </Card>
-        </div>
-
-        {/* Block 4: Production Bottlenecks */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="p-5 border-slate-200">
-            <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <ChefHat size={18} className="text-orange-500" /> Fila de Produção (Top 3)
+        {/* Critical Alerts List */}
+        <Card className="lg:col-span-2 border-l-4 border-l-red-500 p-0 overflow-hidden">
+          <div className="p-4 bg-red-50/50 border-b border-red-100 flex justify-between items-center">
+            <h3 className="font-bold text-red-900 flex items-center gap-2">
+              <AlertCircle size={20} /> Alertas Críticos
             </h3>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center p-2 bg-slate-50 rounded border border-slate-100">
-                <span className="text-sm font-medium text-slate-700">Grelha (Carnes)</span>
-                <span className="text-xs font-bold text-red-600">12 pedidos na fila</span>
+            <Badge variant="destructive" className="bg-red-100 text-red-700 hover:bg-red-200 border-red-200">{criticalCount} Pendentes</Badge>
+          </div>
+          <div className="divide-y divide-slate-50">
+            {loading ? (
+              <div className="p-8 flex justify-center"><Loader2 className="animate-spin text-red-500" /></div>
+            ) : alerts.filter(a => a.status === 'Aberto').slice(0, 3).map(alert => (
+              <div key={alert.id} className="p-4 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge variant="outline" className={cn("text-[10px]",
+                      alert.severity === 'Alta' ? "bg-red-50 text-red-700 border-red-200" : "bg-orange-50 text-orange-700 border-orange-200"
+                    )}>{alert.type}</Badge>
+                    <span className="text-xs text-slate-400 flex items-center gap-1"><Clock size={12} /> 12min</span>
+                  </div>
+                  <p className="font-bold text-slate-800 text-sm">{alert.description}</p>
+                  <p className="text-xs text-slate-500 mt-1">{alert.recommendation}</p>
+                </div>
+                <Button size="sm" variant="outline" className="shrink-0 text-xs border-red-200 text-red-700 hover:bg-red-50"
+                  onClick={() => { setSelectedItem(alert); setActiveDrawer('alert-playbook'); }}>
+                  Resolver Agora
+                </Button>
               </div>
-              <div className="flex justify-between items-center p-2 bg-slate-50 rounded border border-slate-100">
-                <span className="text-sm font-medium text-slate-700">Saladas</span>
-                <span className="text-xs font-bold text-orange-600">5 pedidos na fila</span>
+            ))}
+            {alerts.filter(a => a.status === 'Aberto').length === 0 && !loading && (
+              <div className="p-8 text-center text-slate-500 text-sm">
+                <CheckCircle2 className="mx-auto text-emerald-500 mb-2" size={32} />
+                Operação fluindo sem alertas críticos.
               </div>
-              <div className="flex justify-between items-center p-2 bg-slate-50 rounded border border-slate-100">
-                <span className="text-sm font-medium text-slate-700">Bar</span>
-                <span className="text-xs font-bold text-green-600">2 pedidos na fila</span>
-              </div>
-            </div>
-          </Card>
+            )}
+          </div>
+        </Card>
 
-          <Card className="p-5 border-slate-200 bg-slate-50/50">
-            <h3 className="font-bold text-slate-900 mb-2">Recomendação Operacional</h3>
-            <p className="text-sm text-slate-600 mb-4 leading-relaxed">
-              O tempo de permanência na praça externa está 20% acima da média. Considere enviar um garçom extra para agilizar o fechamento de contas.
-            </p>
-            <Button size="sm" className="bg-slate-900 text-white w-full">Alocar Staff Extra</Button>
-          </Card>
+        {/* Operational Timing KPIs */}
+        <div className="space-y-4">
+          <TimingCard title="Tempo Médio Bebidas" value="4m 30s" target="5m" status="ok" />
+          <TimingCard title="Tempo Médio Cozinha" value="22m 15s" target="20m" status="warning" />
+          <TimingCard title="Tempo Mesa Ocupada" value="1h 12m" target="1h 30m" status="ok" />
         </div>
 
       </div>
+
+      {/* Block 2: Smart Table Map */}
+      <div>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2"><Armchair size={20} className="text-slate-500" /> Mapa de Mesas Inteligente</h2>
+          <div className="flex gap-4 text-xs">
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-slate-200 block"></span> Livre</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-purple-100 border border-purple-200 block"></span> Ocupada</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-red-100 border border-red-300 block"></span> Atenção</span>
+          </div>
+        </div>
+
+        <Card className="p-6 bg-white border-slate-200">
+          <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-3">
+            {tables.map(table => (
+              <button
+                key={table.id}
+                onClick={() => { setSelectedItem(table); setActiveDrawer('table-detail'); }}
+                className={cn(
+                  "aspect-square rounded-lg flex flex-col items-center justify-center p-1 transition-all hover:scale-105 active:scale-95 border",
+                  table.status === 'free' ? "bg-slate-50 border-slate-100 text-slate-400 hover:bg-slate-100" :
+                    table.status === 'occupied' ? "bg-purple-50 border-purple-100 text-purple-700 hover:bg-purple-100 shadow-sm" :
+                      "bg-red-50 border-red-200 text-red-700 hover:bg-red-100 shadow-sm ring-1 ring-red-200 animate-pulse"
+                )}
+              >
+                <span className="text-xs font-bold">{table.id}</span>
+                {table.status !== 'free' && (
+                  <span className="text-[10px] items-center flex gap-0.5 mt-1 font-medium">
+                    {table.time}'
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </Card>
+      </div>
+
+      {/* Block 4: Production Bottlenecks */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Card className="p-5 border-slate-200">
+          <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <ChefHat size={18} className="text-orange-500" /> Fila de Produção (Top 3)
+          </h3>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center p-2 bg-slate-50 rounded border border-slate-100">
+              <span className="text-sm font-medium text-slate-700">Grelha (Carnes)</span>
+              <span className="text-xs font-bold text-red-600">12 pedidos na fila</span>
+            </div>
+            <div className="flex justify-between items-center p-2 bg-slate-50 rounded border border-slate-100">
+              <span className="text-sm font-medium text-slate-700">Saladas</span>
+              <span className="text-xs font-bold text-orange-600">5 pedidos na fila</span>
+            </div>
+            <div className="flex justify-between items-center p-2 bg-slate-50 rounded border border-slate-100">
+              <span className="text-sm font-medium text-slate-700">Bar</span>
+              <span className="text-xs font-bold text-green-600">2 pedidos na fila</span>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-5 border-slate-200 bg-slate-50/50">
+          <h3 className="font-bold text-slate-900 mb-2">Recomendação Operacional</h3>
+          <p className="text-sm text-slate-600 mb-4 leading-relaxed">
+            O tempo de permanência na praça externa está 20% acima da média. Considere enviar um garçom extra para agilizar o fechamento de contas.
+          </p>
+          <Button size="sm" className="bg-slate-900 text-white w-full">Alocar Staff Extra</Button>
+        </Card>
+      </div>
+
+
 
       {/* --- Drawers --- */}
 
@@ -287,7 +281,7 @@ export default function IntelligenceAlerts() {
         )}
       </Drawer>
 
-    </div>
+    </div >
   );
 }
 

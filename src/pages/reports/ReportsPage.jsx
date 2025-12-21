@@ -62,7 +62,7 @@ export default function ReportsPage() {
     <ModuleLayout
       title="Relatórios" // Fixed: Was "Relatórios", now matches standard header
       subtitle={`Última atualização: Hoje, 10:45`} // Moved subtitle here
-      subtitle={`Última atualização: Hoje, 10:45`} // Moved subtitle here
+
       items={null}
     >
       <div className="mb-6">
