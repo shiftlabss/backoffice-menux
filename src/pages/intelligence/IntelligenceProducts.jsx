@@ -1,31 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/ui/Card';
-import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '../../components/ui/Table';
+import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
-import { Package, Sparkles, TrendingUp, Layers, Loader2 } from 'lucide-react';
-import ModuleLayout from '../../components/layout/ModuleLayout';
-import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
+import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '../../components/ui/Table';
+import { Drawer } from '../../components/ui/Drawer';
+import { MaestroHeader } from '../../components/maestro/MaestroHeader';
 import { intelligenceService } from '../../services/dataService';
 import { toast } from 'react-hot-toast';
+import {
+  Package,
+  Sparkles,
+  TrendingUp,
+  Layers,
+  Loader2,
+  DollarSign,
+  ArrowUpRight,
+  ArrowRight,
+  Utensils,
+  Search,
+  MoreHorizontal,
+  Plus,
+  ChevronRight
+} from 'lucide-react';
+import { cn } from '../../lib/utils';
+import { MOCK_PRODUCTS, MOCK_KPIS } from '../../services/mockIntelligence';
 
 export default function IntelligenceProducts() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filters, setFilters] = useState({ period: 'today', shift: 'all', channel: 'all' });
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Mock combos for now as backend endpoint currently only returns products
-  // In a real scenario, this would also come from an API
-  const combos = [
-    { name: 'Combo Família Inteligente', items: ['2x Burger', '2x Batata', '1x Refri 2L'], revenue: 'R$ 890,00', ticketVar: '+15%' },
-    { name: 'Combo Happy Hour', items: ['Porção Fritas', '2x Chopp'], revenue: 'R$ 1.200,00', ticketVar: '+22%' },
-  ];
+  // Drawer State
+  const [activeDrawer, setActiveDrawer] = useState(null); // 'product-detail' | 'filters' | 'new-combo'
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [filters]);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
+      // Simulating API delay
+      await new Promise(resolve => setTimeout(resolve, 600));
       const data = await intelligenceService.getProducts();
       setProducts(data || []);
     } catch (err) {
@@ -35,72 +53,287 @@ export default function IntelligenceProducts() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-purple-600" /></div>
-    );
-  }
+  const handleFilterChange = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  // Mock Combos
+  const combos = [
+    { name: 'Combo Família Inteligente', items: ['2x Burger', '2x Batata', '1x Refri 2L'], revenue: 'R$ 890,00', ticketVar: '+15%', status: 'Ativo' },
+    { name: 'Combo Happy Hour', items: ['Porção Fritas', '2x Chopp'], revenue: 'R$ 1.200,00', ticketVar: '+22%', status: 'Sugerido' },
+    { name: 'Trio Universitário', items: ['Pizza Média', 'Refri Lata'], revenue: 'R$ 450,00', ticketVar: '+8%', status: 'Ativo' },
+  ];
+
+  // Filtering
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    p.category.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-8">
+    <div className="min-h-screen bg-slate-50/50 pb-20">
 
-      {/* Combos Block */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {combos.map((combo, i) => (
-          <Card key={i} className="p-4 border-purple-100 bg-purple-50/20 hover:bg-purple-50/50 transition-colors">
-            <div className="flex justify-between items-start mb-2">
-              <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-purple-100 rounded-lg text-purple-600">
-                  <Layers className="w-4 h-4" />
-                </div>
-                <h3 className="font-bold text-foreground">{combo.name}</h3>
+      <MaestroHeader
+        title="Produtos e Combos"
+        subtitle="Analise a performance do cardápio e crie ofertas inteligentes"
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onOpenAdvancedFilters={() => setActiveDrawer('filters')}
+        onExport={() => toast.success("Dados de produtos exportados!")}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+        {/* Block 1: Executive KPIs */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <KPICard title="Receita Atribuída" value={`R$ ${MOCK_KPIS.ai_revenue}`} trend="+12%" icon={DollarSign} color="text-emerald-600" />
+          <KPICard title="Produtos Influenciados" value="12" trend="+3" icon={Package} color="text-purple-600" />
+          <KPICard title="Lift de Conversão" value="+15%" trend="vs média" icon={TrendingUp} color="text-blue-600" />
+          <KPICard title="Ticket Médio (Com IA)" value="R$ 85,50" trend="+18%" icon={ArrowUpRight} color="text-orange-600" />
+          <KPICard title="Vendas de Combos" value="450" trend="+5%" icon={Layers} color="text-pink-600" />
+          <KPICard title="Margem Média" value="32%" trend="-1%" icon={Utensils} color="text-slate-600" />
+        </div>
+
+        {/* Block 3: Combos e Pares (Moved up for visibility or kept down? Layout says "Block 3", but logic often flow better if combos are highlighted. I'll stick to plan: KPIs -> Table -> Combos) */}
+
+        {/* Block 2 (Table) & Block 3 (Combos) Container */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+          {/* Products Table (Span 2) */}
+          <div className="lg:col-span-2 flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-slate-900">Performance por Produto</h2>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                <input
+                  type="text"
+                  placeholder="Buscar produto..."
+                  className="pl-9 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-purple-100 w-64"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-              <Badge className="bg-green-100 text-green-700 hover:bg-green-200 border-0">
-                {combo.ticketVar} Ticket
-              </Badge>
             </div>
-            <p className="text-sm text-gray-500 mb-3">{combo.items.join(' + ')}</p>
-            <div className="flex items-center gap-2 text-xs font-bold text-purple-800">
-              <Sparkles className="w-3 h-3" /> Gerou {combo.revenue} este mês
+
+            <Card className="border-border overflow-hidden bg-white shadow-sm">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader className="bg-slate-50/50">
+                    <TableRow className="border-b border-slate-100 hover:bg-transparent">
+                      <TableHead className="w-[30%]">Produto</TableHead>
+                      <TableHead>Categoria</TableHead>
+                      <TableHead className="text-center">Conv.</TableHead>
+                      <TableHead className="text-right">Receita</TableHead>
+                      <TableHead className="text-right">Lift</TableHead>
+                      <TableHead className="w-[50px]"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      <TableRow><TableCell colSpan={6} className="h-40 text-center"><Loader2 className="animate-spin w-8 h-8 mx-auto text-purple-600" /></TableCell></TableRow>
+                    ) : filteredProducts.length === 0 ? (
+                      <TableRow><TableCell colSpan={6} className="h-40 text-center text-slate-500">Nenhum produto encontrado.</TableCell></TableRow>
+                    ) : (
+                      filteredProducts.map((p) => (
+                        <TableRow key={p.id} className="border-b border-slate-50 hover:bg-slate-50/50 cursor-pointer group" onClick={() => { setSelectedProduct(p); setActiveDrawer('product-detail'); }}>
+                          <TableCell className="font-medium text-slate-900">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-400">
+                                <Utensils size={14} />
+                              </div>
+                              <div>
+                                <div>{p.name}</div>
+                                {p.recommendations_count > 0 && (
+                                  <div className="flex items-center gap-1 text-[10px] text-purple-600 font-medium">
+                                    <Sparkles size={10} /> {p.recommendations_count} oportunidades
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-slate-500">{p.category}</TableCell>
+                          <TableCell className="text-center font-bold text-slate-700">{p.conversion_rate?.toFixed(1)}%</TableCell>
+                          <TableCell className="text-right font-medium text-emerald-600">
+                            R$ {p.revenue_attributed?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                          </TableCell>
+                          <TableCell className="text-right font-bold text-blue-600 text-xs">+12%</TableCell>
+                          <TableCell>
+                            <Button variant="ghost" size="icon" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                              <ChevronRight size={16} className="text-slate-400" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </Card>
+          </div>
+
+          {/* Combos & Suggestions (Span 1) */}
+          <div className="lg:col-span-1 space-y-6">
+
+            {/* Action Card */}
+            <div className="bg-purple-900 rounded-xl p-6 text-white relative overflow-hidden shadow-lg shadow-purple-900/20">
+              <div className="relative z-10">
+                <h3 className="font-bold text-lg mb-2">Criar Novo Combo</h3>
+                <p className="text-purple-100 text-sm mb-4">Aumente o ticket médio combinando itens com alta afinidade.</p>
+                <Button
+                  className="w-full bg-white text-purple-900 hover:bg-purple-50 hover:text-purple-950 font-bold"
+                  onClick={() => setActiveDrawer('new-combo')}
+                >
+                  <Plus size={16} className="mr-2" />
+                  Iniciar Assistente
+                </Button>
+              </div>
+              <Sparkles className="absolute -bottom-4 -right-4 w-32 h-32 text-purple-800 opacity-50" />
             </div>
-          </Card>
-        ))}
+
+            <div>
+              <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
+                <Layers size={18} className="text-slate-500" /> Combos Ativos
+              </h3>
+              <div className="space-y-4">
+                {combos.map((combo, i) => (
+                  <Card key={i} className="p-4 border border-slate-200 hover:border-purple-200 transition-colors group">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-bold text-slate-800 text-sm group-hover:text-purple-700 transition-colors">{combo.name}</h4>
+                      <Badge variant="outline" className={cn("text-[10px]",
+                        combo.status === 'Ativo' ? "bg-green-50 text-green-700 border-green-200" : "bg-purple-50 text-purple-700 border-purple-200")}>
+                        {combo.status}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-slate-500 mb-3 line-clamp-2">{combo.items.join(' + ')}</p>
+                    <div className="flex items-center justify-between pt-2 border-t border-slate-50">
+                      <span className="text-xs font-bold text-emerald-600">{combo.revenue}</span>
+                      <span className="text-[10px] text-slate-400">{combo.ticketVar} Ticket</span>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
 
-      {/* Products Table */}
-      <Card className="border-border overflow-hidden">
-        <div className="p-4 border-b border-muted bg-gray-50/50">
-          <h3 className="font-bold text-foreground">Performance por Produto</h3>
+      {/* --- Drawers --- */}
+
+      {/* Product Detail Drawer */}
+      <Drawer
+        isOpen={activeDrawer === 'product-detail'}
+        onClose={() => { setActiveDrawer(null); setSelectedProduct(null); }}
+        title={selectedProduct?.name || "Detalhes do Produto"}
+        size="md"
+      >
+        {selectedProduct && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+              <div>
+                <p className="text-xs text-slate-500 uppercase font-bold">Receita Gerada (IA)</p>
+                <p className="text-2xl font-bold text-emerald-600">R$ {selectedProduct.revenue_attributed?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs text-slate-500 uppercase font-bold">Conversão</p>
+                <p className="text-2xl font-bold text-blue-600">{selectedProduct.conversion_rate?.toFixed(1)}%</p>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-slate-900 mb-3">Oportunidades Relacionadas</h4>
+              <div className="space-y-2">
+                <div className="p-3 border rounded-lg hover:bg-slate-50 flex justify-between items-center cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <TrendingUp size={16} className="text-blue-500" />
+                    <span className="text-sm font-medium text-slate-700">Sugerir como Upsell de Bebida</span>
+                  </div>
+                  <Badge variant="outline" className="text-[10px]">Pendente</Badge>
+                </div>
+                <div className="p-3 border rounded-lg hover:bg-slate-50 flex justify-between items-center cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <Layers size={16} className="text-purple-500" />
+                    <span className="text-sm font-medium text-slate-700">Criar Combo com Batata</span>
+                  </div>
+                  <Badge variant="outline" className="text-[10px]">Alta Afinidade</Badge>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-bold text-slate-900 mb-3">Histórico de Performance</h4>
+              <div className="h-32 bg-slate-50 rounded-lg border border-dashed flex items-center justify-center text-slate-400 text-xs">
+                Gráfico de evolução de vendas e conversão
+              </div>
+            </div>
+
+            <div className="pt-20">
+              <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white" onClick={() => { toast.success("Ações aplicadas!"); setActiveDrawer(null); }}>
+                Aplicar Otimizações Automáticas
+              </Button>
+            </div>
+          </div>
+        )}
+      </Drawer>
+
+      {/* New Combo Wizard Mock */}
+      <Drawer
+        isOpen={activeDrawer === 'new-combo'}
+        onClose={() => setActiveDrawer(null)}
+        title="Assistente de Combos"
+        size="lg"
+      >
+        <div className="space-y-6">
+          <div className="p-4 bg-purple-50 border border-purple-100 rounded-xl">
+            <h4 className="font-bold text-purple-900 mb-1">Sugestão da IA</h4>
+            <p className="text-sm text-purple-800">Identificamos que <strong>Hamburguer + Milkshake</strong> são vendidos juntos em <strong>35%</strong> dos pedidos de Domingo à noite.</p>
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-slate-500 uppercase">Item Principal</p>
+              <div className="p-3 border rounded-lg bg-white font-medium text-slate-800">Hamburguer Artesanal</div>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-slate-500 uppercase">Acompanhamento</p>
+              <div className="p-3 border rounded-lg bg-white font-medium text-slate-800">Milkshake Chocolate</div>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <p className="text-xs font-bold text-slate-500 uppercase">Preço do Combo Sugerido</p>
+            <div className="flex items-center gap-4">
+              <input type="text" value="R$ 42,90" className="p-3 border rounded-lg w-32 font-bold text-slate-900 text-lg" readOnly />
+              <span className="text-sm text-green-600 font-medium">Desconto de 12% aplicado</span>
+            </div>
+          </div>
+
+          <div className="pt-8 border-t border-slate-100 flex justify-end gap-3">
+            <Button variant="outline" onClick={() => setActiveDrawer(null)}>Cancelar</Button>
+            <Button className="bg-purple-600 text-white hover:bg-purple-700" onClick={() => { toast.success("Combo criado e enviado para aprovação!"); setActiveDrawer(null); }}>
+              Criar Oferta
+            </Button>
+          </div>
         </div>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-b border-muted">
-                <TableHead className="w-[300px]">Produto</TableHead>
-                <TableHead>Categoria</TableHead>
-                <TableHead className="text-center">Recomendações</TableHead>
-                <TableHead className="text-right">Receita Gerada</TableHead>
-                <TableHead className="text-right">Conversão</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map((p) => (
-                <TableRow key={p.id} className="border-b border-muted">
-                  <TableCell className="font-medium text-foreground">{p.name}</TableCell>
-                  <TableCell className="text-gray-500">{p.category}</TableCell>
-                  <TableCell className="text-center">
-                    <Badge variant="secondary">{p.recommendations_count}</Badge>
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-green-600">
-                    R$ {p.revenue_attributed?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                  </TableCell>
-                  <TableCell className="text-right font-bold text-foreground">{p.conversion_rate?.toFixed(1)}%</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </Card>
+      </Drawer>
+
     </div>
   );
 }
+
+// Helper Components
+const KPICard = ({ title, value, trend, icon: Icon, color }) => (
+  <Card className="p-4 border border-slate-200 shadow-sm hover:shadow-md transition-all">
+    <div className="flex justify-between items-start mb-2">
+      <Icon size={16} className={cn("opacity-80", color)} />
+      <span className={cn("text-[10px] font-medium px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600",
+        trend.includes('+') && "bg-green-50 text-green-700",
+        trend.includes('-') && "bg-red-50 text-red-700"
+      )}>{trend}</span>
+    </div>
+    <div className="text-2xl font-bold text-slate-900 tracking-tight">{value}</div>
+    <p className="text-[10px] text-slate-400 font-medium uppercase mt-1 truncate">{title}</p>
+  </Card>
+);
