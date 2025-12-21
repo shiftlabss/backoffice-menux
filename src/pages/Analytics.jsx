@@ -6,6 +6,12 @@ import ConsumptionDynamics from '../components/analytics/ConsumptionDynamics';
 import MenuPerformance from '../components/analytics/MenuPerformance';
 import MaestroHighlights from '../components/analytics/MaestroHighlights';
 import HighlightsPerformance from '../components/analytics/HighlightsPerformance';
+import Row1_FunnelMetrics from '../components/analytics/deep/Row1_FunnelMetrics';
+import Row2_JourneyExplorer from '../components/analytics/deep/Row2_JourneyExplorer';
+import Row3_SmartRanking from '../components/analytics/deep/Row3_SmartRanking';
+import Row4_FinancialImpact from '../components/analytics/deep/Row4_FinancialImpact';
+import Row5_Actionable from '../components/analytics/deep/Row5_Actionable';
+import Row6_PeriodComparison from '../components/analytics/deep/Row6_PeriodComparison';
 import { Button } from '../components/ui/Form';
 
 import { toast } from 'react-hot-toast';
@@ -67,7 +73,26 @@ export default function Analytics() {
                 <HighlightsPerformance dateRange={dateRange} />
 
                 {/* 2. Menu Performance Table */}
+                {/* 2. Menu Performance Table */}
                 <MenuPerformance dateRange={dateRange} />
+
+                {/* 3. Deep Analytics - Row 1: Funnel & Metrics */}
+                <Row1_FunnelMetrics />
+
+                {/* 4. Deep Analytics - Row 2: Journey */}
+                <Row2_JourneyExplorer />
+
+                {/* 5. Deep Analytics - Row 3: Smart Ranking */}
+                <Row3_SmartRanking />
+
+                {/* 6. Deep Analytics - Row 4: Financial Impact */}
+                <Row4_FinancialImpact />
+
+                {/* 7. Deep Analytics - Row 5: Actionable */}
+                <Row5_Actionable />
+
+                {/* 8. Deep Analytics - Row 6: Comparison */}
+                <Row6_PeriodComparison />
             </div>
         </ModuleLayout>
     );
