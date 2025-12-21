@@ -105,36 +105,7 @@ export default function ExecutiveSummary({ dateRange = 'Últimos 7 dias' }) {
                 />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-5 text-white relative overflow-hidden">
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-2 text-gray-400 text-xs uppercase font-bold mb-2">
-                            <Award className="w-4 h-4" />
-                            Item Estrela ({dateRange})
-                        </div>
-                        <div className="text-xl font-bold mb-1">Bife Ancho Premium</div>
-                        <div className="text-sm opacity-80">{formatCurrency(stats.revenue * 0.35)} em vendas</div>
-                    </div>
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
-                </div>
 
-                <div className="bg-white border border-border rounded-xl p-5 shadow-sm">
-                    <div className="text-xs text-gray-500 uppercase font-bold mb-2">Melhor Horário</div>
-                    <div className="flex items-end gap-2">
-                        <div className="text-2xl font-bold text-gray-900">{dateRange === 'Hoje' ? '12h - 13h' : '20h - 21h'}</div>
-                        <div className="text-sm text-green-600 font-medium mb-1">{dateRange === 'Hoje' ? 'Almoço' : 'Jantar'}</div>
-                    </div>
-                    <div className="w-full bg-gray-100 h-1.5 rounded-full mt-3 overflow-hidden">
-                        <div className="bg-green-500 w-[85%] h-full rounded-full"></div>
-                    </div>
-                </div>
-
-                <div className="bg-white border border-border rounded-xl p-5 shadow-sm">
-                    <div className="text-xs text-gray-500 uppercase font-bold mb-2">Gargalo Identificado</div>
-                    <div className="text-lg font-bold text-gray-900">Checkout (Pagamento)</div>
-                    <p className="text-xs text-red-500 mt-1 font-medium">15% de abandono nesta etapa</p>
-                </div>
-            </div>
         </section>
     );
 }

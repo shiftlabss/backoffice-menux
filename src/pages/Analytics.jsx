@@ -63,27 +63,10 @@ export default function Analytics() {
             }
         >
             <div className="space-y-8 animate-fadeIn pb-12">
-                {/* 1. Executive Summary */}
-                <ExecutiveSummary dateRange={dateRange} />
-
-                {/* 2 & 3. Middle Section: Dynamics & AI */}
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                    <div className="xl:col-span-2">
-                        <ConsumptionDynamics dateRange={dateRange} />
-                    </div>
-                    <div className="xl:col-span-1 space-y-6">
-                        <div className="flex items-center gap-2 mb-6">
-                            <div className="h-6 w-1 bg-[#8E4156] rounded-full"></div>
-                            <h2 className="text-lg font-bold text-foreground">Insights IA</h2>
-                        </div>
-                        <MaestroHighlights onAction={handleIAAction} dateRange={dateRange} />
-                    </div>
-                </div>
-
-                {/* 3.5 Highlights Performance */}
+                {/* 1. Highlights Performance */}
                 <HighlightsPerformance dateRange={dateRange} />
 
-                {/* 4. Menu Performance Table */}
+                {/* 2. Menu Performance Table */}
                 <MenuPerformance dateRange={dateRange} />
             </div>
         </ModuleLayout>

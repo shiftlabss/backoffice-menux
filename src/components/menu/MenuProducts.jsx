@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { Button, Input } from '../ui/Form';
 import { cn, formatCurrency } from '../../lib/utils';
-import MenuHighlights from './MenuHighlights';
+
 import { toast } from 'react-hot-toast';
 
 export default function MenuProducts({
@@ -15,7 +15,7 @@ export default function MenuProducts({
     onDelete
 }) {
     // State
-    const [highlights, setHighlights] = useState([null, null, null]);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [filterCategory, setFilterCategory] = useState('all');
     const [filterSubCategory, setFilterSubCategory] = useState('all');
@@ -106,14 +106,7 @@ export default function MenuProducts({
 
     return (
         <div className="h-full flex flex-col overflow-y-auto">
-            {/* Highlights Section */}
-            <div className="mb-6">
-                <MenuHighlights
-                    allProducts={allProducts}
-                    highlights={highlights}
-                    onChange={setHighlights}
-                />
-            </div>
+
 
             {/* Catalog Section */}
             <div className="flex-1 flex flex-col gap-6">
