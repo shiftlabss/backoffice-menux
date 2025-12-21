@@ -609,7 +609,7 @@ const IntelligenceImpact = () => {
                       </TableCell>
                       <TableCell className="text-right font-medium text-slate-900">{product.revenue}</TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100 text-purple-600">Detalhes</Button>
+                        <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50">Detalhes</Button>
                       </TableCell>
                     </TableRow>
                   ))}
