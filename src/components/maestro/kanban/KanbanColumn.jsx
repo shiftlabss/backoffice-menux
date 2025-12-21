@@ -12,7 +12,7 @@ export function KanbanColumn({ id, title, cards, color, count }) {
   const cardIds = useMemo(() => cards.map((c) => c.id), [cards]);
 
   return (
-    <div className="flex flex-col h-full min-w-[320px] max-w-[360px] bg-slate-50/50 rounded-xl border border-slate-200/60">
+    <div className="flex flex-col h-full min-w-[380px] max-w-[420px] bg-slate-50/50 rounded-xl border border-slate-200/60">
       {/* Header */}
       <div className="p-4 border-b border-slate-100 flex items-center justify-between sticky top-0 bg-slate-50/95 backdrop-blur-sm rounded-t-xl z-10">
         <div className="flex items-center gap-2">
