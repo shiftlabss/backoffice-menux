@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import ModuleLayout from '../components/layout/ModuleLayout';
-import MaestroNavigation from '../components/maestro/MaestroNavigation';
+import { MaestroTabs } from '../components/maestro/MaestroNavigation';
 import { intelligenceSidebarItems } from '../constants/intelligenceSidebar';
 
 export default function IntelligenceLayout() {
@@ -16,7 +16,9 @@ export default function IntelligenceLayout() {
       subtitle={currentItem?.subtitle || "Inteligência Artificial"}
       items={null} // No sidebar
     >
-      <MaestroNavigation />
+      <div className="mb-6">
+        <MaestroTabs />
+      </div>
       <Outlet />
     </ModuleLayout>
   );

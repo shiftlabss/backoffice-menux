@@ -242,16 +242,7 @@ const IntelligenceImpact = () => {
   const [data, setData] = useState(generateTrendData());
   const [trendMetric, setTrendMetric] = useState('revenue');
   const [isLoading, setIsLoading] = useState(false);
-  const [period, setPeriod] = useState('7d');
 
-  const handleFilterChange = (setter, value) => {
-    setter(value);
-    setIsLoading(true);
-    setTimeout(() => {
-      setData(generateTrendData());
-      setIsLoading(false);
-    }, 800);
-  };
 
   const content = isLoading ? (
     <div className="space-y-6">
@@ -274,50 +265,7 @@ const IntelligenceImpact = () => {
     <div className="space-y-8 animate-in fade-in duration-500">
 
       {/* Header & Filters */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Impacto nas Vendas</h1>
-          <p className="text-slate-500 mt-1">Acompanhe como o Maestro está influenciando sua receita e conversão.</p>
-        </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-lg p-1 shadow-sm">
-            <Button
-              variant={period === '7d' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => handleFilterChange(setPeriod, '7d')}
-              className="text-xs h-8"
-            >
-              7 dias
-            </Button>
-            <Button
-              variant={period === '30d' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => handleFilterChange(setPeriod, '30d')}
-              className="text-xs h-8"
-            >
-              30 dias
-            </Button>
-            <Button
-              variant={period === 'mes' ? 'secondary' : 'ghost'}
-              size="sm"
-              onClick={() => handleFilterChange(setPeriod, 'mes')}
-              className="text-xs h-8"
-            >
-              Este Mês
-            </Button>
-          </div>
-
-          <div className="h-8 w-px bg-slate-200 mx-2 hidden md:block" />
-
-          <Button variant="outline" size="sm" className="h-9 gap-2 text-slate-600">
-            <Filter size={14} /> Filtros
-          </Button>
-          <Button variant="outline" size="sm" className="h-9 gap-2 text-slate-600">
-            <Download size={14} /> Exportar
-          </Button>
-        </div>
-      </div>
 
       {/* KPI Section */}
       <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
