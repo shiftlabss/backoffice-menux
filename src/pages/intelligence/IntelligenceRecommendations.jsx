@@ -129,7 +129,7 @@ export default function IntelligenceRecommendations() {
         onExport={() => toast.success("Relatório de oportunidades exportado!")}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
         {/* Bloco 1: Contexto do dia */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

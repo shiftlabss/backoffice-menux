@@ -82,7 +82,7 @@ export default function IntelligenceProducts() {
         onExport={() => toast.success("Dados de produtos exportados!")}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
         {/* Block 1: Executive KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
@@ -97,10 +97,10 @@ export default function IntelligenceProducts() {
         {/* Block 3: Combos e Pares (Moved up for visibility or kept down? Layout says "Block 3", but logic often flow better if combos are highlighted. I'll stick to plan: KPIs -> Table -> Combos) */}
 
         {/* Block 2 (Table) & Block 3 (Combos) Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="flex flex-col gap-8">
 
           {/* Products Table (Span 2) */}
-          <div className="lg:col-span-2 flex flex-col gap-4">
+          <div className="w-full flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-slate-900">Performance por Produto</h2>
               <div className="relative">
@@ -172,7 +172,7 @@ export default function IntelligenceProducts() {
           </div>
 
           {/* Combos & Suggestions (Span 1) */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             {/* Action Card */}
             <div className="bg-purple-900 rounded-xl p-6 text-white relative overflow-hidden shadow-lg shadow-purple-900/20">
@@ -190,7 +190,7 @@ export default function IntelligenceProducts() {
               <Sparkles className="absolute -bottom-4 -right-4 w-32 h-32 text-purple-800 opacity-50" />
             </div>
 
-            <div>
+            <div className="lg:col-span-2">
               <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
                 <Layers size={18} className="text-slate-500" /> Combos Ativos
               </h3>

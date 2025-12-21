@@ -28,7 +28,7 @@ export function MaestroHeader({
 
   return (
     <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
 
         {/* Top Row: Title & Main Actions */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">

@@ -139,13 +139,14 @@ export function KanbanBoard({ data }) {
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-4 overflow-x-auto pb-6 h-[600px] items-start">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px] items-start pb-6">
         <KanbanColumn
           id="high"
           title="Prioridade Alta"
           cards={columns.high}
           color="text-red-600"
           count={columns.high.length}
+          className="h-full"
         />
         <KanbanColumn
           id="medium"
@@ -153,6 +154,7 @@ export function KanbanBoard({ data }) {
           cards={columns.medium}
           color="text-amber-600"
           count={columns.medium.length}
+          className="h-full"
         />
         <KanbanColumn
           id="low"
@@ -160,6 +162,7 @@ export function KanbanBoard({ data }) {
           cards={columns.low}
           color="text-blue-600"
           count={columns.low.length}
+          className="h-full"
         />
       </div>
 
