@@ -364,15 +364,7 @@ const IntelligenceImpact = () => {
     <div className="space-y-8 animate-in fade-in duration-500">
 
 
-      {/* Section 1: Standard Maestro Header */}
-      <MaestroHeader
-        title="Impacto nas Vendas"
-        subtitle="Análise detalhada de conversão e receita atribuída"
-        filters={filters}
-        onFilterChange={(key, value) => handleFilterChange({ ...filters, [key]: value })}
-        onOpenAdvancedFilters={() => { }} // or open a drawer if needed
-        onExport={handleExport}
-      />
+
 
       {/* KPI Section */}
       <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
