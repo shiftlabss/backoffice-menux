@@ -208,15 +208,15 @@ export default function IntelligenceRecommendations() {
             </div>
           </div>
 
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 flex flex-col h-full">
             <div className="flex items-center gap-2 mb-4">
               <Sparkles size={18} className="text-purple-600" />
               <h3 className="font-bold text-slate-800">Sugestões baseadas no Clima</h3>
             </div>
             {weatherInsights ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
                 {weatherInsights.insights.slice(0, 2).map((insight, idx) => (
-                  <Card key={idx} className="p-4 border-l-4 border-l-purple-500 hover:shadow-md transition-shadow">
+                  <Card key={idx} className="p-4 border-l-4 border-l-purple-500 hover:shadow-md transition-shadow h-full flex flex-col justify-between">
                     <div className="flex justify-between items-start mb-2">
                       <Badge variant="secondary" className="bg-purple-50 text-purple-700 text-[10px]">Agora</Badge>
                       <span className="text-[10px] text-slate-400 font-medium">Confiança Alta</span>
