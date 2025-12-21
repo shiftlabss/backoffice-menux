@@ -1,14 +1,26 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import UsersSidebar from '../components/users/UsersSidebar';
+import { Users, Shield } from 'lucide-react';
+import ModuleLayout from '../components/layout/ModuleLayout';
+import { SecondaryNavigation } from '../components/ui/SecondaryNavigation';
 
 export default function UsersLayout() {
+    const navItems = [
+        { label: 'Usuários', to: '/users/list', icon: Users },
+        { label: 'Funções e Permissões', to: '/users/roles', icon: Shield },
+    ];
+
     return (
-        <div className="flex flex-col md:flex-row gap-6 p-6 md:p-8 min-h-full">
-            <UsersSidebar />
-            <main className="flex-1 min-w-0">
-                <Outlet />
-            </main>
-        </div>
+        <ModuleLayout
+            title="Usuários e Equipe"
+            subtitle="Gerencie o acesso ao sistema."
+            items={null}
+        >
+            <div className="mb-6">
+                <SecondaryNavigation items={navItems} />
+            </div>
+            <Outlet />
+        </ModuleLayout>
     );
 }
+

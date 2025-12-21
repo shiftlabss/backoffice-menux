@@ -3,7 +3,6 @@ import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Drawer } from '../../components/ui/Drawer';
-import { MaestroHeader } from '../../components/maestro/MaestroHeader';
 import { WeatherCard } from '../../components/maestro/WeatherCard';
 import { MaestroWeatherInsights } from '../../components/maestro/MaestroWeatherInsights';
 import { intelligenceService } from '../../services/dataService';
@@ -120,14 +119,7 @@ export default function IntelligenceRecommendations() {
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
 
-      <MaestroHeader
-        title="Oportunidades"
-        subtitle="O que fazer agora para aumentar ticket, conversão e eficiência"
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onOpenAdvancedFilters={() => setDrawerOpen('filters')}
-        onExport={() => toast.success("Relatório de oportunidades exportado!")}
-      />
+
 
       <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 

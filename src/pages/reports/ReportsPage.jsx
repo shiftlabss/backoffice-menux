@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ModuleLayout from '../../components/layout/ModuleLayout';
+import { SecondaryNavigation } from '../../components/ui/SecondaryNavigation';
 import ReportsFilterBar from '../../components/reports/ReportsFilterBar';
 import MaestroInsights from '../../components/reports/MaestroInsights';
 import {
@@ -61,8 +62,13 @@ export default function ReportsPage() {
     <ModuleLayout
       title="Relatórios" // Fixed: Was "Relatórios", now matches standard header
       subtitle={`Última atualização: Hoje, 10:45`} // Moved subtitle here
-      items={tabs}
+      subtitle={`Última atualização: Hoje, 10:45`} // Moved subtitle here
+      items={null}
     >
+      <div className="mb-6">
+        <SecondaryNavigation items={tabs} />
+      </div>
+
       <div className="space-y-6 animate-in fade-in">
         <ReportsFilterBar />
 

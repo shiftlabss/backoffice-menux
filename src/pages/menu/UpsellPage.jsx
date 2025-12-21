@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Button } from '../../components/ui/Form';
+import { SecondaryNavigation } from '../../components/ui/SecondaryNavigation';
+
 
 // Import sub-components
 import UpsellOverview from '../../components/upsell/UpsellOverview';
@@ -25,17 +27,14 @@ export default function UpsellPage() {
 
   // Define sidebar items
   const menuItems = [
-    [
-      { id: 'overview', label: 'Visão Geral', icon: LayoutDashboard, onClick: () => setActiveTab('overview'), isActive: activeTab === 'overview' },
-      { id: 'maestro', label: 'Maestro', icon: Sparkles, onClick: () => setActiveTab('maestro'), isActive: activeTab === 'maestro' },
-    ],
-    [
-      { id: 'rules', label: 'Regras', icon: ListFilter, onClick: () => setActiveTab('rules'), isActive: activeTab === 'rules' },
-      { id: 'size', label: 'Tamanhos', icon: Scaling, onClick: () => setActiveTab('size'), isActive: activeTab === 'size' },
-      { id: 'combos', label: 'Combos', icon: UtensilsCrossed, onClick: () => setActiveTab('combos'), isActive: activeTab === 'combos' },
-      { id: 'reports', label: 'Relatórios', icon: BarChart3, onClick: () => setActiveTab('reports'), isActive: activeTab === 'reports' },
-    ]
+    { id: 'overview', label: 'Visão Geral', icon: LayoutDashboard, onClick: () => setActiveTab('overview'), isActive: activeTab === 'overview' },
+    { id: 'maestro', label: 'Maestro', icon: Sparkles, onClick: () => setActiveTab('maestro'), isActive: activeTab === 'maestro' },
+    { id: 'rules', label: 'Regras', icon: ListFilter, onClick: () => setActiveTab('rules'), isActive: activeTab === 'rules' },
+    { id: 'size', label: 'Tamanhos', icon: Scaling, onClick: () => setActiveTab('size'), isActive: activeTab === 'size' },
+    { id: 'combos', label: 'Combos', icon: UtensilsCrossed, onClick: () => setActiveTab('combos'), isActive: activeTab === 'combos' },
+    { id: 'reports', label: 'Relatórios', icon: BarChart3, onClick: () => setActiveTab('reports'), isActive: activeTab === 'reports' },
   ];
+
 
   const renderContent = () => {
     switch (activeTab) {
@@ -53,7 +52,7 @@ export default function UpsellPage() {
     <ModuleLayout
       title="Upsell"
       subtitle="Maximize o ticket médio com sugestões inteligentes."
-      items={menuItems}
+      items={null}
       actions={
         <div className="flex items-center gap-2">
           <Button variant="primary" className="gap-2 hidden md:flex" onClick={() => setActiveTab('rules')}>
@@ -63,6 +62,9 @@ export default function UpsellPage() {
         </div>
       }
     >
+      <div className="mb-6">
+        <SecondaryNavigation items={menuItems} />
+      </div>
       <div className="space-y-6 animate-in fade-in duration-500">
         {/* Content Area */}
         <div className="min-h-[400px]">

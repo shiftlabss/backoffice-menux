@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import ModuleLayout from '../components/layout/ModuleLayout';
+import { SecondaryNavigation } from '../components/ui/SecondaryNavigation';
+
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button, Input } from '../components/ui/Form';
 import { Modal } from '../components/ui/Modal';
@@ -254,8 +256,12 @@ export default function Settings() {
         <ModuleLayout
             title="Configurações"
             subtitle="Gerencie sua conta e preferências."
-            items={extendedNavItems}
+            items={null}
         >
+            <div className="mb-6">
+                <SecondaryNavigation items={navItems} />
+            </div>
+
             {renderContent()}
 
             <Modal

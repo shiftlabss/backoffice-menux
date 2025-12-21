@@ -3,7 +3,6 @@ import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Drawer } from '../../components/ui/Drawer';
-import { MaestroHeader } from '../../components/maestro/MaestroHeader';
 import { intelligenceService } from '../../services/dataService';
 import { toast } from 'react-hot-toast';
 import {
@@ -70,13 +69,7 @@ export default function IntelligenceAlerts() {
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
 
-      <MaestroHeader
-        title="Alertas e Operação"
-        subtitle="Monitoramento em tempo real da saúde operacional"
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onOpenAdvancedFilters={() => toast("Filtros avançados em breve.")}
-      />
+
 
 
 

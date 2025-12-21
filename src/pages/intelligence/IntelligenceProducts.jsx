@@ -4,7 +4,6 @@ import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '../../components/ui/Table';
 import { Drawer } from '../../components/ui/Drawer';
-import { MaestroHeader } from '../../components/maestro/MaestroHeader';
 import { intelligenceService } from '../../services/dataService';
 import { toast } from 'react-hot-toast';
 import {
@@ -73,14 +72,7 @@ export default function IntelligenceProducts() {
   return (
     <div className="min-h-screen bg-slate-50/50 pb-20">
 
-      <MaestroHeader
-        title="Produtos e Combos"
-        subtitle="Analise a performance do cardápio e crie ofertas inteligentes"
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onOpenAdvancedFilters={() => setActiveDrawer('filters')}
-        onExport={() => toast.success("Dados de produtos exportados!")}
-      />
+
 
       <div className="w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 

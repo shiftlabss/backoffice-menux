@@ -1,8 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { arrayMove } from '@dnd-kit/sortable';
 import { menuService } from '../services/menuService';
 import ModuleLayout from '../components/layout/ModuleLayout';
+import { SecondaryNavigation } from '../components/ui/SecondaryNavigation';
 import MenuOverview from '../components/menu/MenuOverview';
 import MenuInsights from '../components/menu/MenuInsights';
 import MenuCategoryAccordion from '../components/menu/MenuCategoryAccordion';
@@ -19,7 +21,8 @@ import {
     Coffee,
     Wine,
     Zap,
-    Plus
+    Plus,
+    TrendingUp
 } from 'lucide-react';
 
 // ... (SubComponents like SimpleFormModal, SubCategoryModal can remain here or be moved)
@@ -75,6 +78,8 @@ function SubCategoryModal({ isOpen, onClose, categories, initialCategoryId, subT
 }
 
 export default function Menu() {
+    const navigate = useNavigate();
+    const location = useLocation();
     // Top-Level State
     const [activeView, setActiveView] = useState('overview');
     const [categories, setCategories] = useState([]);
@@ -160,20 +165,13 @@ export default function Menu() {
     // Navigation configuration for ModuleLayout
     // Navigation configuration for ModuleLayout
     // Navigation configuration for ModuleLayout
-    const group1 = [
-        { id: 'overview', label: 'Visão Geral', subtitle: 'Resumo do cardápio', icon: LayoutDashboard, onClick: () => setActiveView('overview') },
-        { id: 'insights', label: 'Insights IA', subtitle: 'Análise inteligente', icon: Zap, onClick: () => setActiveView('insights') },
-    ];
-
-    const group2 = [
-        { id: 'categories', label: 'Categorias', subtitle: 'Organização estrutural', icon: Layers, onClick: () => setActiveView('categories') },
-        { id: 'products', label: 'Produtos', subtitle: 'Todos os itens', icon: Coffee, onClick: () => setActiveView('products') },
-        { id: 'wine_list', label: 'Carta de Vinhos', subtitle: 'Gestão da adega', icon: Wine, onClick: () => setActiveView('wine_list') },
-    ];
-
     const navItems = [
-        group1.map(item => ({ ...item, isActive: activeView === item.id })),
-        group2.map(item => ({ ...item, isActive: activeView === item.id }))
+        { id: 'overview', label: 'Visão Geral', icon: LayoutDashboard, onClick: () => setActiveView('overview'), isActive: activeView === 'overview' },
+        { id: 'insights', label: 'Insights IA', icon: Zap, onClick: () => setActiveView('insights'), isActive: activeView === 'insights' },
+        { id: 'categories', label: 'Categorias', icon: Layers, onClick: () => setActiveView('categories'), isActive: activeView === 'categories' },
+        { id: 'products', label: 'Produtos', icon: Coffee, onClick: () => setActiveView('products'), isActive: activeView === 'products' },
+        { id: 'wine_list', label: 'Carta de Vinhos', icon: Wine, onClick: () => setActiveView('wine_list'), isActive: activeView === 'wine_list' },
+        { id: 'upsell', label: 'Upsell', icon: TrendingUp, to: '/menu/upsell', isActive: location.pathname === '/menu/upsell' }
     ];
 
     // Render Logic
@@ -215,7 +213,10 @@ export default function Menu() {
     };
 
     return (
-        <ModuleLayout title="Cardápio" subtitle="Gerencie seus itens" items={navItems}>
+        <ModuleLayout title="Cardápio" subtitle="Gerencie seus itens" items={null}>
+            <div className="mb-6">
+                <SecondaryNavigation items={navItems} />
+            </div>
             {renderContent()}
 
             {/* Modals */}
