@@ -323,163 +323,167 @@ const IntelligenceImpact = () => {
         />
       </div>
 
-      {/* Main Content Grid */}
-      <div className="grid grid-cols-12 gap-6">
+      {/* Main Content Rows */}
+      <div className="space-y-6">
 
-        {/* Left Column: Trend Chart & Products */}
-        <div className="col-span-12 lg:col-span-8 space-y-6">
-          <TrendChart data={data} metric={trendMetric} setMetric={setTrendMetric} />
-
-          {/* Funnel Widget (Moved from Right Col) */}
-          <Card className="bg-white shadow-sm border-slate-200">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-slate-800">Funil de Influência</CardTitle>
-              <CardDescription>Eficiência das sugestões do Maestro</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {funnelData.map((stage, index) => (
-                <div key={index} className="relative">
-                  {index !== 0 && (
-                    <div className="absolute left-6 -top-4 bottom-1/2 w-0.5 bg-slate-100 -z-10" />
-                  )}
-                  <div className="flex items-center gap-4 group">
-                    <div className={cn(
-                      "w-12 h-12 rounded-full flex items-center justify-center shrink-0 border-2",
-                      index === 0 ? "bg-purple-50 border-purple-100 text-purple-600" :
-                        index === 3 ? "bg-emerald-50 border-emerald-100 text-emerald-600" :
-                          "bg-white border-slate-100 text-slate-400"
-                    )}>
-                      {index === 0 && <Eye size={20} />}
-                      {index === 1 && <MousePointer size={20} />}
-                      {index === 2 && <ShoppingCart size={20} />}
-                      {index === 3 && <CheckCircle size={20} />}
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-medium text-slate-700">{stage.stage}</span>
-                        <span className="text-sm font-bold text-slate-900">{stage.value.toLocaleString()}</span>
-                      </div>
-                      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                        <div
-                          className={cn("h-full rounded-full", index === 3 ? "bg-emerald-500" : "bg-purple-500")}
-                          style={{ width: stage.conversion.split('%')[0] + '%' }}
-                        />
-                      </div>
-                      <div className="flex justify-between mt-1 text-xs text-slate-400">
-                        <span>Conv: {stage.conversion}</span>
-                        <span>Drop: {stage.dropoff}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-
-          {/* Detailed Products Table */}
-          <Card className="shadow-sm">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-lg font-semibold text-slate-800">Detalhe por Produto</CardTitle>
-                  <CardDescription>Itens com maior impacto nas sugestões</CardDescription>
-                </div>
-                <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50">
-                  Ver Todos <ArrowRight size={14} className="ml-1" />
-                </Button>
+        {/* Row 1: Chart & Drivers */}
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-7">
+            <TrendChart data={data} metric={trendMetric} setMetric={setTrendMetric} />
+          </div>
+          <div className="col-span-12 lg:col-span-5">
+            {/* Revenue Drivers */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp className="text-slate-500" size={18} />
+                <h3 className="text-sm font-semibold text-slate-700">Drivers de Receita</h3>
               </div>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Produto</TableHead>
-                    <TableHead className="text-right">Views</TableHead>
-                    <TableHead className="text-right">Cliques</TableHead>
-                    <TableHead className="text-right">Lift Conv.</TableHead>
-                    <TableHead className="text-right">Receita Atrib.</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {productsData.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell>
-                        <div>
-                          <p className="font-medium text-slate-900">{product.name}</p>
-                          <span className="text-xs text-slate-500">{product.category}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right text-slate-600">{product.views}</TableCell>
-                      <TableCell className="text-right text-slate-600">{product.clicks}</TableCell>
-                      <TableCell className="text-right">
-                        <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-100">
-                          {product.conversion_lift}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-medium text-slate-900">{product.revenue}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
+              {revenueDrivers.map((driver) => (
+                <Card key={driver.id} className="bg-slate-50 overflow-hidden relative border-slate-200/60 shadow-sm">
+                  <div className="absolute top-0 right-0 p-2 opacity-10">
+                    <BarChart3 size={48} />
+                  </div>
+                  <CardContent className="p-4">
+                    <p className="text-sm text-slate-500 font-medium mb-1">{driver.label}</p>
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span className="text-xl font-bold text-slate-800">{driver.value}</span>
+                      <span className="text-xs font-semibold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded">{driver.growth}</span>
+                    </div>
+                    <p className="text-xs text-slate-500 line-clamp-1">{driver.details}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Right Column: Funnel & Recommendations */}
-        <div className="col-span-12 lg:col-span-4 space-y-6">
-
-          {/* Revenue Drivers (Moved from Left Col - Stacked) */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="text-slate-500" size={18} />
-              <h3 className="text-sm font-semibold text-slate-700">Drivers de Receita</h3>
-            </div>
-            {revenueDrivers.map((driver) => (
-              <Card key={driver.id} className="bg-slate-50 overflow-hidden relative border-slate-200/60 shadow-sm">
-                <div className="absolute top-0 right-0 p-2 opacity-10">
-                  <BarChart3 size={48} />
-                </div>
-                <CardContent className="p-4">
-                  <p className="text-sm text-slate-500 font-medium mb-1">{driver.label}</p>
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-xl font-bold text-slate-800">{driver.value}</span>
-                    <span className="text-xs font-semibold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded">{driver.growth}</span>
+        {/* Row 2: Funnel & Time Opportunity (Aligned) */}
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-7">
+            <Card className="bg-white shadow-sm border-slate-200 h-full">
+              <CardHeader>
+                <CardTitle className="text-lg font-semibold text-slate-800">Funil de Influência</CardTitle>
+                <CardDescription>Eficiência das sugestões do Maestro</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {funnelData.map((stage, index) => (
+                  <div key={index} className="relative">
+                    {index !== 0 && (
+                      <div className="absolute left-6 -top-4 bottom-1/2 w-0.5 bg-slate-100 -z-10" />
+                    )}
+                    <div className="flex items-center gap-4 group">
+                      <div className={cn(
+                        "w-12 h-12 rounded-full flex items-center justify-center shrink-0 border-2",
+                        index === 0 ? "bg-purple-50 border-purple-100 text-purple-600" :
+                          index === 3 ? "bg-emerald-50 border-emerald-100 text-emerald-600" :
+                            "bg-white border-slate-100 text-slate-400"
+                      )}>
+                        {index === 0 && <Eye size={20} />}
+                        {index === 1 && <MousePointer size={20} />}
+                        {index === 2 && <ShoppingCart size={20} />}
+                        {index === 3 && <CheckCircle size={20} />}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-sm font-medium text-slate-700">{stage.stage}</span>
+                          <span className="text-sm font-bold text-slate-900">{stage.value.toLocaleString()}</span>
+                        </div>
+                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className={cn("h-full rounded-full", index === 3 ? "bg-emerald-500" : "bg-purple-500")}
+                            style={{ width: stage.conversion.split('%')[0] + '%' }}
+                          />
+                        </div>
+                        <div className="flex justify-between mt-1 text-xs text-slate-400">
+                          <span>Conv: {stage.conversion}</span>
+                          <span>Drop: {stage.dropoff}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-xs text-slate-500 line-clamp-1">{driver.details}</p>
-                </CardContent>
-              </Card>
-            ))}
+                ))}
+              </CardContent>
+            </Card>
           </div>
+          <div className="col-span-12 lg:col-span-5">
+            <Card className="bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-md border-none h-full">
+              <CardHeader className="pb-2">
+                <div className="flex items-center gap-2">
+                  <Clock className="text-purple-400" size={20} />
+                  <CardTitle className="text-white text-lg">Oportunidade de Tempo</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center py-2 border-b border-slate-700/50">
+                    <span className="text-slate-300 text-sm">Tempo médio até 2ª bebida</span>
+                    <span className="text-xl font-bold font-mono">18min</span>
+                  </div>
+                  <div className="flex justify-between items-center py-2 border-b border-slate-700/50">
+                    <span className="text-slate-300 text-sm">Conv. Sobremesa (Jantar)</span>
+                    <span className="text-xl font-bold font-mono text-emerald-400">12%</span>
+                  </div>
+                  <div className="pt-2">
+                    <p className="text-xs text-slate-400 leading-relaxed">
+                      <strong className="text-purple-400">Insight:</strong> Reduzir o tempo de oferta da 2ª bebida para 15min pode aumentar a receita em ~8% no jantar.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
 
-          {/* Timing / Operational */}
-          <Card className="bg-gradient-to-br from-slate-900 to-slate-800 text-white shadow-md border-none">
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-2">
-                <Clock className="text-purple-400" size={20} />
-                <CardTitle className="text-white text-lg">Oportunidade de Tempo</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center py-2 border-b border-slate-700/50">
-                  <span className="text-slate-300 text-sm">Tempo médio até 2ª bebida</span>
-                  <span className="text-xl font-bold font-mono">18min</span>
+        {/* Row 3: Detailed Products */}
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-12 lg:col-span-7">
+            <Card className="shadow-sm">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg font-semibold text-slate-800">Detalhe por Produto</CardTitle>
+                    <CardDescription>Itens com maior impacto nas sugestões</CardDescription>
+                  </div>
+                  <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50">
+                    Ver Todos <ArrowRight size={14} className="ml-1" />
+                  </Button>
                 </div>
-                <div className="flex justify-between items-center py-2 border-b border-slate-700/50">
-                  <span className="text-slate-300 text-sm">Conv. Sobremesa (Jantar)</span>
-                  <span className="text-xl font-bold font-mono text-emerald-400">12%</span>
-                </div>
-                <div className="pt-2">
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    <strong className="text-purple-400">Insight:</strong> Reduzir o tempo de oferta da 2ª bebida para 15min pode aumentar a receita em ~8% no jantar.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Actionable Recommendations - MOVED TO BOTTOM */}
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Produto</TableHead>
+                      <TableHead className="text-right">Views</TableHead>
+                      <TableHead className="text-right">Cliques</TableHead>
+                      <TableHead className="text-right">Lift Conv.</TableHead>
+                      <TableHead className="text-right">Receita Atrib.</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {productsData.map((product) => (
+                      <TableRow key={product.id}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium text-slate-900">{product.name}</p>
+                            <span className="text-xs text-slate-500">{product.category}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right text-slate-600">{product.views}</TableCell>
+                        <TableCell className="text-right text-slate-600">{product.clicks}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-100">
+                            {product.conversion_lift}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right font-medium text-slate-900">{product.revenue}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
 
