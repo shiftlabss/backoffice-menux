@@ -120,6 +120,7 @@ export default function ProductModal({ isOpen, onClose, productToEdit, initialCa
         short_description: '',
         photo_url: '',
         is_active: true,
+        ingredients: '',
         category_id: initialCategoryId || '',
         subcategory_id: initialSubCategoryId || ''
     });
@@ -136,6 +137,7 @@ export default function ProductModal({ isOpen, onClose, productToEdit, initialCa
                     short_description: productToEdit.short_description || '',
                     photo_url: productToEdit.photo_url || '',
                     is_active: productToEdit.is_active,
+                    ingredients: productToEdit.ingredients || '',
                     category_id: initialCategoryId || '',
                     subcategory_id: productToEdit.subcategory_id || initialSubCategoryId || ''
                 });
@@ -148,6 +150,7 @@ export default function ProductModal({ isOpen, onClose, productToEdit, initialCa
                     short_description: '',
                     photo_url: '',
                     is_active: true,
+                    ingredients: '',
                     category_id: initialCategoryId || '',
                     subcategory_id: initialSubCategoryId || ''
                 });
@@ -318,6 +321,19 @@ export default function ProductModal({ isOpen, onClose, productToEdit, initialCa
                                 rows={4}
                                 className="resize-none border-gray-200 focus:border-purple-500"
                                 placeholder="Descreva os ingredientes, modo de preparo ou detalhes que valorizem o produto..."
+                            />
+                        </div>
+
+                        {/* 3.1. Ingredients */}
+                        <div>
+                            <Label>Ingredientes</Label>
+                            <Textarea
+                                name="ingredients"
+                                value={formData.ingredients}
+                                onChange={handleChange}
+                                rows={2}
+                                className="resize-none border-gray-200 focus:border-purple-500 mt-1"
+                                placeholder="Lista de ingredientes (ex: Trigo, Leite, Ovos...)"
                             />
                         </div>
 

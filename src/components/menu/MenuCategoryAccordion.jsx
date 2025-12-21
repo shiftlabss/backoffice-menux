@@ -316,8 +316,11 @@ export default function MenuCategoryAccordion({
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-text-primary">Categorias & Subcategorias</h2>
-                    <p className="text-text-secondary">Organize a estrutura do seu cardápio de forma hierárquica.</p>
+                    <h2 className="text-xl font-bold text-text-primary flex items-center gap-2">
+                        <Filter className="w-5 h-5" />
+                        Categorias & Subcategorias
+                    </h2>
+                    <p className="text-sm text-text-tertiary">Organize a estrutura do seu cardápio de forma hierárquica.</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <Button variant="ghost" size="sm" onClick={expandAll} className="text-xs">
