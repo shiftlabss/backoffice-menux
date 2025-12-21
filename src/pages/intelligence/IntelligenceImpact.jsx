@@ -270,13 +270,11 @@ const IntelligenceImpact = () => {
       {/* KPI Section */}
       <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
         <KPICard
-          title="Receita Atribuída"
-          value="R$ 28.450"
-          subtext="Vendas influenciadas"
-          trend="up"
-          trendValue="12.5%"
-          icon={DollarSign}
-          info="Receita..."
+          title="Confiança Atribuição"
+          value="94%"
+          subtext="Alta Precisão"
+          icon={CheckCircle}
+          info="Nível de certeza..."
         />
         <KPICard
           title="Pedidos Influenciados"
@@ -288,13 +286,13 @@ const IntelligenceImpact = () => {
           info="Total de pedidos..."
         />
         <KPICard
-          title="Lift Ticket Médio"
-          value="+R$ 12,40"
-          subtext="vs. Sem Maestro"
+          title="Receita Atribuída"
+          value="R$ 28.450"
+          subtext="Vendas influenciadas"
           trend="up"
-          trendValue="R$ 8,50"
-          icon={TrendingUp}
-          info="Diferença..."
+          trendValue="12.5%"
+          icon={DollarSign}
+          info="Receita..."
         />
         <KPICard
           title="Lift Conversão"
@@ -306,6 +304,15 @@ const IntelligenceImpact = () => {
           info="Aumento percentual..."
         />
         <KPICard
+          title="Lift Ticket Médio"
+          value="+R$ 12,40"
+          subtext="vs. Sem Maestro"
+          trend="up"
+          trendValue="R$ 8,50"
+          icon={TrendingUp}
+          info="Diferença..."
+        />
+        <KPICard
           title="Receita Incremental"
           value="R$ 8.900"
           subtext="Estimativa IA"
@@ -313,13 +320,6 @@ const IntelligenceImpact = () => {
           trendValue="15%"
           icon={Lightbulb}
           info="Estimativa..."
-        />
-        <KPICard
-          title="Confiança Atribuição"
-          value="94%"
-          subtext="Alta Precisão"
-          icon={CheckCircle}
-          info="Nível de certeza..."
         />
       </div>
 
