@@ -105,9 +105,9 @@ export default function MenuProducts({
     };
 
     return (
-        <div className="h-full flex flex-col overflow-y-auto bg-background/50">
+        <div className="h-full flex flex-col overflow-y-auto">
             {/* Highlights Section */}
-            <div className="pt-6 px-6">
+            <div className="mb-6">
                 <MenuHighlights
                     allProducts={allProducts}
                     highlights={highlights}
@@ -116,7 +116,7 @@ export default function MenuProducts({
             </div>
 
             {/* Catalog Section */}
-            <div className="flex-1 px-6 pb-12 flex flex-col gap-6">
+            <div className="flex-1 flex flex-col gap-6">
 
                 {/* Header & Filters */}
                 <div className="space-y-4">

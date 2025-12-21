@@ -312,7 +312,7 @@ export default function MenuCategoryAccordion({
     };
 
     return (
-        <div className="max-w-4xl mx-auto pt-6 px-6 h-full flex flex-col">
+        <div className="h-full flex flex-col">
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
                 <div>
