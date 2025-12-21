@@ -14,22 +14,7 @@ export default function UpsellSize() {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
 
-      {/* Intro / Header */}
-      <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <h3 className="text-lg font-bold text-blue-900 flex items-center gap-2">
-            <Scaling size={20} />
-            Upsell de Tamanho
-          </h3>
-          <p className="text-sm text-blue-700 mt-1 max-w-2xl">
-            Configure automaticamente sugestões para o cliente levar o tamanho maior por uma pequena diferença de valor.
-            Ex: &quot;Por apenas +R$ 4,00, leve a Batata Grande!&quot;
-          </p>
-        </div>
-        <Button className="bg-blue-600 text-white hover:bg-blue-700 whitespace-nowrap">
-          Configurar em Massa
-        </Button>
-      </div>
+
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

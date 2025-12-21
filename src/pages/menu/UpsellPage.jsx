@@ -17,7 +17,6 @@ import { SecondaryNavigation } from '../../components/ui/SecondaryNavigation';
 // Import sub-components
 import UpsellOverview from '../../components/upsell/UpsellOverview';
 import UpsellRules from '../../components/upsell/UpsellRules';
-import UpsellSize from '../../components/upsell/UpsellSize';
 import UpsellCombos from '../../components/upsell/UpsellCombos';
 import UpsellMaestro from '../../components/upsell/UpsellMaestro';
 
@@ -29,7 +28,7 @@ export default function UpsellPage() {
     { id: 'overview', label: 'Visão Geral', icon: LayoutDashboard, onClick: () => setActiveTab('overview'), isActive: activeTab === 'overview' },
     { id: 'maestro', label: 'Maestro', icon: Sparkles, onClick: () => setActiveTab('maestro'), isActive: activeTab === 'maestro' },
     { id: 'rules', label: 'Regras', icon: ListFilter, onClick: () => setActiveTab('rules'), isActive: activeTab === 'rules' },
-    { id: 'size', label: 'Tamanhos', icon: Scaling, onClick: () => setActiveTab('size'), isActive: activeTab === 'size' },
+
     { id: 'combos', label: 'Combos', icon: UtensilsCrossed, onClick: () => setActiveTab('combos'), isActive: activeTab === 'combos' },
   ];
 
@@ -38,7 +37,7 @@ export default function UpsellPage() {
     switch (activeTab) {
       case 'overview': return <UpsellOverview setActiveTab={setActiveTab} />;
       case 'rules': return <UpsellRules />;
-      case 'size': return <UpsellSize />;
+
       case 'combos': return <UpsellCombos />;
       case 'maestro': return <UpsellMaestro />;
       default: return <UpsellOverview setActiveTab={setActiveTab} />;

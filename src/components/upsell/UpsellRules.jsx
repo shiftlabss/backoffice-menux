@@ -4,6 +4,7 @@ import { Button, Input, Select } from '../../components/ui/Form';
 import { Badge } from '../../components/ui/Badge';
 import { Plus, Search, MoreHorizontal, Edit2, Trash2, PauseCircle, PlayCircle, Filter, ArrowUpDown } from 'lucide-react';
 import UpsellWizard from './UpsellWizard';
+import UpsellSize from './UpsellSize';
 
 export default function UpsellRules() {
   const [isWizardOpen, setIsWizardOpen] = useState(false);
@@ -83,7 +84,7 @@ export default function UpsellRules() {
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-bold border ${rule.priority === 'Alta' ? 'bg-red-50 text-red-700 border-red-100' :
-                        rule.priority === 'Média' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-blue-50 text-blue-700 border-blue-100'
+                      rule.priority === 'Média' ? 'bg-yellow-50 text-yellow-700 border-yellow-100' : 'bg-blue-50 text-blue-700 border-blue-100'
                       }`}>
                       {rule.priority}
                     </span>
@@ -116,6 +117,12 @@ export default function UpsellRules() {
           </table>
         </div>
       </Card>
+
+      {/* Upsell Size Section */}
+      <div className="pt-8 border-t border-gray-200">
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Upsell de Tamanho e Complementos</h3>
+        <UpsellSize />
+      </div>
 
       <UpsellWizard isOpen={isWizardOpen} onClose={() => setIsWizardOpen(false)} />
     </div>
