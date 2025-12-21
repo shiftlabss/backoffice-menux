@@ -13,7 +13,7 @@ export default function IntelligenceLayout() {
   return (
     <ModuleLayout
       title="Maestro"
-      subtitle={null}
+      subtitle="Sua inteligência artificial para decisões estratégicas."
       items={null} // No sidebar
     >
       <div className="mb-6">

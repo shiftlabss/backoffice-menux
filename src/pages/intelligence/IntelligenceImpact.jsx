@@ -38,6 +38,7 @@ import { cn } from '../../lib/utils';
 import ModuleLayout from '../../components/layout/ModuleLayout';
 import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
 import { ImpactFilters } from '../../components/maestro/ImpactFilters';
+import { MaestroHeader } from '../../components/maestro/MaestroHeader';
 
 // --- Local Mock Data Generator ---
 
@@ -362,8 +363,16 @@ const IntelligenceImpact = () => {
   ) : (
     <div className="space-y-8 animate-in fade-in duration-500">
 
-      {/* Section 1: Filters & Context */}
-      <ImpactFilters onFilterChange={handleFilterChange} />
+
+      {/* Section 1: Standard Maestro Header */}
+      <MaestroHeader
+        title="Impacto nas Vendas"
+        subtitle="Análise detalhada de conversão e receita atribuída"
+        filters={filters}
+        onFilterChange={(key, value) => handleFilterChange({ ...filters, [key]: value })}
+        onOpenAdvancedFilters={() => { }} // or open a drawer if needed
+        onExport={handleExport}
+      />
 
       {/* KPI Section */}
       <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">

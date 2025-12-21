@@ -131,10 +131,7 @@ export function MaestroHeader({
         </div>
 
         {/* Micro-text status (Optional, based on requirements) */}
-        <div className="mt-2 text-[10px] text-slate-400 flex justify-end items-center gap-2">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          Maestro ativo • Última análise: agora
-        </div>
+
 
       </div>
     </div>
