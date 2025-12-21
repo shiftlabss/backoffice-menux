@@ -18,7 +18,6 @@ import { SecondaryNavigation } from '../../components/ui/SecondaryNavigation';
 import UpsellOverview from '../../components/upsell/UpsellOverview';
 import UpsellRules from '../../components/upsell/UpsellRules';
 import UpsellCombos from '../../components/upsell/UpsellCombos';
-import UpsellMaestro from '../../components/upsell/UpsellMaestro';
 
 export default function UpsellPage() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -26,7 +25,7 @@ export default function UpsellPage() {
   // Define sidebar items
   const menuItems = [
     { id: 'overview', label: 'Visão Geral', icon: LayoutDashboard, onClick: () => setActiveTab('overview'), isActive: activeTab === 'overview' },
-    { id: 'maestro', label: 'Maestro', icon: Sparkles, onClick: () => setActiveTab('maestro'), isActive: activeTab === 'maestro' },
+
     { id: 'rules', label: 'Regras', icon: ListFilter, onClick: () => setActiveTab('rules'), isActive: activeTab === 'rules' },
 
     { id: 'combos', label: 'Combos', icon: UtensilsCrossed, onClick: () => setActiveTab('combos'), isActive: activeTab === 'combos' },
@@ -39,7 +38,6 @@ export default function UpsellPage() {
       case 'rules': return <UpsellRules />;
 
       case 'combos': return <UpsellCombos />;
-      case 'maestro': return <UpsellMaestro />;
       default: return <UpsellOverview setActiveTab={setActiveTab} />;
     }
   };

@@ -15,7 +15,9 @@ import {
   CheckCircle,
   Lightbulb,
   ChevronRight,
-  BarChart3
+  BarChart3,
+
+  CheckCircle2
 } from 'lucide-react';
 import {
   LineChart,
@@ -127,32 +129,7 @@ const shiftsData = [
   { id: 'madrugada', name: 'Madrugada', revenue: 'R$ 1.850', lift_conv: '+5.5%', lift_ticket: '+R$ 8.00', opportunity: 'Alta' },
 ];
 
-const recommendationsData = [
-  {
-    id: 1,
-    type: 'success',
-    title: 'Aumentar oferta de sobremesa no jantar',
-    diagnosis: 'A conversão de sobremesas caiu 5% nas últimas 2h do jantar.',
-    impact: 'Est. +R$ 450/dia',
-    confidence: 'Alto (85%)'
-  },
-  {
-    id: 2,
-    type: 'warning',
-    title: 'Revisar preço do Combo Família',
-    diagnosis: 'Visualizações altas, mas conversão 20% abaixo da média.',
-    impact: 'Est. +R$ 120/dia',
-    confidence: 'Médio (60%)'
-  },
-  {
-    id: 3,
-    type: 'info',
-    title: 'Ativar "Modo Happy Hour" mais cedo',
-    diagnosis: 'Pico de pedidos de bebidas começando as 17h, 1h antes do previsto.',
-    impact: 'Est. +R$ 300/dia',
-    confidence: 'Alto (92%)'
-  },
-];
+// recommendationsData moved to IntelligenceRecommendations.jsx
 
 const InfoTooltip = ({ text }) => (
   <div className="group relative ml-1 inline-flex cursor-help">
@@ -607,6 +584,8 @@ const IntelligenceImpact = () => {
                   ))}
                 </TableBody>
               </Table>
+
+
             )}
 
             {rankingTab === 'rules' && (
@@ -669,62 +648,10 @@ const IntelligenceImpact = () => {
           </CardContent>
         </Card>
 
-        {/* Section 7: Actionable Recommendations */}
-        <Card className="shadow-sm border-l-4 border-l-purple-500 overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-5">
-            <Lightbulb size={120} />
-          </div>
-          <CardHeader className="pb-3 relative z-10">
-            <div className="flex justify-between items-center">
-              <div>
-                <CardTitle className="text-lg font-semibold text-slate-800">Oportunidades Identificadas</CardTitle>
-                <CardDescription>Ações recomendadas para maximizar seu faturamento agora</CardDescription>
-              </div>
-              <Button onClick={handleExport} variant="outline" className="hidden md:flex gap-2">
-                <Download size={16} /> Exportar Relatório
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="relative z-10">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {recommendationsData.map((rec) => (
-                <div key={rec.id} className="p-4 bg-white rounded-lg border border-slate-200 hover:border-purple-300 hover:shadow-md transition-all cursor-pointer group flex flex-col h-full">
-                  <div className="flex items-start justify-between mb-3">
-                    <Badge variant="outline" className={cn(
-                      "text-xs font-semibold px-2 py-0.5",
-                      rec.type === 'success' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                        rec.type === 'warning' ? "bg-amber-50 text-amber-700 border-amber-200" :
-                          "bg-blue-50 text-blue-700 border-blue-200"
-                    )}>
-                      {rec.impact}
-                    </Badge>
-                    <div className="flex gap-1">
-                      <CheckCircle size={14} className="text-slate-300" />
-                    </div>
-                  </div>
-                  <h4 className="text-sm font-bold text-slate-800 mb-2 leading-tight group-hover:text-purple-700 transition-colors">
-                    {rec.title}
-                  </h4>
-                  <p className="text-xs text-slate-500 mb-4 line-clamp-3">
-                    {rec.diagnosis}
-                  </p>
 
-                  <div className="mt-auto flex gap-2">
-                    <Button size="sm" className="flex-1 bg-slate-900 hover:bg-slate-800 text-white h-8 text-xs">
-                      Aplicar
-                    </Button>
-                    <Button size="sm" variant="outline" className="h-8 w-8 p-0">
-                      <ChevronRight size={14} />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
       </div >
-    </div>
+    </div >
   );
 
   return content;

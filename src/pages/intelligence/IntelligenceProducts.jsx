@@ -16,10 +16,13 @@ import {
   ArrowUpRight,
   ArrowRight,
   Utensils,
+
   Search,
   MoreHorizontal,
   Plus,
-  ChevronRight
+  ChevronRight,
+  XCircle,
+  CheckCircle2
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { MOCK_PRODUCTS, MOCK_KPIS } from '../../services/mockIntelligence';
@@ -204,6 +207,92 @@ export default function IntelligenceProducts() {
 
         </div>
 
+      </div>
+
+      {/* Maestro Suggestions from Upsell */}
+      <div className="pt-8 border-t border-slate-200">
+        <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+          Sugestões do Maestro para Produtos e Combos
+        </h3>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="flex flex-col h-full border-t-4 border-purple-600 hover:shadow-lg transition-shadow">
+            <div className="p-6 flex-1">
+              <div className="flex justify-between items-start mb-4">
+                <Badge variant="secondary" className="bg-gray-100 text-gray-600">Combo</Badge>
+                <span className="text-xs font-bold px-2 py-1 rounded-full bg-green-100 text-green-700">Alto Impacto</span>
+              </div>
+              <h3 className="font-bold text-xl text-gray-900 mb-3">Combo de Almoço Executivo</h3>
+              <p className="text-gray-600 text-sm leading-relaxed mb-6">
+                Seus pratos executivos têm alta saída entre 11h e 14h, mas baixo ticket médio. Crie um combo com bebida e sobremesa "mini" para aumentar o ticket em 25%.
+              </p>
+              <div className="flex items-center gap-2 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <TrendingUp size={18} className="text-green-600" />
+                <span className="font-bold text-gray-900">+ R$ 2.400/mês</span>
+                <span className="text-xs text-gray-500">projecão</span>
+              </div>
+            </div>
+            <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex gap-2">
+              <Button className="flex-1 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-red-600 shadow-sm" size="sm">
+                <XCircle size={16} className="mr-2" /> Ignorar
+              </Button>
+              <Button className="flex-1 bg-gray-900 text-white hover:bg-black shadow-sm" size="sm">
+                <CheckCircle2 size={16} className="mr-2" /> Aplicar
+              </Button>
+            </div>
+          </Card>
+
+          <Card className="flex flex-col h-full border-t-4 border-red-600 hover:shadow-lg transition-shadow">
+            <div className="p-6 flex-1">
+              <div className="flex justify-between items-start mb-4">
+                <Badge variant="secondary" className="bg-gray-100 text-gray-600">Harmonização</Badge>
+                <span className="text-xs font-bold px-2 py-1 rounded-full bg-yellow-100 text-yellow-700">Médio Impacto</span>
+              </div>
+              <h3 className="font-bold text-xl text-gray-900 mb-3">Vinhos para Carnes</h3>
+              <p className="text-gray-600 text-sm leading-relaxed mb-6">
+                A "Picanha na Brasa" é seu item mais vendido. Sugira o vinho "Malbec Argentino" automaticamente quando ela for adicionada ao carrinho.
+              </p>
+              <div className="flex items-center gap-2 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <TrendingUp size={18} className="text-green-600" />
+                <span className="font-bold text-gray-900">+ R$ 1.800/mês</span>
+                <span className="text-xs text-gray-500">projecão</span>
+              </div>
+            </div>
+            <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex gap-2">
+              <Button className="flex-1 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-red-600 shadow-sm" size="sm">
+                <XCircle size={16} className="mr-2" /> Ignorar
+              </Button>
+              <Button className="flex-1 bg-gray-900 text-white hover:bg-black shadow-sm" size="sm">
+                <CheckCircle2 size={16} className="mr-2" /> Aplicar
+              </Button>
+            </div>
+          </Card>
+
+          <Card className="flex flex-col h-full border-t-4 border-green-600 hover:shadow-lg transition-shadow">
+            <div className="p-6 flex-1">
+              <div className="flex justify-between items-start mb-4">
+                <Badge variant="secondary" className="bg-gray-100 text-gray-600">Tamanho</Badge>
+                <span className="text-xs font-bold px-2 py-1 rounded-full bg-green-100 text-green-700">Alto Impacto</span>
+              </div>
+              <h3 className="font-bold text-xl text-gray-900 mb-3">Upsell de Sucos</h3>
+              <p className="text-gray-600 text-sm leading-relaxed mb-6">
+                80% dos clientes pedem suco de 300ml. A margem no de 500ml é 40% maior. Ative a sugestão de upgrade por +R$ 4,00.
+              </p>
+              <div className="flex items-center gap-2 mb-4 p-3 bg-gray-50 rounded-lg border border-gray-100">
+                <TrendingUp size={18} className="text-green-600" />
+                <span className="font-bold text-gray-900">+ R$ 900/mês</span>
+                <span className="text-xs text-gray-500">projecão</span>
+              </div>
+            </div>
+            <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex gap-2">
+              <Button className="flex-1 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-red-600 shadow-sm" size="sm">
+                <XCircle size={16} className="mr-2" /> Ignorar
+              </Button>
+              <Button className="flex-1 bg-gray-900 text-white hover:bg-black shadow-sm" size="sm">
+                <CheckCircle2 size={16} className="mr-2" /> Aplicar
+              </Button>
+            </div>
+          </Card>
+        </div>
       </div>
 
 
