@@ -300,7 +300,7 @@ const IntelligenceImpact = () => {
   const [rankingTab, setRankingTab] = useState('products');
 
   const [filters, setFilters] = useState({
-    period: '7d',
+    period: 'today',
     shift: 'all',
     channel: 'all',
     segment: 'all',

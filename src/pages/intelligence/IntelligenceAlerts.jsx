@@ -78,17 +78,7 @@ export default function IntelligenceAlerts() {
         onOpenAdvancedFilters={() => toast("Filtros avançados em breve.")}
       />
 
-      {/* Sub-header for Connection Status */}
-      <div className="bg-white border-b border-slate-200 px-4 sm:px-6 lg:px-8 py-2 flex justify-between items-center text-xs">
-        <div className="flex items-center gap-2">
-          <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="text-slate-600 font-medium">Sistema Operacional Normal</span>
-        </div>
-        <div className="flex items-center gap-4 text-slate-500">
-          <span className="flex items-center gap-1"><Wifi size={14} className="text-emerald-500" /> API Conectada (14ms)</span>
-          <span className="hidden sm:inline">Última atualização: Agora mesmo</span>
-        </div>
-      </div>
+
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
