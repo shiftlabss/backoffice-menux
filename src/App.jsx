@@ -25,8 +25,7 @@ import RestaurantList from './pages/restaurants/RestaurantList';
 import RestaurantForm from './pages/restaurants/RestaurantForm';
 import UpsellPage from './pages/menu/UpsellPage';
 import ReportsPage from './pages/reports/ReportsPage';
-import CustomersList from './pages/customers/CustomersList';
-import CustomerDetail from './pages/customers/CustomerDetail';
+import CustomersPage from './pages/Customers/CustomersPage';
 
 function PrivateRoute({ children }) {
     const { user, loading } = useAuth();
@@ -92,10 +91,7 @@ export default function App() {
                                 </Route>
 
                                 {/* Customers Module */}
-                                <Route path="customers">
-                                    <Route index element={<CustomersList />} />
-                                    <Route path=":id" element={<CustomerDetail />} />
-                                </Route>
+                                <Route path="customers" element={<CustomersPage />} />
 
                                 {/* Legacy redirect */}
                                 <Route path="ai/recommendations" element={<Navigate to="/intelligence/recommendations" replace />} />
