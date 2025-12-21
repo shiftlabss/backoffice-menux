@@ -16,7 +16,7 @@ export default function Layout() {
 
             {/* Main Content Area */}
             <div className={`flex-1 flex flex-col min-w-0 transition-all duration-300 relative ${isIAPanelOpen ? 'mr-96' : ''
-                } ${isSidebarCollapsed ? 'lg:ml-[112px]' : 'lg:ml-[312px]'
+                } ${isSidebarCollapsed ? 'lg:ml-[96px]' : 'lg:ml-[276px]'
                 }`}>
 
                 {/* Mobile Header Trigger - Removed to avoid duplication with ModuleLayout */}
