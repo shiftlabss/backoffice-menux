@@ -137,8 +137,8 @@ const InfoTooltip = ({ text }) => (
 
 const TrendChart = ({ data, metric, setMetric }) => {
   return (
-    <Card className="col-span-12 lg:col-span-8 shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+    <Card className="h-full flex flex-col shadow-sm">
+      <CardHeader className="flex flex-row items-center justify-between pb-2 shrink-0">
         <div>
           <CardTitle className="text-lg font-semibold text-slate-800">Evolução de Impacto</CardTitle>
           <CardDescription>Comparativo temporal de performance</CardDescription>
@@ -162,7 +162,7 @@ const TrendChart = ({ data, metric, setMetric }) => {
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="h-[350px]">
+      <CardContent className="flex-1 min-h-[350px]">
         <ResponsiveContainer width="100%" height="100%">
           {metric === 'revenue' ? (
             <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -206,6 +206,7 @@ const TrendChart = ({ data, metric, setMetric }) => {
     </Card>
   );
 };
+
 
 const KPICard = ({ title, value, subtext, trend, trendValue, icon: Icon, info }) => (
   <Card className="shadow-sm hover:shadow-md transition-shadow">
@@ -333,26 +334,28 @@ const IntelligenceImpact = () => {
           </div>
           <div className="col-span-12 lg:col-span-5">
             {/* Revenue Drivers */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-2">
+            <div className="h-full flex flex-col gap-4">
+              <div className="flex items-center gap-2 shrink-0">
                 <TrendingUp className="text-slate-500" size={18} />
                 <h3 className="text-sm font-semibold text-slate-700">Drivers de Receita</h3>
               </div>
-              {revenueDrivers.map((driver) => (
-                <Card key={driver.id} className="bg-slate-50 overflow-hidden relative border-slate-200/60 shadow-sm">
-                  <div className="absolute top-0 right-0 p-2 opacity-10">
-                    <BarChart3 size={48} />
-                  </div>
-                  <CardContent className="p-4">
-                    <p className="text-sm text-slate-500 font-medium mb-1">{driver.label}</p>
-                    <div className="flex items-baseline gap-2 mb-1">
-                      <span className="text-xl font-bold text-slate-800">{driver.value}</span>
-                      <span className="text-xs font-semibold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded">{driver.growth}</span>
+              <div className="flex-1 flex flex-col gap-4">
+                {revenueDrivers.map((driver) => (
+                  <Card key={driver.id} className="bg-slate-50 overflow-hidden relative border-slate-200/60 shadow-sm flex-1 flex flex-col justify-center">
+                    <div className="absolute top-0 right-0 p-2 opacity-10">
+                      <BarChart3 size={48} />
                     </div>
-                    <p className="text-xs text-slate-500 line-clamp-1">{driver.details}</p>
-                  </CardContent>
-                </Card>
-              ))}
+                    <CardContent className="p-4 relative z-10">
+                      <p className="text-sm text-slate-500 font-medium mb-1">{driver.label}</p>
+                      <div className="flex items-baseline gap-2 mb-1">
+                        <span className="text-xl font-bold text-slate-800">{driver.value}</span>
+                        <span className="text-xs font-semibold text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded">{driver.growth}</span>
+                      </div>
+                      <p className="text-xs text-slate-500 line-clamp-1">{driver.details}</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -436,7 +439,7 @@ const IntelligenceImpact = () => {
 
         {/* Row 3: Detailed Products */}
         <div className="grid grid-cols-12 gap-6">
-          <div className="col-span-12 lg:col-span-7">
+          <div className="col-span-12">
             <Card className="shadow-sm">
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">

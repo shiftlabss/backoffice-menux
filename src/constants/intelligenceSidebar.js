@@ -15,16 +15,16 @@ export const intelligenceSidebarItems = [
     icon: TrendingUp
   },
   {
+    label: 'Oportunidades',
+    subtitle: 'Oportunidades de melhoria',
+    to: '/intelligence/recommendations',
+    icon: Sparkles
+  },
+  {
     label: 'Produtos e Combos',
     subtitle: 'Performance do cardápio',
     to: '/intelligence/products',
     icon: Package
-  },
-  {
-    label: 'Recomendações',
-    subtitle: 'Oportunidades de melhoria',
-    to: '/intelligence/recommendations',
-    icon: Sparkles
   },
   {
     label: 'Alertas e Operação',
