@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button, Input, Label, Textarea, Select } from '../ui/Form';
 import { menuService } from '../../services/menuService';
-import { AlertCircle, Upload, X, Image as ImageIcon, RefreshCw, Tag, Info, Package, DollarSign } from 'lucide-react';
+import { AlertCircle, Upload, X, Image as ImageIcon, RefreshCw, Tag, Info, Package, DollarSign, Sparkles } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -110,6 +110,7 @@ function ImageUploader({ value, onChange, onError }) {
 
 export default function ProductModal({ isOpen, onClose, productToEdit, initialCategoryId, initialSubCategoryId, categories, onSuccess }) {
     const [loading, setLoading] = useState(false);
+    const [loadingAI, setLoadingAI] = useState(false);
     const [error, setError] = useState(null);
     const [imageError, setImageError] = useState(null);
     const [subCategories, setSubCategories] = useState([]);
@@ -183,6 +184,28 @@ export default function ProductModal({ isOpen, onClose, productToEdit, initialCa
     };
 
     const handleImageChange = (url) => setFormData(prev => ({ ...prev, photo_url: url }));
+
+    const handleGenerateAI = async () => {
+        if (!formData.name) {
+            setError("Digite o nome do produto para gerar a descrição.");
+            return;
+        }
+        setLoadingAI(true);
+        setError(null);
+        try {
+            const { description, ingredients } = await menuService.generateProductDetails(formData.name);
+            setFormData(prev => ({
+                ...prev,
+                short_description: description,
+                ingredients: ingredients
+            }));
+        } catch (err) {
+            console.error("AI Error:", err);
+            setError("Erro ao gerar conteúdo com IA. Tente novamente.");
+        } finally {
+            setLoadingAI(false);
+        }
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -313,7 +336,23 @@ export default function ProductModal({ isOpen, onClose, productToEdit, initialCa
 
                         {/* 3. Description */}
                         <div>
-                            <Label>Descrição Detalhada</Label>
+                            <div className="flex items-center justify-between mb-2">
+                                <Label className="mb-0">Descrição Detalhada</Label>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={handleGenerateAI}
+                                    disabled={loadingAI || !formData.name}
+                                    className={cn(
+                                        "h-7 text-xs gap-1.5 transition-all",
+                                        loadingAI ? "opacity-70 cursor-wait" : "hover:bg-purple-50 text-purple-600 hover:text-purple-700"
+                                    )}
+                                >
+                                    <Sparkles className={cn("w-3.5 h-3.5", loadingAI && "animate-pulse")} />
+                                    {loadingAI ? "Gerando..." : "Gerar com Maestro"}
+                                </Button>
+                            </div>
                             <Textarea
                                 name="short_description"
                                 value={formData.short_description}
@@ -326,7 +365,23 @@ export default function ProductModal({ isOpen, onClose, productToEdit, initialCa
 
                         {/* 3.1. Ingredients */}
                         <div>
-                            <Label>Ingredientes</Label>
+                            <div className="flex items-center justify-between mb-2">
+                                <Label className="mb-0">Ingredientes</Label>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={handleGenerateAI}
+                                    disabled={loadingAI || !formData.name}
+                                    className={cn(
+                                        "h-7 text-xs gap-1.5 transition-all",
+                                        loadingAI ? "opacity-70 cursor-wait" : "hover:bg-purple-50 text-purple-600 hover:text-purple-700"
+                                    )}
+                                >
+                                    <Sparkles className={cn("w-3.5 h-3.5", loadingAI && "animate-pulse")} />
+                                    {loadingAI ? "Gerando..." : "Gerar com Maestro"}
+                                </Button>
+                            </div>
                             <Textarea
                                 name="ingredients"
                                 value={formData.ingredients}

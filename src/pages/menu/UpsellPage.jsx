@@ -20,7 +20,6 @@ import UpsellRules from '../../components/upsell/UpsellRules';
 import UpsellSize from '../../components/upsell/UpsellSize';
 import UpsellCombos from '../../components/upsell/UpsellCombos';
 import UpsellMaestro from '../../components/upsell/UpsellMaestro';
-import UpsellReports from '../../components/upsell/UpsellReports';
 
 export default function UpsellPage() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -32,7 +31,6 @@ export default function UpsellPage() {
     { id: 'rules', label: 'Regras', icon: ListFilter, onClick: () => setActiveTab('rules'), isActive: activeTab === 'rules' },
     { id: 'size', label: 'Tamanhos', icon: Scaling, onClick: () => setActiveTab('size'), isActive: activeTab === 'size' },
     { id: 'combos', label: 'Combos', icon: UtensilsCrossed, onClick: () => setActiveTab('combos'), isActive: activeTab === 'combos' },
-    { id: 'reports', label: 'Relatórios', icon: BarChart3, onClick: () => setActiveTab('reports'), isActive: activeTab === 'reports' },
   ];
 
 
@@ -43,7 +41,6 @@ export default function UpsellPage() {
       case 'size': return <UpsellSize />;
       case 'combos': return <UpsellCombos />;
       case 'maestro': return <UpsellMaestro />;
-      case 'reports': return <UpsellReports />;
       default: return <UpsellOverview setActiveTab={setActiveTab} />;
     }
   };
@@ -52,15 +49,7 @@ export default function UpsellPage() {
     <ModuleLayout
       title="Upsell"
       subtitle="Maximize o ticket médio com sugestões inteligentes."
-      items={null}
-      actions={
-        <div className="flex items-center gap-2">
-          <Button variant="primary" className="gap-2 hidden md:flex" onClick={() => setActiveTab('rules')}>
-            <Plus size={18} />
-            Nova Regra
-          </Button>
-        </div>
-      }
+      actions={null}
     >
       <div className="mb-6">
         <SecondaryNavigation items={menuItems} />
