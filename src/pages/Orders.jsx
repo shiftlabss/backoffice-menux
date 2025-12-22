@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, Eye, Clock, CheckCircle2, AlertCircle, LayoutList, Kanban as KanbanIcon, ShoppingBag, X } from 'lucide-react';
 import OrdersKanban from './orders/OrdersKanban';
 import OrderDetailsModal from './orders/OrderDetailsModal';
 import TableMap from './orders/TableMap';
 import ModuleLayout from '../components/layout/ModuleLayout';
+import { Skeleton } from '../components/ui/Skeleton';
+import toast from 'react-hot-toast';
 
 export default function Orders() {
     const [viewMode, setViewMode] = useState('list'); // 'list' | 'kanban'
@@ -11,6 +13,12 @@ export default function Orders() {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 1000);
+        return () => clearTimeout(timer);
+    }, [filterStatus, selectedTable]);
 
     // Mock data
     const [orders, setOrders] = useState([
@@ -201,7 +209,17 @@ export default function Orders() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
-                                {filteredOrders.map((order) => (
+                                {isLoading ? (
+                                    [1, 2, 3, 4, 5].map(i => (
+                                        <tr key={i}>
+                                            <td className="py-4 px-6"><Skeleton className="h-10 w-full" /></td>
+                                            <td className="py-4 px-6"><Skeleton className="h-6 w-20" /></td>
+                                            <td className="py-4 px-6"><Skeleton className="h-6 w-16" /></td>
+                                            <td className="py-4 px-6"><Skeleton className="h-6 w-16" /></td>
+                                            <td className="py-4 px-6 text-right"><Skeleton className="h-8 w-8 ml-auto" /></td>
+                                        </tr>
+                                    ))
+                                ) : filteredOrders.map((order) => (
                                     <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
                                         <td className="py-4 px-6">
                                             <div className="flex items-center gap-3">

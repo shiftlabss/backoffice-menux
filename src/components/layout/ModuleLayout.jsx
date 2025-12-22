@@ -4,12 +4,14 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 import { Menu, User, Settings, LogOut, Briefcase, Utensils, ChevronDown } from 'lucide-react';
 import { useMenux } from '../../context/MenuxContext';
+import { useAuth } from '../../context/AuthContext';
 import NotificationsPopover from './NotificationsPopover';
 
 export default function ModuleLayout({ title, subtitle, items, children, actions }) {
     const location = useLocation();
     const navigate = useNavigate();
     const { toggleSidebar, role, toggleRole } = useMenux();
+    const { logout } = useAuth();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [toast, setToast] = useState(null); // { message: string, type: 'success' | 'info' | 'error' }
 
@@ -37,8 +39,8 @@ export default function ModuleLayout({ title, subtitle, items, children, actions
         setIsProfileOpen(false);
         setToast({ message: 'Encerrando sessão...', type: 'info' });
         setTimeout(() => {
-            navigate('/login');
-        }, 1500);
+            logout();
+        }, 800);
     };
 
     return (

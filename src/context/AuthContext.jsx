@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         // Check if mock mode is enabled via environment variable
         const useMockAuth = import.meta.env.VITE_USE_MOCK_AUTH === 'true';
-        
+
         // Mock Login for Development (no backend required)
         if (useMockAuth) {
             if (email === 'admin@admin.com' && password === 'admin') {
@@ -79,10 +79,38 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem('token');
         setUser(null);
+        // Clean session and force redirect to clear any cached sensitive state
+        window.location.href = '/login';
+    };
+
+    /**
+     * trackAction handles the consistent execution of actions with audit logging and feedback.
+     * Consistent with the Audit Lead's specification for actionId and feedback.
+     */
+    const trackAction = async (actionId, callback, options = {}) => {
+        const {
+            successToast = 'Ação realizada com sucesso',
+            errorToast = 'Erro ao realizar ação',
+            showFeedback = true
+        } = options;
+
+        try {
+            // Placeholder for audit logging - in production this would call an API
+            console.log(`[AUDIT] Action: ${actionId}`, { timestamp: new Date(), context: options.context });
+
+            const result = await callback();
+
+            // if (showFeedback) toast.success(successToast); // Integration with toast system
+            return result;
+        } catch (error) {
+            console.error(`[AUDIT ERROR] Action: ${actionId}`, error);
+            // if (showFeedback) toast.error(errorToast);
+            throw error;
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, forgotPassword, loading, isAuthenticated: !!user }}>
+        <AuthContext.Provider value={{ user, login, logout, forgotPassword, loading, trackAction, isAuthenticated: !!user }}>
             {children}
         </AuthContext.Provider>
     );

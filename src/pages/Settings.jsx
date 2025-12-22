@@ -14,10 +14,14 @@ import { Copy, Plus, Edit2, Trash2, Store, Users, User, Settings as SettingsIcon
 import { toast } from 'react-hot-toast';
 import { Sparkles } from 'lucide-react';
 import IntelligenceSettings from './intelligence/IntelligenceSettings';
+import { ConfirmModal, useConfirmModal } from '../components/ui/ConfirmModal';
 
 export default function Settings() {
     const location = useLocation();
     const [activeTab, setActiveTab] = useState(location.state?.tab || 'restaurant');
+    const [isDirty, setIsDirty] = useState(false);
+
+    const { confirm, ConfirmModalComponent } = useConfirmModal();
 
     // Preferences State
     const [pushNotif, setPushNotif] = useState(true);
@@ -25,17 +29,51 @@ export default function Settings() {
     const [darkMode, setDarkMode] = useState(false);
     const [soundEnabled, setSoundEnabled] = useState(true);
 
-    // Update activeTab if location state changes (though typical navigation remounts component)
+    // Update activeTab if location state changes
     React.useEffect(() => {
         if (location.state?.tab) {
             setActiveTab(location.state.tab);
         }
     }, [location.state]);
 
+    // Prevent accidental navigation
+    React.useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            if (isDirty) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, [isDirty]);
+
+    const handleTabSwitch = async (tabId) => {
+        if (tabId === activeTab) return;
+
+        if (isDirty) {
+            const confirmed = await confirm({
+                title: "Alterações não salvas",
+                message: "Você tem alterações não salvas. Deseja sair sem salvar?",
+                variant: "warning",
+                confirmText: "Sair sem salvar",
+                cancelText: "Ficar e salvar"
+            });
+            if (!confirmed) return;
+        }
+        setIsDirty(false);
+        setActiveTab(tabId);
+    };
+
+    const handleSave = () => {
+        setIsDirty(false);
+        toast.success("Alterações salvas com sucesso!");
+    };
+
     // Navigation Items for the Module Sidebar
     const navItems = [
-        { id: 'restaurant', label: 'Dados do Restaurante', subtitle: 'Informações gerais e logo', icon: Store, onClick: () => setActiveTab('restaurant') },
-        { id: 'profile', label: 'Meu Perfil', subtitle: 'Dados pessoais e senha', icon: User, onClick: () => setActiveTab('profile') },
+        { id: 'restaurant', label: 'Dados do Restaurante', subtitle: 'Informações gerais e logo', icon: Store, onClick: () => handleTabSwitch('restaurant') },
+        { id: 'profile', label: 'Meu Perfil', subtitle: 'Dados pessoais e senha', icon: User, onClick: () => handleTabSwitch('profile') },
     ].map(item => ({ ...item, isActive: activeTab === item.id }));
 
     const renderContent = () => {
@@ -57,44 +95,44 @@ export default function Settings() {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <Input label="Nome Completo" defaultValue="Fernando Calado" />
+                                <Input label="Nome Completo" defaultValue="Fernando Calado" onChange={() => setIsDirty(true)} />
                                 <Input label="Email" defaultValue="admin@menux.com.br" readOnly />
                             </div>
 
                             <div className="space-y-4 pt-4">
                                 <h4 className="font-bold text-foreground">Alterar Senha</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <Input label="Senha Atual" type="password" />
-                                    <Input label="Nova Senha" type="password" />
+                                    <Input label="Senha Atual" type="password" onChange={() => setIsDirty(true)} />
+                                    <Input label="Nova Senha" type="password" onChange={() => setIsDirty(true)} />
                                 </div>
                             </div>
                         </div>
-                        <div className="pt-8 border-t border-border flex justify-end">
-                            <Button onClick={() => toast.success('Perfil atualizado!')} className="bg-primary text-white">Salvar Alterações</Button>
+                        <div className="pt-8 border-t border-border flex justify-end gap-3 items-center">
+                            {isDirty && <Badge variant="warning" className="animate-pulse">Alterações Pendentes</Badge>}
+                            <Button onClick={handleSave} className="bg-primary text-white">Salvar Alterações</Button>
                         </div>
                     </div>
                 );
             case 'restaurant':
-                // ... (existing restaurant case) ...
                 return (
                     <div className="space-y-8 animate-fadeIn">
                         <div className="space-y-6">
                             <h3 className="text-xl font-bold text-foreground">Informações Gerais</h3>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <Input label="Nome do Restaurante" defaultValue="Restaurante Exemplo" />
+                                <Input label="Nome do Restaurante" defaultValue="Restaurante Exemplo" onChange={() => setIsDirty(true)} />
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium text-foreground">Logomarca</label>
                                     <div className="flex items-center gap-4">
                                         <div className="h-12 w-12 rounded-full bg-background border border-border flex items-center justify-center text-xs text-muted-foreground font-medium">
                                             Logo
                                         </div>
-                                        <Button variant="outline" size="sm" onClick={() => toast.info('Upload de logo em breve!')}>Alterar Logo</Button>
+                                        <Button variant="outline" size="sm" onClick={() => { setIsDirty(true); toast.info('Upload de logo em breve!'); }}>Alterar Logo</Button>
                                     </div>
                                 </div>
                             </div>
 
-                            <Input label="Horário de Funcionamento" defaultValue="Seg-Dom: 11:00 - 23:00" />
+                            <Input label="Horário de Funcionamento" defaultValue="Seg-Dom: 11:00 - 23:00" onChange={() => setIsDirty(true)} />
 
                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-foreground">Link do Cardápio (QR Code)</label>
@@ -108,8 +146,9 @@ export default function Settings() {
                             </div>
                         </div>
 
-                        <div className="pt-8 border-t border-border flex justify-end">
-                            <Button onClick={() => toast.success('Alterações salvas!')} className="bg-primary text-white hover:bg-[#262626]">Salvar Alterações</Button>
+                        <div className="pt-8 border-t border-border flex justify-end gap-3 items-center">
+                            {isDirty && <Badge variant="warning" className="animate-pulse">Alterações Pendentes</Badge>}
+                            <Button onClick={handleSave} className="bg-primary text-white hover:bg-[#262626]">Salvar Alterações</Button>
                         </div>
                     </div>
                 );
@@ -118,13 +157,6 @@ export default function Settings() {
                 return null;
         }
     };
-
-    // Need to pass a way for ModuleLayout to know which is active since we aren't using routes for tabs here yet
-    // I will modify ModuleLayout slightly to accept `activeId` in the prop.
-    const extendedNavItems = navItems.map(item => ({
-        ...item,
-        id: item.id // Explicit id passing
-    }));
 
     return (
         <ModuleLayout
@@ -138,7 +170,7 @@ export default function Settings() {
 
             {renderContent()}
 
-
+            <ConfirmModalComponent />
         </ModuleLayout>
     );
 }

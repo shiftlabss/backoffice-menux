@@ -12,6 +12,7 @@ import MenuWineList from '../components/menu/MenuWineList';
 import ProductModal from '../components/menu/ProductModal';
 import WineModal from '../components/menu/WineModal';
 import { Modal } from '../components/ui/Modal';
+import { ConfirmModal, useConfirmModal } from '../components/ui/ConfirmModal';
 import { Button, Input } from '../components/ui/Form';
 import { toast } from 'react-hot-toast';
 import {
@@ -104,6 +105,8 @@ export default function Menu() {
     const [isSubModalOpen, setIsSubModalOpen] = useState(false);
     const [subToEdit, setSubToEdit] = useState(null);
 
+    const { confirm, ConfirmModalComponent } = useConfirmModal();
+
     // Initial Load
     useEffect(() => { loadAllItems(); }, []);
 
@@ -130,7 +133,23 @@ export default function Menu() {
     // --- Handlers: Category ---
     const handleCreateCategory = async (name) => { try { await menuService.createCategory({ name, sort_order: categories.length }); refreshData(); toast.success("Categoria criada!"); } catch (e) { toast.error("Erro"); } };
     const handleUpdateCategory = async (name) => { if (!catToEdit) return; try { await menuService.updateCategory(catToEdit.id, { name }); refreshData(); toast.success("Categoria atualizada!"); } catch (e) { /* ignore */ } };
-    const handleDeleteCategory = async (cat) => { if (confirm(`Excluir ${cat.name}?`)) { try { await menuService.deleteCategory(cat.id); refreshData(); toast.success("Excluída!"); } catch (e) { toast.error("Erro (verifique subcategorias)."); } } };
+    const handleDeleteCategory = async (cat) => {
+        const confirmed = await confirm({
+            title: "Excluir Categoria",
+            message: `Tem certeza que deseja excluir a categoria "${cat.name}"? Esta ação não pode ser desfeita.`,
+            variant: "danger"
+        });
+
+        if (confirmed) {
+            try {
+                await menuService.deleteCategory(cat.id);
+                refreshData();
+                toast.success("Categoria excluída!");
+            } catch (e) {
+                toast.error("Erro ao excluir (verifique se existem subcategorias).");
+            }
+        }
+    };
     const handleCategoryReorder = async (activeId, overId) => {
         const oldIndex = categories.findIndex(c => c.id === activeId);
         const newIndex = categories.findIndex(c => c.id === overId);
@@ -148,7 +167,23 @@ export default function Menu() {
             refreshData(); setSelectedCategory(categoryId);
         } catch (e) { toast.error("Erro"); }
     };
-    const handleDeleteSubCategory = async (sub) => { if (confirm(`Excluir ${sub.name}?`)) { try { await menuService.deleteSubCategory(sub.id); refreshData(); toast.success("Excluída!"); } catch (e) { toast.error("Erro (verifique produtos)."); } } };
+    const handleDeleteSubCategory = async (sub) => {
+        const confirmed = await confirm({
+            title: "Excluir Subcategoria",
+            message: `Tem certeza que deseja excluir a subcategoria "${sub.name}"? Esta ação não pode ser desfeita.`,
+            variant: "danger"
+        });
+
+        if (confirmed) {
+            try {
+                await menuService.deleteSubCategory(sub.id);
+                refreshData();
+                toast.success("Subcategoria excluída!");
+            } catch (e) {
+                toast.error("Erro ao excluir (verifique se existem produtos).");
+            }
+        }
+    };
     const handleSubCategoryReorder = async (categoryId, activeId, overId) => {
         const category = categories.find(c => c.id === categoryId); if (!category) return;
         const subs = category.subcategories || []; const oldIndex = subs.findIndex(s => s.id === activeId); const newIndex = subs.findIndex(s => s.id === overId);
@@ -161,7 +196,23 @@ export default function Menu() {
     };
     // --- Handlers: Product ---
     const handleProductSuccess = () => { refreshData(); toast.success(productToEdit ? "Produto atualizado!" : "Produto criado!"); };
-    const handleDeleteProduct = async (item) => { if (confirm(`Excluir ${item.name}?`)) { try { await menuService.deleteItem(item.id); refreshData(); toast.success("Excluído!"); } catch (e) { toast.error("Erro"); } } };
+    const handleDeleteProduct = async (item) => {
+        const confirmed = await confirm({
+            title: "Excluir Produto",
+            message: `Tem certeza que deseja excluir o produto "${item.name}"? Esta ação não pode ser desfeita.`,
+            variant: "danger"
+        });
+
+        if (confirmed) {
+            try {
+                await menuService.deleteItem(item.id);
+                refreshData();
+                toast.success("Produto excluído!");
+            } catch (e) {
+                toast.error("Erro ao excluir produto.");
+            }
+        }
+    };
 
     // --- Handlers: Highlights ---
     const handleUpdateHighlights = async (newHighlights) => {
@@ -259,6 +310,8 @@ export default function Menu() {
             <WineModal isOpen={isWineModalOpen} onClose={() => setIsWineModalOpen(false)} wineToEdit={wineToEdit} onSave={refreshData} />
             <SimpleFormModal isOpen={isCatModalOpen} onClose={() => setIsCatModalOpen(false)} title={catToEdit ? "Editar Categoria" : "Nova Categoria"} label="Nome" initialValue={catToEdit?.name} onSubmit={catToEdit ? handleUpdateCategory : handleCreateCategory} />
             <SubCategoryModal isOpen={isSubModalOpen} onClose={() => setIsSubModalOpen(false)} categories={categories} initialCategoryId={selectedCategory} subToEdit={subToEdit} onSubmit={handleSubCategorySubmit} />
+
+            <ConfirmModalComponent />
         </ModuleLayout>
     );
 }

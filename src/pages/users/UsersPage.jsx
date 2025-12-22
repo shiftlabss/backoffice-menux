@@ -3,8 +3,9 @@ import { Card } from '../../components/ui/Card';
 import { Button, Input } from '../../components/ui/Form';
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '../../components/ui/Table';
 import { Badge } from '../../components/ui/Badge';
-import { Plus, Search, Mail, Clock, Shield, MoreHorizontal, User, History, Edit2, Users } from 'lucide-react';
+import { Plus, Search, Mail, Clock, Shield, MoreHorizontal, User, History, Edit2, Users, UserX } from 'lucide-react';
 import UserModal from '../../components/users/UserModal';
+import { ConfirmModal, useConfirmModal } from '../../components/ui/ConfirmModal';
 
 // Mock Data
 const MOCK_USERS = [
@@ -24,6 +25,8 @@ export default function UsersPage() {
     const [inviteEmail, setInviteEmail] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const { confirm, ConfirmModalComponent } = useConfirmModal();
+
     const handleInvite = () => {
         if (!inviteEmail) return;
         toast.success(`Convite enviado para ${inviteEmail}`);
@@ -36,6 +39,20 @@ export default function UsersPage() {
 
     const handleHistory = (user) => {
         toast("Histórico de acesso simulado!", { icon: '🕒' });
+    };
+
+    const handleDeleteUser = async (user) => {
+        const confirmed = await confirm({
+            title: "Desativar Usuário",
+            message: `Tem certeza que deseja desativar o acesso de ${user.name}? O usuário não poderá mais acessar o sistema.`,
+            variant: "danger",
+            confirmText: "Desativar"
+        });
+
+        if (confirmed) {
+            toast.success(`Usuário ${user.name} desativado com sucesso.`);
+            // In real app: call API to update status
+        }
     };
 
     const filteredUsers = MOCK_USERS.filter(user =>
@@ -149,6 +166,9 @@ export default function UsersPage() {
                                             <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-text-secondary hover:text-primary" title="Editar" onClick={() => handleEdit(user)}>
                                                 <Edit2 className="w-4 h-4" />
                                             </Button>
+                                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-text-secondary hover:text-red-600" title="Desativar" onClick={() => handleDeleteUser(user)}>
+                                                <UserX className="w-4 h-4" />
+                                            </Button>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -162,6 +182,8 @@ export default function UsersPage() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
             />
+
+            <ConfirmModalComponent />
         </div>
     );
 }

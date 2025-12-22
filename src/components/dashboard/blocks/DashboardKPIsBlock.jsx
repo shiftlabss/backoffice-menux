@@ -1,8 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../../ui/Card';
 import { DollarSign, ShoppingBag, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Sparkles, Activity } from 'lucide-react';
+import { Skeleton } from '../../ui/Skeleton';
 
 export default function DashboardKPIsBlock() {
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsLoading(false), 1200);
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 items-stretch">
+                {[1, 2, 3, 4].map(i => (
+                    <Card key={i} className="p-6 h-[180px] bg-white border-gray-200">
+                        <Skeleton className="h-10 w-10 mb-4" />
+                        <Skeleton className="h-6 w-24 mb-2" />
+                        <Skeleton className="h-10 w-32 mb-4" />
+                        <Skeleton className="h-4 w-full mt-auto" />
+                    </Card>
+                ))}
+            </div>
+        );
+    }
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 items-stretch">
 

@@ -29,6 +29,7 @@ import {
 import { cn } from '../../lib/utils';
 import { MOCK_INSIGHT, MOCK_FORECAST, MOCK_KANBAN_DATA } from '../../services/mockIntelligence'; // Fallback mocks
 import { KanbanBoard } from '../../components/maestro/kanban/KanbanBoard';
+import { ConfirmModal, useConfirmModal } from '../../components/ui/ConfirmModal';
 
 const recommendationsData = [
   {
@@ -74,6 +75,8 @@ export default function IntelligenceRecommendations() {
 
   // Collapsed Sections
   const [collapsedSections, setCollapsedSections] = useState({ high: false, medium: false, low: false });
+
+  const { confirm, ConfirmModalComponent } = useConfirmModal();
 
   useEffect(() => {
     fetchData();
@@ -122,14 +125,35 @@ export default function IntelligenceRecommendations() {
 
   const handleApply = async (id, e) => {
     if (e) e.stopPropagation();
-    toast.success("Ação aplicada com sucesso!");
-    setRecommendations(prev => prev.map(r => r.id === id ? { ...r, status: 'Aplicada' } : r));
+
+    const rec = recommendations.find(r => r.id === id);
+    const confirmed = await confirm({
+      title: "Confirmar Aplicação",
+      message: `Deseja aplicar a recomendação "${rec?.title || 'esta ação'}"? O impacto estimado é de ${rec?.impact_estimate || 'R$ 0,00'}.`,
+      variant: "success",
+      confirmText: "Aplicar Agora"
+    });
+
+    if (confirmed) {
+      toast.success("Ação aplicada com sucesso!");
+      setRecommendations(prev => prev.map(r => r.id === id ? { ...r, status: 'Aplicada' } : r));
+    }
   };
 
   const handleIgnore = async (id, e) => {
     if (e) e.stopPropagation();
-    toast("Ação ignorada por 7 dias.", { icon: '🗓️' });
-    setRecommendations(prev => prev.map(r => r.id === id ? { ...r, status: 'Ignorada' } : r));
+
+    const confirmed = await confirm({
+      title: "Ignorar Recomendação",
+      message: "Tem certeza que deseja ignorar esta oportunidade por 7 dias? Ela não aparecerá no seu painel durante este período.",
+      variant: "warning",
+      confirmText: "Ignorar"
+    });
+
+    if (confirmed) {
+      toast("Ação ignorada por 7 dias.", { icon: '🗓️' });
+      setRecommendations(prev => prev.map(r => r.id === id ? { ...r, status: 'Ignorada' } : r));
+    }
   };
 
   // Group recommendations by priority/impact
@@ -425,8 +449,8 @@ export default function IntelligenceRecommendations() {
         </div>
       </Drawer>
 
-    </div >
-
+      <ConfirmModalComponent />
+    </div>
   );
 }
 

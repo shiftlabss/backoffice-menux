@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Plus, Search, Edit2, Trash2, Building2, ExternalLink } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { ConfirmModal, useConfirmModal } from '../../components/ui/ConfirmModal';
 
 export default function RestaurantList() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
+  const { confirm, ConfirmModalComponent } = useConfirmModal();
 
   // Mock data for MVP
   const restaurants = [
@@ -18,8 +20,14 @@ export default function RestaurantList() {
     r.cnpj.includes(searchTerm)
   );
 
-  const handleDelete = (id) => {
-    if (confirm('Tem certeza que deseja excluir este restaurante?')) {
+  const handleDelete = async (id) => {
+    const confirmed = await confirm({
+      title: "Excluir Restaurante",
+      message: "Tem certeza que deseja excluir esta unidade? Todos os dados associados serão permanentemente removidos.",
+      variant: "danger"
+    });
+
+    if (confirmed) {
       toast.success('Restaurante excluído com sucesso!');
     }
   };
@@ -124,6 +132,8 @@ export default function RestaurantList() {
           </table>
         </div>
       </div>
+
+      <ConfirmModalComponent />
     </div>
   );
 }
