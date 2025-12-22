@@ -26,8 +26,8 @@ import RestaurantForm from './pages/restaurants/RestaurantForm';
 import UpsellPage from './pages/menu/UpsellPage';
 import ReportsPage from './pages/reports/ReportsPage';
 import CustomersLayout from './layouts/CustomersLayout';
-import CustomersAnalytics from './pages/Customers/CustomersAnalytics';
-import CustomersList from './pages/Customers/CustomersList';
+import CustomersAnalytics from './pages/customers/CustomersAnalytics';
+import CustomersList from './pages/customers/CustomersList';
 
 function PrivateRoute({ children }) {
     const { user, loading } = useAuth();
