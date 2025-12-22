@@ -16,7 +16,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '../../lib/utils';
 
-const ITEMS_PER_PAGE = 25;
+const ITEMS_PER_PAGE = 50;
 
 export default function CustomersTable({ customers, isLoading, onSelectCustomer }) {
   const [sortConfig, setSortConfig] = useState({ key: 'metrics.totalSpent', direction: 'desc' });
@@ -320,8 +320,8 @@ export default function CustomersTable({ customers, isLoading, onSelectCustomer 
                 key={page}
                 onClick={() => handlePageChange(page)}
                 className={`w-7 h-7 flex items-center justify-center rounded-md text-xs font-medium transition-colors ${currentPage === page
-                    ? 'bg-primary text-white shadow-sm border border-primary'
-                    : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                  ? 'bg-primary text-white shadow-sm border border-primary'
+                  : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
                   }`}
               >
                 {page}
