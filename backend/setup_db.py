@@ -1,6 +1,5 @@
 from app.db.session import engine, SessionLocal, Base
 from app.models.all_models import User, Restaurant, Category
-from app.core.security import get_password_hash
 
 def init_db():
     print("Creating tables...")
@@ -19,13 +18,13 @@ def init_db():
         else:
             print("Restaurant already exists.")
 
-        # Create Admin
+        # Create Admin (MVP: plain text password)
         existing_user = db.query(User).filter(User.email == "admin@admin.com").first()
         if not existing_user:
             print("Creating admin user...")
             user = User(
                 email="admin@admin.com",
-                password_hash=get_password_hash("admin"),
+                password_hash="admin",  # MVP: Plain text password
                 role="admin",
                 restaurant_id=restaurant.id
             )

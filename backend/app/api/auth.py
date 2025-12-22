@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.core.config import settings
-from app.core.security import create_access_token, verify_password, get_password_hash
+from app.core.security import create_access_token
 from app.models.all_models import User, Restaurant
 from app.schemas.all_schemas import LoginRequest, Token, UserOut, UserCreate, PasswordResetRequest
 from app.api import deps
@@ -11,9 +11,10 @@ router = APIRouter()
 
 @router.post("/login", response_model=Token)
 def login(login_data: LoginRequest, db: Session = Depends(get_db)):
-    """Authenticate user and return JWT token."""
+    """Authenticate user and return JWT token. MVP: Using plain text passwords."""
     user = db.query(User).filter(User.email == login_data.email).first()
-    if not user or not verify_password(login_data.password, user.password_hash):
+    # MVP: Simple plain text password comparison
+    if not user or user.password_hash != login_data.password:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
@@ -70,10 +71,10 @@ def setup_initial_data(user_in: UserCreate, restaurant_name: str, db: Session = 
     db.commit()
     db.refresh(restaurant)
     
-    # Create admin user
+    # Create admin user (MVP: plain text password)
     user = User(
         email=user_in.email,
-        password_hash=get_password_hash(user_in.password),
+        password_hash=user_in.password,  # MVP: Storing plain text
         role="admin",
         restaurant_id=restaurant.id
     )

@@ -37,24 +37,33 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
-        // Mock Login for Development
-        if (email === 'admin@admin.com' && password === 'admin') {
-            const mockUser = {
-                id: 1,
-                name: 'Admin User',
-                email: 'admin@admin.com',
-                role: 'admin',
-                restaurant_id: 1
-            };
-            const mockToken = 'mock-jwt-token-dev-123';
+        // Check if mock mode is enabled via environment variable
+        const useMockAuth = import.meta.env.VITE_USE_MOCK_AUTH === 'true';
+        
+        // Mock Login for Development (no backend required)
+        if (useMockAuth) {
+            if (email === 'admin@admin.com' && password === 'admin') {
+                const mockUser = {
+                    id: 1,
+                    name: 'Admin User',
+                    email: 'admin@admin.com',
+                    role: 'admin',
+                    restaurant_id: 1
+                };
+                const mockToken = 'mock-jwt-token-dev-123';
 
-            localStorage.setItem('token', mockToken);
-            setUser(mockUser);
-            // Simulate network delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-            return;
+                localStorage.setItem('token', mockToken);
+                setUser(mockUser);
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 500));
+                return;
+            } else {
+                // Invalid credentials in mock mode
+                throw new Error('Invalid credentials');
+            }
         }
 
+        // Real API Login (requires backend)
         const response = await api.post('/auth/login', { email, password });
         const { access_token } = response.data;
         localStorage.setItem('token', access_token);
