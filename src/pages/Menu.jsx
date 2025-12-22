@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { arrayMove } from '@dnd-kit/sortable';
 import { menuService } from '../services/menuService';
 import ModuleLayout from '../components/layout/ModuleLayout';
@@ -15,9 +15,7 @@ import { Modal } from '../components/ui/Modal';
 import { Button, Input } from '../components/ui/Form';
 import { toast } from 'react-hot-toast';
 import {
-
     Plus,
-
     Layers,
     Coffee,
     Wine
@@ -78,9 +76,19 @@ function SubCategoryModal({ isOpen, onClose, categories, initialCategoryId, subT
 export default function Menu() {
     const navigate = useNavigate();
     const location = useLocation();
-    // Top-Level State
-    const [activeView, setActiveView] = useState('categories');
+
+    // Top-Level State derived from URL
+    const getActiveView = () => {
+        const path = location.pathname.split('/').pop();
+        if (path === 'products') return 'products';
+        if (path === 'wine-list') return 'wine_list';
+        return 'categories';
+    };
+
+    const activeView = getActiveView();
+
     const [categories, setCategories] = useState([]);
+    const [highlights, setHighlights] = useState([]);
 
     // View-Specific State (Selection)
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -102,13 +110,23 @@ export default function Menu() {
     // Loaders
     const loadAllItems = async () => {
         try {
-            const fullMenu = await menuService.getFullMenu();
+            const [fullMenu, highlightsData] = await Promise.all([
+                menuService.getFullMenu(),
+                menuService.getHighlights()
+            ]);
             setCategories(fullMenu);
+            setHighlights(highlightsData);
         } catch (error) { toast.error("Erro ao carregar cardápio"); }
     };
     const refreshData = () => { loadAllItems(); };
 
-    // ... (Keep existing handlers: handleCreateCategory, handleUpdateCategory, etc. - omitting for brevity but standard implementation)
+    // Determine default redirect - Render <Navigate> if needed, but DO NOT return early before hooks
+    // Note: In this component, we have already called all hooks above.
+    // Ideally, we should perform the redirect check here.
+    if (location.pathname === '/menu' || location.pathname === '/menu/') {
+        return <Navigate to="/menu/categories" replace />;
+    }
+
     // --- Handlers: Category ---
     const handleCreateCategory = async (name) => { try { await menuService.createCategory({ name, sort_order: categories.length }); refreshData(); toast.success("Categoria criada!"); } catch (e) { toast.error("Erro"); } };
     const handleUpdateCategory = async (name) => { if (!catToEdit) return; try { await menuService.updateCategory(catToEdit.id, { name }); refreshData(); toast.success("Categoria atualizada!"); } catch (e) { /* ignore */ } };
@@ -132,7 +150,6 @@ export default function Menu() {
     };
     const handleDeleteSubCategory = async (sub) => { if (confirm(`Excluir ${sub.name}?`)) { try { await menuService.deleteSubCategory(sub.id); refreshData(); toast.success("Excluída!"); } catch (e) { toast.error("Erro (verifique produtos)."); } } };
     const handleSubCategoryReorder = async (categoryId, activeId, overId) => {
-        // ... (Same implementation as before)
         const category = categories.find(c => c.id === categoryId); if (!category) return;
         const subs = category.subcategories || []; const oldIndex = subs.findIndex(s => s.id === activeId); const newIndex = subs.findIndex(s => s.id === overId);
         if (oldIndex !== -1 && newIndex !== -1) {
@@ -146,6 +163,30 @@ export default function Menu() {
     const handleProductSuccess = () => { refreshData(); toast.success(productToEdit ? "Produto atualizado!" : "Produto criado!"); };
     const handleDeleteProduct = async (item) => { if (confirm(`Excluir ${item.name}?`)) { try { await menuService.deleteItem(item.id); refreshData(); toast.success("Excluído!"); } catch (e) { toast.error("Erro"); } } };
 
+    // --- Handlers: Highlights ---
+    const handleUpdateHighlights = async (newHighlights) => {
+        setHighlights(newHighlights); // Optimistic
+        try {
+            await menuService.updateHighlights(newHighlights);
+            toast.success("Destaques atualizados!");
+        } catch (e) {
+            toast.error("Erro ao salvar destaques");
+            refreshData(); // Revert
+        }
+    };
+
+    const handleAddToHighlights = async (product) => {
+        if (highlights.length >= 3) {
+            toast.error("Limite de 3 destaques atingido!");
+            return;
+        }
+        if (highlights.some(h => h.id === product.id)) {
+            toast.error("Produto já está nos destaques");
+            return;
+        }
+        await handleUpdateHighlights([...highlights, product]);
+    };
+
     // --- Action Orchestration ---
     const handleSidebarAction = (action) => {
         switch (action) {
@@ -153,22 +194,18 @@ export default function Menu() {
             case 'create_product': setProductToEdit(null); setIsProductModalOpen(true); break;
             case 'create_wine': setWineToEdit(null); setIsWineModalOpen(true); break;
             case 'open_ai_panel': toast("IA: Analisando...", { icon: '⚡️' }); break;
-            case 'switch_view_categories': setActiveView('categories'); break;
-            case 'switch_view_products': setActiveView('products'); break;
+            case 'switch_view_categories': navigate('/menu/categories'); break;
+            case 'switch_view_products': navigate('/menu/products'); break;
             case 'bulk_photos': toast("Funcionalidade de upload em massa em breve!", { icon: '🚧' }); break;
             default: console.warn("Unknown action:", action);
         }
     };
 
     // Navigation configuration for ModuleLayout
-    // Navigation configuration for ModuleLayout
-    // Navigation configuration for ModuleLayout
     const navItems = [
-
-        { id: 'categories', label: 'Categorias', icon: Layers, onClick: () => setActiveView('categories'), isActive: activeView === 'categories' },
-        { id: 'products', label: 'Produtos', icon: Coffee, onClick: () => setActiveView('products'), isActive: activeView === 'products' },
-        { id: 'wine_list', label: 'Carta de Vinhos', icon: Wine, onClick: () => setActiveView('wine_list'), isActive: activeView === 'wine_list' },
-
+        { id: 'categories', label: 'Categorias', icon: Layers, onClick: () => navigate('/menu/categories'), isActive: activeView === 'categories' },
+        { id: 'products', label: 'Produtos', icon: Coffee, onClick: () => navigate('/menu/products'), isActive: activeView === 'products' },
+        { id: 'wine_list', label: 'Carta de Vinhos', icon: Wine, onClick: () => navigate('/menu/wine-list'), isActive: activeView === 'wine_list' },
     ];
 
     // Render Logic
@@ -185,7 +222,7 @@ export default function Menu() {
                     onEditSubcategory={(sub) => { setSubToEdit(sub); setIsSubModalOpen(true); }}
                     onDeleteSubcategory={handleDeleteSubCategory}
                     onReorderSubcategories={handleSubCategoryReorder}
-                    onFilterBySubcategory={(sub) => { setSelectedSubCategory(sub); setActiveView('products'); }}
+                    onFilterBySubcategory={(sub) => { setSelectedSubCategory(sub); navigate('/menu/products'); }}
                 />
             );
             case 'products': return (
@@ -194,6 +231,9 @@ export default function Menu() {
                     onAdd={() => handleSidebarAction('create_product')}
                     onEdit={(p) => { setProductToEdit(p); setIsProductModalOpen(true); }}
                     onDelete={handleDeleteProduct}
+                    highlights={highlights}
+                    onUpdateHighlights={handleUpdateHighlights}
+                    onAddToHighlights={handleAddToHighlights}
                 />
             );
             case 'wine_list': return (

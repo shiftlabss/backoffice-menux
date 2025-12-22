@@ -58,6 +58,33 @@ export const menuService = {
         return response.data;
     },
 
+    // Highlights (Vitrine)
+    getHighlights: async () => {
+        const token = localStorage.getItem('token');
+        if (token === 'mock-jwt-token-dev-123') {
+            await new Promise(resolve => setTimeout(resolve, 400));
+            // Return IDs or small objects. Ideally full objects for display.
+            // Using IDs 101, 201, 302 as default mock
+            return [
+                { id: 101, name: 'Carpaccio Clássico', price: 42.00, image_url: null },
+                { id: 201, name: 'Filé Mignon ao Poivre', price: 89.00, image_url: null },
+                { id: 302, name: 'Refrigerante Lata', price: 8.00, image_url: null }
+            ];
+        }
+        const response = await api.get('/menu/highlights');
+        return response.data;
+    },
+
+    updateHighlights: async (products) => {
+        const token = localStorage.getItem('token');
+        if (token === 'mock-jwt-token-dev-123') {
+            await new Promise(resolve => setTimeout(resolve, 600));
+            return products;
+        }
+        const response = await api.post('/menu/highlights', { products });
+        return response.data;
+    },
+
     // Categories
     getCategories: async () => {
         const response = await api.get('/menu/categories');

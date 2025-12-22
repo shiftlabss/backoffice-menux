@@ -7,13 +7,16 @@ import { Button, Input } from '../ui/Form';
 import { cn, formatCurrency } from '../../lib/utils';
 
 import { toast } from 'react-hot-toast';
+import MenuHighlights from './MenuHighlights';
 
 export default function MenuProducts({
     categories,
     onAdd,
     onEdit,
     onDelete,
-    highlights = []
+    highlights = [],
+    onUpdateHighlights,
+    onAddToHighlights
 }) {
     // State
 
@@ -206,6 +209,14 @@ export default function MenuProducts({
                             </div>
                         </div>
                     </div>
+                    {/* Highlights Section */}
+                    {onUpdateHighlights && (
+                        <MenuHighlights
+                            highlights={highlights}
+                            onUpdate={onUpdateHighlights}
+                            onAddClick={() => toast('Selecione um produto na lista abaixo clicando no ícone de "Estrela" ou arraste-o (em breve)', { icon: '👇' })}
+                        />
+                    )}
                 </div>
 
                 {/* Product List */}
@@ -303,6 +314,18 @@ export default function MenuProducts({
 
                                                     {/* Actions */}
                                                     <div className="flex items-center gap-1 pl-4 border-l border-border/50">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className={cn(
+                                                                "h-8 w-8",
+                                                                isHighlighted ? "text-yellow-500 hover:text-yellow-600 bg-yellow-500/10" : "text-text-tertiary hover:text-yellow-500"
+                                                            )}
+                                                            onClick={() => isHighlighted ? onUpdateHighlights(highlights.filter(h => h.id !== product.id)) : onAddToHighlights(product)}
+                                                            title={isHighlighted ? "Remover dos Destaques" : "Adicionar aos Destaques"}
+                                                        >
+                                                            <LayoutGrid className="h-4 w-4" />
+                                                        </Button>
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
