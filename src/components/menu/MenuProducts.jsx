@@ -8,6 +8,7 @@ import { cn, formatCurrency } from '../../lib/utils';
 
 import { toast } from 'react-hot-toast';
 import MenuHighlights from './MenuHighlights';
+import HighlightSelectionModal from './HighlightSelectionModal';
 
 export default function MenuProducts({
     categories,
@@ -19,12 +20,12 @@ export default function MenuProducts({
     onAddToHighlights
 }) {
     // State
-
     const [searchTerm, setSearchTerm] = useState('');
     const [filterCategory, setFilterCategory] = useState('all');
     const [filterSubCategory, setFilterSubCategory] = useState('all');
     const [filterStatus, setFilterStatus] = useState('all');
     const [sortBy, setSortBy] = useState('name'); // name, price_asc, price_desc
+    const [isHighlightModalOpen, setIsHighlightModalOpen] = useState(false);
 
     // Flatten all products
     const allProducts = useMemo(() => {
@@ -106,6 +107,11 @@ export default function MenuProducts({
     const handleDuplicate = (product) => {
         toast.success(`Cópia de ${product.name} criada!`);
         // Actual logic would be onAdd({ ...product, name: `${product.name} (Cópia)` })
+    };
+
+    const handleHighlightSelect = (product) => {
+        onAddToHighlights(product);
+        setIsHighlightModalOpen(false);
     };
 
     return (
@@ -214,7 +220,7 @@ export default function MenuProducts({
                         <MenuHighlights
                             highlights={highlights}
                             onUpdate={onUpdateHighlights}
-                            onAddClick={() => toast('Selecione um produto na lista abaixo clicando no ícone de "Estrela" ou arraste-o (em breve)', { icon: '👇' })}
+                            onAddClick={() => setIsHighlightModalOpen(true)}
                         />
                     )}
                 </div>
@@ -373,6 +379,15 @@ export default function MenuProducts({
                     )}
                 </div>
             </div>
+
+            {/* Highlight Selection Modal */}
+            <HighlightSelectionModal
+                isOpen={isHighlightModalOpen}
+                onClose={() => setIsHighlightModalOpen(false)}
+                products={allProducts}
+                activeHighlights={highlights}
+                onSelect={handleHighlightSelect}
+            />
         </div>
     );
 }
