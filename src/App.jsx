@@ -94,7 +94,7 @@ export default function App() {
 
                                 {/* Customers Module */}
                                 <Route path="customers" element={<CustomersLayout />}>
-                                    <Route index element={<Navigate to="analytics" replace />} />
+                                    <Route index element={<Navigate to="list" replace />} />
                                     <Route path="analytics" element={<CustomersAnalytics />} />
                                     <Route path="list" element={<CustomersList />} />
                                 </Route>

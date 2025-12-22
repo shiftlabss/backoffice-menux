@@ -18,7 +18,6 @@ import IntelligenceSettings from './intelligence/IntelligenceSettings';
 export default function Settings() {
     const location = useLocation();
     const [activeTab, setActiveTab] = useState(location.state?.tab || 'restaurant');
-    const [isUserModalOpen, setIsUserModalOpen] = useState(false);
 
     // Preferences State
     const [pushNotif, setPushNotif] = useState(true);
@@ -37,15 +36,7 @@ export default function Settings() {
     const navItems = [
         { id: 'restaurant', label: 'Dados do Restaurante', subtitle: 'Informações gerais e logo', icon: Store, onClick: () => setActiveTab('restaurant') },
         { id: 'profile', label: 'Meu Perfil', subtitle: 'Dados pessoais e senha', icon: User, onClick: () => setActiveTab('profile') },
-        { id: 'users', label: 'Usuários e Permissões', subtitle: 'Gestão de equipe', icon: Users, onClick: () => setActiveTab('users') },
     ].map(item => ({ ...item, isActive: activeTab === item.id }));
-
-    // Mock Users Data
-    const users = [
-        { id: 1, name: 'Fernando Calado', email: 'admin@menux.com', role: 'Administrador', status: 'active' },
-        { id: 2, name: 'João Silva', email: 'joao@menux.com', role: 'Gerente', status: 'active' },
-        { id: 3, name: 'Maria Oliveira', email: 'maria@menux.com', role: 'Garçom', status: 'active' },
-    ];
 
     const renderContent = () => {
         switch (activeTab) {
@@ -122,46 +113,7 @@ export default function Settings() {
                         </div>
                     </div>
                 );
-            case 'users':
-                return (
-                    <div className="space-y-6 animate-fadeIn">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-xl font-bold text-foreground">Gerenciar Usuários</h3>
-                            <Button onClick={() => setIsUserModalOpen(true)} className="bg-primary text-white">
-                                <Plus className="h-4 w-4 mr-2" />
-                                Criar Usuário
-                            </Button>
-                        </div>
-                        <div className="border border-border rounded-xl overflow-hidden">
-                            <Table>
-                                <TableHeader className="bg-background">
-                                    <TableRow>
-                                        <TableHead>Nome</TableHead>
-                                        <TableHead>Email</TableHead>
-                                        <TableHead>Papel</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Ações</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {users.map((user) => (
-                                        <TableRow key={user.id}>
-                                            <TableCell className="font-medium text-foreground">{user.name}</TableCell>
-                                            <TableCell className="text-muted-foreground">{user.email}</TableCell>
-                                            <TableCell><Badge variant="outline">{user.role}</Badge></TableCell>
-                                            <TableCell><Badge variant="success">Ativo</Badge></TableCell>
-                                            <TableCell className="text-right">
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground">
-                                                    <Edit2 className="h-4 w-4" />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </div>
-                );
+
             default:
                 return null;
         }
@@ -186,29 +138,7 @@ export default function Settings() {
 
             {renderContent()}
 
-            <Modal
-                isOpen={isUserModalOpen}
-                onClose={() => setIsUserModalOpen(false)}
-                title="Novo Usuário"
-            >
-                <div className="space-y-4">
-                    <Input label="Nome Completo" placeholder="Ex: João Silva" />
-                    <Input label="Email" type="email" placeholder="Ex: joao@menux.com" />
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium text-foreground">Papel</label>
-                        <select className="flex h-12 w-full rounded-md border border-input bg-input px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                            <option>Garçom</option>
-                            <option>Gerente</option>
-                            <option>Administrador</option>
-                        </select>
-                    </div>
-                    <Input label="Senha Inicial" type="password" />
-                    <div className="pt-4 flex justify-end gap-3">
-                        <Button variant="ghost" onClick={() => setIsUserModalOpen(false)}>Cancelar</Button>
-                        <Button onClick={() => { toast.success('Usuário criado com sucesso!'); setIsUserModalOpen(false); }}>Criar Usuário</Button>
-                    </div>
-                </div>
-            </Modal>
+
         </ModuleLayout>
     );
 }
