@@ -42,24 +42,6 @@ export default function CustomersLayout() {
     <ModuleLayout
       title="Clientes"
       subtitle="Raio-X, segmentação e fidelização"
-      actions={
-        <div className="flex bg-gray-100/50 p-1 rounded-lg border border-gray-200/50">
-          {['7 dias', '30 dias', '90 dias', '12 meses'].map((label) => (
-            <button
-              key={label}
-              onClick={() => setPeriodFilter(label)}
-              className={cn(
-                "px-3 py-1.5 text-xs font-bold rounded-md transition-all",
-                periodFilter === label
-                  ? "bg-white text-gray-900 shadow-sm border border-gray-200"
-                  : "text-gray-500 hover:text-gray-700"
-              )}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      }
     >
       <div className="space-y-6">
         {/* Search & Toolbar */}
