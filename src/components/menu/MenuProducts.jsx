@@ -12,7 +12,8 @@ export default function MenuProducts({
     categories,
     onAdd,
     onEdit,
-    onDelete
+    onDelete,
+    highlights = []
 }) {
     // State
 

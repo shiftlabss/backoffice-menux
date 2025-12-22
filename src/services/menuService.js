@@ -3,6 +3,57 @@ import api from './api';
 export const menuService = {
     // Full Hierarchy
     getFullMenu: async () => {
+        const token = localStorage.getItem('token');
+        if (token === 'mock-jwt-token-dev-123') {
+            await new Promise(resolve => setTimeout(resolve, 800)); // Simulate delay
+            return [
+                {
+                    id: 1, name: 'Entradas', sort_order: 1,
+                    subcategories: [
+                        {
+                            id: 11, name: 'Frias', items: [
+                                { id: 101, name: 'Carpaccio Clássico', price: 42.00, description: 'Lâminas finas de carne com molho de mostarda, alcaparras e parmesão.', is_active: true },
+                                { id: 102, name: 'Salada Caprese', price: 38.00, description: 'Tomate, mussarela de búfala e manjericão fresco.', is_active: true }
+                            ]
+                        },
+                        {
+                            id: 12, name: 'Quentes', items: [
+                                { id: 103, name: 'Bruschetta Pomodoro', price: 28.00, description: 'Pão italiano, tomate picado, alho e azeite.', is_active: true }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 2, name: 'Pratos Principais', sort_order: 2,
+                    subcategories: [
+                        {
+                            id: 21, name: 'Carnes', items: [
+                                { id: 201, name: 'Filé Mignon ao Poivre', price: 89.00, description: 'Filé alto com molho de pimenta verde e batatas rústicas.', is_active: true },
+                                { id: 202, name: 'Picanha Grelhada', price: 110.00, description: 'Acompanha arroz biro-biro e farofa de ovos.', is_active: true }
+                            ]
+                        },
+                        {
+                            id: 22, name: 'Massas', items: [
+                                { id: 203, name: 'Spaghetti Carbonara', price: 62.00, description: 'Autêntica receita romana com guanciale e pecorino.', is_active: true },
+                                { id: 204, name: 'Fettuccine Alfredo', price: 58.00, description: 'Molho cremoso de queijo parmesão.', is_active: true }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 3, name: 'Bebidas', sort_order: 3,
+                    subcategories: [
+                        { id: 31, name: 'Vinhos', items: [] },
+                        {
+                            id: 32, name: 'Não Alcoólicos', items: [
+                                { id: 301, name: 'Água Mineral', price: 6.00, is_active: true },
+                                { id: 302, name: 'Refrigerante Lata', price: 8.00, is_active: true }
+                            ]
+                        }
+                    ]
+                }
+            ];
+        }
         const response = await api.get('/menu/full');
         return response.data;
     },
@@ -66,7 +117,17 @@ export const menuService = {
     },
 
     // Wines
+    // Wines
     getWines: async () => {
+        const token = localStorage.getItem('token');
+        if (token === 'mock-jwt-token-dev-123') {
+            await new Promise(resolve => setTimeout(resolve, 600));
+            return [
+                { id: 401, name: 'DV Catena Malbec', price: 240.00, type: 'Tinto', country: 'Argentina', region: 'Mendoza', grapes: 'Malbec', is_active: true },
+                { id: 402, name: 'Pera Manca Branco', price: 450.00, type: 'Branco', country: 'Portugal', region: 'Alentejo', grapes: 'Antão Vaz, Arinto', is_active: true },
+                { id: 403, name: 'Moët & Chandon Imperial', price: 580.00, type: 'Espumante', country: 'França', region: 'Champagne', grapes: 'Chardonnay, Pinot Noir', is_active: true }
+            ];
+        }
         const response = await api.get('/menu/wines');
         return response.data;
     },
