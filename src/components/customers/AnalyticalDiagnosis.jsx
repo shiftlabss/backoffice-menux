@@ -62,9 +62,9 @@ export default function AnalyticalDiagnosis({ customers }) {
   const formatCurrency = (val) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
   return (
-    <div className="xl:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Block 1: Distribution & Top Lists */}
-      <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+      <div className="lg:col-span-2 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
         <SectionTitle title="Distribuição de Valor" subtitle="Quem são seus melhores clientes" />
 
         <div className="grid grid-cols-2 gap-8">

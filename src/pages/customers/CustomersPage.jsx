@@ -139,7 +139,7 @@ export default function CustomersPage() {
               <ExecutiveKPIs customers={customers} period={periodFilter} />
 
               {/* 2. Analytical Diagnosis */}
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div className="space-y-6">
                 <AnalyticalDiagnosis customers={customers} />
                 {/* 3. Segments & Tags */}
                 <SegmentsSection customers={customers} />

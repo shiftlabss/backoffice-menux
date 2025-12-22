@@ -11,11 +11,6 @@ const randomFloat = (min, max) => parseFloat((Math.random() * (max - min) + min)
 // Helper for random array pick
 const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
-// Helper for date generation
-const getRandomDate = (start, end) => {
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-};
-
 const CHANNELS = ['Salão', 'Delivery', 'Retirada'];
 const SHIFTS = ['Almoço', 'Jantar'];
 const CATEGORIES = ['Pratos Principais', 'Bebidas', 'Sobremesas', 'Entradas', 'Vinhos'];
@@ -25,13 +20,117 @@ const ITEMS = [
   'Vinho Tinto Malbec'
 ];
 
+const ORIGINS = ['Mesa 12', 'Mesa 04', 'Mesa 21', 'QR Balcão', 'Link Delivery', 'Instagram', 'Mesa 18'];
+
+const FIRST_NAMES = [
+  'Ana', 'Bruno', 'Carla', 'Daniel', 'Eduarda', 'Felipe', 'Gabriela', 'Henrique', 'Isabela', 'João',
+  'Karina', 'Lucas', 'Mariana', 'Nicolas', 'Olivia', 'Pedro', 'Quintino', 'Rafael', 'Sofia', 'Thiago'
+];
+
+const LAST_NAMES = [
+  'Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Ferreira', 'Alves', 'Pereira', 'Lima', 'Gomes',
+  'Costa', 'Ribeiro', 'Martins', 'Carvalho', 'Almeida', 'Lopes', 'Soares', 'Fernandes', 'Vieira', 'Barbosa'
+];
+
 // Generate fake customers
 export const generateMockCustomers = () => {
-  return Array.from({ length: USERS_COUNT }).map((_, i) => {
-    const id = `CUST-${(i + 1).toString().padStart(4, '0')}`;
-    const name = `Cliente ${i + 1}`;
-    const email = `cliente${i + 1}@email.com`;
-    const phone = `(11) 9${randomInt(1000, 9999)}-${randomInt(1000, 9999)}`;
+  // Hardcoded specific test cases
+  const specificCases = [
+    {
+      id: '101',
+      customer_type: 'registered',
+      name: 'Maria Eduarda de Albuquerque Cavalcanti Neto',
+      email: 'maria.cavalcanti@email.com',
+      phone: '(11) 94301-3623',
+      since: '2025-08-05',
+      rfm: { score: 4.8, classification: 'Leal', r: 5, f: 5, m: 4 },
+      metrics: {
+        totalSpent: 10851.83,
+        lastOrderDate: '2025-08-05',
+        totalOrders: 47,
+        frequencyDays: 7,
+        ticketAverage: 230.89,
+        ltv: 25000,
+        lastOrderDaysAgo: 138,
+        churnProbability: 15
+      },
+      preferences: {
+        topItems: ['Vinho Tinto', 'Queijo Brie', 'Filé Mignon'],
+        topCategory: 'Vinhos',
+        channel: 'Retirada',
+        shift: 'Jantar'
+      },
+      tags: ['Leal', 'Vinhos'],
+      predictions: {
+        nextBestAction: 'Enviar Cupom de Retorno',
+        nextPurchaseProbability: 85,
+        likelyToChurn: false
+      },
+      risk: { churnRisk: 'Baixo', churnProbability: 15 }
+    },
+    {
+      id: 'ANON-0192',
+      customer_type: 'anonymous',
+      name: 'Cliente Anônimo',
+      anon_id: 'ANON-0192',
+      origin: 'Mesa 12',
+      email: '',
+      phone: '',
+      since: '2025-12-20',
+      rfm: { score: 1.0, classification: 'Novo', r: 5, f: 1, m: 1 },
+      metrics: {
+        totalSpent: 185.90,
+        lastOrderDate: '2025-12-20',
+        totalOrders: 1,
+        frequencyDays: 0,
+        ticketAverage: 185.90,
+        ltv: 185.90,
+        lastOrderDaysAgo: 1,
+        churnProbability: 80
+      },
+      preferences: {
+        topItems: ['Picanha Grelhada', 'Caipirinha'],
+        topCategory: 'Pratos Principais',
+        channel: 'Mesa',
+        shift: 'Jantar'
+      },
+      tags: ['Anônimo', 'Novo'],
+      predictions: {
+        nextBestAction: 'Capturar Cadastro no Wi-Fi',
+        nextPurchaseProbability: 20,
+        likelyToChurn: true
+      },
+      risk: { churnRisk: 'Alto', churnProbability: 80 }
+    }
+  ];
+
+  const generatedCount = USERS_COUNT - specificCases.length;
+
+  const generated = Array.from({ length: generatedCount }).map((_, i) => {
+    // 20% Anonymous
+    const isAnonymous = Math.random() < 0.2;
+    const customerType = isAnonymous ? 'anonymous' : 'registered';
+
+    // IDs
+    const idNum = (i + 103).toString().padStart(4, '0');
+    const id = isAnonymous ? `ANON-${idNum}` : `CUST-${idNum}`;
+    const anonId = isAnonymous ? `ANON-${idNum}` : null;
+
+    // Names & Contact
+    const firstName = FIRST_NAMES[Math.floor(Math.random() * FIRST_NAMES.length)];
+    const lastName = LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)];
+
+    // Some long names
+    const hasMiddleName = Math.random() < 0.3;
+    const middleName = hasMiddleName ? LAST_NAMES[Math.floor(Math.random() * LAST_NAMES.length)] : '';
+
+    const name = isAnonymous
+      ? 'Cliente Anônimo'
+      : `${firstName} ${middleName} ${lastName}`.replace('  ', ' ');
+
+    const email = isAnonymous ? '' : `${firstName.toLowerCase()}.${lastName.toLowerCase()}@email.com`;
+    const phone = isAnonymous ? '' : `(11) 9${randomInt(1000, 9999)}-${randomInt(1000, 9999)}`;
+    const origin = isAnonymous ? pickRandom(ORIGINS) : null;
 
     // RFM Simulation
     const lastOrderDaysAgo = randomInt(0, 365);
@@ -39,18 +138,20 @@ export const generateMockCustomers = () => {
     const totalOrders = randomInt(1, 50);
     const ticketAverage = randomFloat(40, 250);
     const totalSpent = totalOrders * ticketAverage;
-    const ltv = totalSpent * randomFloat(1.1, 1.5); // Projected LTV
+    const ltv = totalSpent * randomFloat(1.1, 1.5);
 
-    // Calculate RFM Score (simplified 1-5 scale)
+    // Calculate RFM Score
     const rScore = lastOrderDaysAgo <= 30 ? 5 : lastOrderDaysAgo <= 60 ? 4 : lastOrderDaysAgo <= 90 ? 3 : 2;
     const fScore = totalOrders > 20 ? 5 : totalOrders > 10 ? 4 : totalOrders > 5 ? 3 : 2;
     const mScore = ticketAverage > 150 ? 5 : ticketAverage > 100 ? 4 : ticketAverage > 70 ? 3 : 2;
     const rfmScore = Math.round((rScore + fScore + mScore) / 3);
 
-    // Determine Tags/Segments
+    // Determine Tags
     const tags = [];
-    if (totalSpent > 3000 || (fScore >= 4 && mScore >= 4)) tags.push('VIP');
-    else if (lastOrderDaysAgo > 60 && totalOrders > 3) tags.push('Em Risco');
+    if (isAnonymous) tags.push('Anônimo');
+    else if (totalSpent > 3000 || (fScore >= 4 && mScore >= 4)) tags.push('VIP');
+
+    if (lastOrderDaysAgo > 60 && totalOrders > 3) tags.push('Em Risco');
     else if (totalOrders === 1 && lastOrderDaysAgo < 30) tags.push('Novo');
     else if (lastOrderDaysAgo < 15 && totalOrders > 10) tags.push('Leal');
 
@@ -59,24 +160,14 @@ export const generateMockCustomers = () => {
     const preferredShift = pickRandom(SHIFTS);
     const topCategory = pickRandom(CATEGORIES);
 
-    // Mock Next Best Action & Predictions
-    let nextBestAction = 'Ofertar Combo Família';
-    let churnRisk = 'Baixo';
-
-    if (rScore <= 2) {
-      nextBestAction = 'Enviar Cupom de Retorno';
-      churnRisk = 'Alto';
-    } else if (mScore >= 4) {
-      nextBestAction = 'Convidar para Menu Degustação';
-    }
-
-    const nextLikelyPurchase = pickRandom(ITEMS);
-
     return {
-      id,
+      id: isAnonymous ? anonId : id,
+      customer_type: customerType,
       name,
       email,
       phone,
+      anon_id: anonId,
+      origin,
       since: subDays(new Date(), randomInt(30, 700)).toISOString(),
       metrics: {
         lastOrderDate: lastOrderDate.toISOString(),
@@ -85,7 +176,7 @@ export const generateMockCustomers = () => {
         totalSpent,
         ticketAverage,
         ltv,
-        frequencyDays: Math.floor(365 / Math.max(totalOrders, 1)), // Avg days between orders
+        frequencyDays: Math.floor(365 / Math.max(totalOrders, 1)),
       },
       preferences: {
         channel: preferredChannel,
@@ -101,17 +192,18 @@ export const generateMockCustomers = () => {
         classification: rfmScore >= 4.5 ? 'Campeão' : rfmScore >= 3.5 ? 'Leal' : rfmScore >= 2.5 ? 'Promissor' : 'Em Risco',
       },
       risk: {
-        churnRisk, // Baixo, Médio, Alto
+        churnRisk: rScore <= 2 ? 'Alto' : 'Baixo',
         churnProbability: randomInt(0, 100),
       },
       predictions: {
-        nextBestAction,
-        nextLikelyPurchase,
+        nextBestAction: isAnonymous ? 'Capturar Cadastro' : 'Recomendar Prato do Dia',
         nextPurchaseProbability: randomInt(20, 95),
       },
       tags,
     };
   });
+
+  return [...specificCases, ...generated];
 };
 
 // Generate mock order history for a specific customer
