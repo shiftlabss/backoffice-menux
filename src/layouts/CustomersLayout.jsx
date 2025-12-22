@@ -12,8 +12,8 @@ import {
 import { cn } from '../lib/utils';
 
 const TABS = [
-  { id: 'analytics', path: '/customers/analytics', label: 'Analytics', icon: ChartBarIcon },
   { id: 'list', path: '/customers/list', label: 'Lista de Clientes', icon: ListBulletIcon },
+  { id: 'analytics', path: '/customers/analytics', label: 'Analytics', icon: ChartBarIcon },
 ];
 
 export default function CustomersLayout() {

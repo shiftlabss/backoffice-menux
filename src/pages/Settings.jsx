@@ -38,8 +38,6 @@ export default function Settings() {
         { id: 'restaurant', label: 'Dados do Restaurante', subtitle: 'Informações gerais e logo', icon: Store, onClick: () => setActiveTab('restaurant') },
         { id: 'profile', label: 'Meu Perfil', subtitle: 'Dados pessoais e senha', icon: User, onClick: () => setActiveTab('profile') },
         { id: 'users', label: 'Usuários e Permissões', subtitle: 'Gestão de equipe', icon: Users, onClick: () => setActiveTab('users') },
-        { id: 'ai', label: 'Configurações da IA', subtitle: 'Personalize seu assistente', icon: Sparkles, onClick: () => setActiveTab('ai') },
-        { id: 'preferences', label: 'Preferências do Sistema', subtitle: 'Configurações globais', icon: SettingsIcon, onClick: () => setActiveTab('preferences') },
     ].map(item => ({ ...item, isActive: activeTab === item.id }));
 
     // Mock Users Data
@@ -51,12 +49,6 @@ export default function Settings() {
 
     const renderContent = () => {
         switch (activeTab) {
-            case 'ai':
-                return (
-                    <div className="animate-fadeIn">
-                        <IntelligenceSettings />
-                    </div>
-                );
             case 'profile':
                 return (
                     <div className="space-y-8 animate-fadeIn">
@@ -167,76 +159,6 @@ export default function Settings() {
                                     ))}
                                 </TableBody>
                             </Table>
-                        </div>
-                    </div>
-                );
-            case 'preferences':
-                return (
-                    <div className="space-y-8 animate-fadeIn">
-                        {/* Notifications Section */}
-                        <div className="space-y-6">
-                            <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
-                                <Bell className="h-5 w-5" /> Notificações
-                            </h3>
-                            <div className="bg-white border border-border rounded-xl p-6 space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex-1 pr-4">
-                                        <p className="font-semibold text-foreground">Notificações Push</p>
-                                        <p className="text-sm text-muted-foreground">Receba alertas em tempo real sobre novos pedidos.</p>
-                                    </div>
-                                    <Switch checked={pushNotif} onCheckedChange={setPushNotif} />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex-1 pr-4">
-                                        <p className="font-semibold text-foreground">Relatório por Email</p>
-                                        <p className="text-sm text-muted-foreground">Receba o fechamento diário no seu email.</p>
-                                    </div>
-                                    <Switch checked={emailNotif} onCheckedChange={setEmailNotif} />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Appearance & System */}
-                        <div className="space-y-6">
-                            <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
-                                <SettingsIcon className="h-5 w-5" /> Sistema
-                            </h3>
-                            <div className="bg-white border border-border rounded-xl p-6 space-y-6">
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-gray-100 rounded-lg"><Moon className="h-4 w-4" /></div>
-                                        <div className="flex-1 pr-4">
-                                            <p className="font-semibold text-foreground">Modo Escuro</p>
-                                            <p className="text-sm text-muted-foreground">Alternar entre tema claro e escuro.</p>
-                                        </div>
-                                    </div>
-                                    <Switch checked={darkMode} onCheckedChange={setDarkMode} />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-gray-100 rounded-lg"><Volume2 className="h-4 w-4" /></div>
-                                        <div className="flex-1 pr-4">
-                                            <p className="font-semibold text-foreground">Sons de Alerta</p>
-                                            <p className="text-sm text-muted-foreground">Tocar som ao receber novo pedido.</p>
-                                        </div>
-                                    </div>
-                                    <Switch checked={soundEnabled} onCheckedChange={setSoundEnabled} />
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 bg-gray-100 rounded-lg"><Globe className="h-4 w-4" /></div>
-                                        <div className="flex-1 pr-4">
-                                            <p className="font-semibold text-foreground">Idioma</p>
-                                            <p className="text-sm text-muted-foreground">Português (Brasil)</p>
-                                        </div>
-                                    </div>
-                                    <Button variant="ghost" size="sm" disabled>Alterar</Button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="pt-8 border-t border-border flex justify-end">
-                            <Button onClick={() => toast.success('Preferências salvas!')} className="bg-primary text-white">Salvar Preferências</Button>
                         </div>
                     </div>
                 );

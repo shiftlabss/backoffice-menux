@@ -11,6 +11,19 @@ export const AuthProvider = ({ children }) => {
         const loadUser = async () => {
             const token = localStorage.getItem('token');
             if (token) {
+                // Mock Session Restore
+                if (token === 'mock-jwt-token-dev-123') {
+                    setUser({
+                        id: 1,
+                        name: 'Admin User',
+                        email: 'admin@admin.com',
+                        role: 'admin',
+                        restaurant_id: 1
+                    });
+                    setLoading(false);
+                    return;
+                }
+
                 try {
                     const response = await api.get('/auth/me');
                     setUser(response.data);
@@ -24,6 +37,24 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const login = async (email, password) => {
+        // Mock Login for Development
+        if (email === 'admin@admin.com' && password === 'admin') {
+            const mockUser = {
+                id: 1,
+                name: 'Admin User',
+                email: 'admin@admin.com',
+                role: 'admin',
+                restaurant_id: 1
+            };
+            const mockToken = 'mock-jwt-token-dev-123';
+
+            localStorage.setItem('token', mockToken);
+            setUser(mockUser);
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+            return;
+        }
+
         const response = await api.post('/auth/login', { email, password });
         const { access_token } = response.data;
         localStorage.setItem('token', access_token);
