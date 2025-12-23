@@ -7,7 +7,8 @@ export const Button = React.forwardRef(({ className, variant = "primary", size =
         secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 active:scale-95 shadow-sm",
         ghost: "bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 active:scale-95 shadow-sm",
-        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground active:scale-95"
+        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground active:scale-95",
+        outlineSuccess: "border border-emerald-200 bg-emerald-50/10 hover:bg-emerald-50 text-emerald-700 font-bold active:scale-95"
     };
 
     const sizes = {

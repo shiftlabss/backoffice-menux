@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { cn, formatCurrency } from '../../../lib/utils';
 import toast from 'react-hot-toast';
+import { OptimizeButton } from './OptimizeButton';
+import { ItemOverflowMenu } from './ItemOverflowMenu';
 
 // --- MOCK DATA ENRICHED ---
 const RICH_PRODUCTS_DATA = {
@@ -186,81 +188,8 @@ function ProductInfo({ item }) {
     );
 }
 
-function OptimizePopover({ item }) {
-    const [isApplying, setIsApplying] = useState(false);
 
-    const handleApply = (e) => {
-        e.stopPropagation();
-        setIsApplying(true);
-        const toastId = toast.loading('Aplicando recomendação...');
-
-        // Simulate API call
-        setTimeout(() => {
-            toast.success('Alteração aplicada com sucesso!', { id: toastId });
-            setIsApplying(false);
-        }, 1500);
-    };
-
-    return (
-        <Popover>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 px-3 text-xs font-bold gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 transition-all active:scale-95"
-                    onClick={(e) => e.stopPropagation()}
-                >
-                    <Zap size={14} className="fill-current" />
-                    Otimizar
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-[320px] p-0 overflow-hidden border-emerald-100 shadow-2xl">
-                <div className="bg-emerald-50 px-4 py-3 border-b border-emerald-100 flex items-center gap-2">
-                    <Sparkles size={16} className="text-emerald-600" />
-                    <span className="text-xs font-bold text-emerald-900 uppercase tracking-wider">Recomendação Maestro</span>
-                </div>
-                <div className="p-4 space-y-3">
-                    <div className="space-y-1">
-                        <p className="text-sm font-bold text-slate-900">{item.maestro.recommendation}</p>
-                        <div className="flex items-center gap-2 text-[11px] text-slate-500">
-                            <span className="flex items-center gap-0.5"><Check size={12} className="text-emerald-500" /> Confiança: {item.maestro.confidence}%</span>
-                            <span className="w-1 h-1 rounded-full bg-slate-300" />
-                            <span className="text-emerald-600 font-bold">Impacto: {item.maestro.impact}</span>
-                        </div>
-                    </div>
-
-                    <div className="bg-slate-50 rounded-lg p-2 border border-slate-100">
-                        <p className="text-[10px] text-slate-500 leading-relaxed italic">
-                            "Evidência: O fluxo de pedidos entre 19h-21h para {item.category} apresentou um levantamento de 15%, porém {item.name} converte 8% menos que a média da categoria neste turno."
-                        </p>
-                    </div>
-
-                    <div className="flex gap-2 pt-1">
-                        <Button
-                            className="flex-1 h-9 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
-                            onClick={handleApply}
-                            disabled={isApplying}
-                        >
-                            {isApplying ? <Loader2 size={14} className="animate-spin" /> : 'Aplicar agora'}
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="flex-1 h-9 text-xs font-bold text-slate-600 hover:bg-slate-50"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            Editar antes
-                        </Button>
-                    </div>
-                </div>
-                <div className="bg-slate-50/50 px-4 py-2 border-top border-slate-100 text-center">
-                    <button className="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-colors">
-                        Ver todas as 3 recomendações
-                    </button>
-                </div>
-            </PopoverContent>
-        </Popover>
-    );
-}
+// --- DETAIL DRAWER ---
 
 function ItemDetailDrawer({ item, isOpen, onClose }) {
     if (!item) return null;
@@ -449,36 +378,6 @@ export default function DashboardProductsBlock() {
                         </p>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-3 md:gap-4">
-                        {/* Sort Selector */}
-                        <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ordenar por:</span>
-                            <Select
-                                value={sortBy}
-                                onChange={handleSortChange}
-                                className="h-9 min-w-[130px] rounded-full border-slate-200 bg-white shadow-sm font-bold text-xs"
-                            >
-                                <option value="Receita">Receita</option>
-                                <option value="Conversão">Conversão</option>
-                                <option value="Margem">Margem Est.</option>
-                                <option value="Potencial">Potencial</option>
-                            </Select>
-                        </div>
-
-                        <div className="w-px h-6 bg-slate-200 hidden sm:block" />
-
-                        {/* Compare Toggle */}
-                        <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-full">
-                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Comparar:</span>
-                            <Switch checked={showCompare} onCheckedChange={setShowCompare} className="scale-75" />
-                        </div>
-
-                        {/* Period Chip Heritage */}
-                        <Badge variant="secondary" className="bg-slate-900 text-white font-bold h-9 px-4 rounded-full flex items-center gap-2 border-0 shadow-inner">
-                            <Clock size={14} className="text-slate-400" />
-                            {period}
-                        </Badge>
-                    </div>
                 </div>
 
                 {/* --- SUMMARY STRIP --- */}
@@ -562,7 +461,6 @@ export default function DashboardProductsBlock() {
                                     </th>
                                     <th className="px-4 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[15%]">Conversão</th>
                                     <th className="px-4 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[18%]">Receita</th>
-                                    <th className="px-6 py-4 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ações</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100/50">
@@ -625,45 +523,6 @@ export default function DashboardProductsBlock() {
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 text-right">
-                                                <div className="flex items-center justify-end gap-2">
-                                                    <OptimizePopover item={item} />
-
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger asChild>
-                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-900 transition-colors" onClick={(e) => e.stopPropagation()}>
-                                                                <MoreVertical size={16} />
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end" className="w-56 overflow-hidden">
-                                                            <DropdownMenuItem className="gap-2" onClick={() => setSelectedItem(item)}>
-                                                                <BarChart3 size={14} className="text-slate-400" /> Ver item detale
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuSeparator />
-                                                            <DropdownMenuItem className="gap-2">
-                                                                <Camera size={14} className="text-slate-400" /> Melhorar foto
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem className="gap-2">
-                                                                <FileText size={14} className="text-slate-400" /> Melhorar descrição
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem className="gap-2">
-                                                                <Move size={14} className="text-slate-400" /> Ajustar posição
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuSeparator />
-                                                            <DropdownMenuItem className="gap-2 text-emerald-600 font-bold">
-                                                                <DollarSign size={14} /> Sugerir ajuste preço
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuItem className="gap-2">
-                                                                <Tag size={14} className="text-slate-400" /> Criar upsell / combo
-                                                            </DropdownMenuItem>
-                                                            <DropdownMenuSeparator />
-                                                            <DropdownMenuItem className="gap-2 text-red-600 focus:text-red-700 focus:bg-red-50">
-                                                                <Info size={14} /> Ver evidência Maestro
-                                                            </DropdownMenuItem>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                </div>
-                                            </td>
                                         </tr>
                                     ))
                                 )}
@@ -677,15 +536,6 @@ export default function DashboardProductsBlock() {
                     <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest pl-2">
                         Mostrando 5 de 124 itens • Última atualização 10:43
                     </p>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-primary hover:bg-primary/5 font-bold text-xs gap-1 transition-all group/btn"
-                        onClick={() => navigate('/analytics/products')}
-                    >
-                        Ver Relatório Completo
-                        <ArrowRight size={14} className="transition-transform group-hover/btn:translate-x-1" />
-                    </Button>
                 </div>
 
                 {/* DRAWER DRILLDOWN */}
