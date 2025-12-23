@@ -73,11 +73,6 @@ function ImpactoRealCard() {
           <div className="h-full bg-gray-900 w-[28%]" />
         </div>
 
-        <div className="mt-4 flex gap-2">
-          <Button variant="ghost" size="sm" className="w-full h-8 text-xs font-medium text-gray-500 hover:text-gray-900 border border-transparent hover:border-gray-200">
-            Ver detalhes
-          </Button>
-        </div>
       </div>
     </Card>
   );
@@ -136,9 +131,6 @@ function ProjecaoCard() {
       <div className="flex gap-2 mt-auto">
         <Button className="flex-1 h-8 text-xs font-bold bg-gray-900 text-white hover:bg-black">
           Aplicar Sugestões
-        </Button>
-        <Button variant="outline" className="h-8 px-3 text-gray-500 border-gray-200 hover:bg-gray-50">
-          <ArrowRight className="w-4 h-4" />
         </Button>
       </div>
     </Card>
@@ -219,9 +211,6 @@ function DriversCard() {
         <span className="text-xs font-medium text-gray-500">
           Principal alavanca: <span className="font-bold text-gray-900">Conversão</span>
         </span>
-        <Button variant="link" size="sm" className="h-auto p-0 text-xs font-bold text-primary">
-          Ver análise
-        </Button>
       </div>
     </Card>
   );
