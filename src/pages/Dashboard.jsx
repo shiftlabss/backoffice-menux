@@ -10,7 +10,8 @@ import { Button } from "../components/ui/Form";
 // 1. Operation Components
 import PriorityActions from '../components/dashboard/blocks/PriorityActions';
 // import ServiceStatus from '../components/dashboard/blocks/ServiceStatus'; // Removed as per request
-import CriticalBottlenecks from '../components/dashboard/blocks/CriticalBottlenecks';
+// import CriticalBottlenecks from '../components/dashboard/blocks/CriticalBottlenecks'; // Replaced by Radar
+import RadarDeGargalos from '../components/dashboard/blocks/RadarDeGargalos';
 import DashboardDiningBlock from '../components/dashboard/blocks/DashboardDiningBlock';
 
 // 2. Intelligence & Results
@@ -98,7 +99,7 @@ export default function Dashboard() {
                         {/* 2.2 Status & Gargalos - 4 cols */}
                         <div className="md:col-span-1 xl:col-span-4 flex flex-col gap-4 h-full min-h-[420px]">
                             <div className="flex-1">
-                                <CriticalBottlenecks />
+                                <RadarDeGargalos />
                             </div>
                         </div>
 
