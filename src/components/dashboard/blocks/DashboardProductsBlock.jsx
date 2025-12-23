@@ -1,258 +1,700 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../ui/Card';
-import { Button } from '../../ui/Form';
-import { ShoppingBag, TrendingUp, TrendingDown, Eye, ArrowRight, Loader2, ImageOff, MousePointer2, ShoppingCart, Receipt, MoreVertical, Star, Edit2, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { Button } from '../../ui/Button';
 import { Badge } from '../../ui/Badge';
+import { Select } from '../../ui/Select';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../../ui/Tooltip';
+import { Drawer } from '../../ui/Drawer';
+import { Popover, PopoverTrigger, PopoverContent } from '../../ui/Popover';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '../../ui/DropdownMenu';
+import { Switch } from '../../ui/Switch';
+import { Skeleton } from '../../ui/Skeleton';
+import {
+    ShoppingBag, TrendingUp, TrendingDown, Eye, ArrowRight, Loader2, ImageOff,
+    MousePointer2, ShoppingCart, Receipt, MoreVertical, Star, Edit2,
+    Image as ImageIcon, Sparkles, HelpCircle, Target, Info, Zap,
+    Search, ArrowUpRight, ArrowDownRight, Layout, Percent, DollarSign,
+    Camera, FileText, Move, Tag, Package, BarChart3, Clock, Check, RefreshCcw
+} from 'lucide-react';
+import { cn, formatCurrency } from '../../../lib/utils';
+import toast from 'react-hot-toast';
 
-// --- MOCK DATA FOR RICH RANKING ---
+// --- MOCK DATA ENRICHED ---
 const RICH_PRODUCTS_DATA = {
     'Hoje': [
         {
             id: 1,
             name: 'Burger Clássico',
-            cat: 'Frios',
-            subcat: 'Artesanal',
+            category: 'Burger Artesanal',
             image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=150&auto=format&fit=crop',
-            funnel: { views: 1240, clicks: 450, cart: 180, orders: 142 },
-            conversion: { rate: 18, delta: 2, trend: 'up' },
-            financial: { revenue: 4970, ticket: 35.00 },
-            margin: { percent: 45, level: 'high' }
+            funnel: { vis: 1240, cliq: 450, carr: 180, ped: 142 },
+            funnelPrev: { vis: 1100, cliq: 420, carr: 160, ped: 120 },
+            conversion: { current: 11.45, delta: 2.1, trend: 'up', base: 1240 },
+            revenue: { current: 4970, trend: '+14%', ticket: 35.00 },
+            margin: { percent: 45, level: 'high' },
+            status: ['alta_margem', 'em_destaque'],
+            maestro: { recommendation: 'Aumentar exposição no jantar', confidence: 94, impact: 'R$ 450' }
         },
         {
             id: 2,
-            name: 'Combo Família',
-            cat: 'Combos',
-            subcat: 'Especial',
+            name: 'Combo Família G',
+            category: 'Combos Especiais',
             image: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=150&auto=format&fit=crop',
-            funnel: { views: 890, clicks: 220, cart: 95, orders: 82 },
-            conversion: { rate: 12, delta: -3, trend: 'down' },
-            financial: { revenue: 7380, ticket: 90.00 },
-            margin: { percent: 32, level: 'medium' }
+            funnel: { vis: 890, cliq: 220, carr: 95, ped: 82 },
+            funnelPrev: { vis: 950, cliq: 240, carr: 100, ped: 90 },
+            conversion: { current: 9.21, delta: -0.8, trend: 'down', base: 890 },
+            revenue: { current: 7380, trend: '-2%', ticket: 89.90 },
+            margin: { percent: 32, level: 'medium' },
+            status: ['em_destaque'],
+            maestro: { recommendation: 'Revisar descrição e itens inclusos', confidence: 88, impact: 'R$ 820' }
         },
         {
             id: 3,
-            name: 'Coca-Cola Zero',
-            cat: 'Bebidas',
-            subcat: 'Refrig.',
+            name: 'Coca-Cola Zero 350ml',
+            category: 'Bebidas',
             image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=150&auto=format&fit=crop',
-            funnel: { views: 3200, clicks: 1540, cart: 1200, orders: 1150 },
-            conversion: { rate: 45, delta: 5, trend: 'up' },
-            financial: { revenue: 9200, ticket: 8.00 },
-            margin: { percent: 85, level: 'high' }
+            funnel: { vis: 3200, cliq: 1540, carr: 1200, ped: 1150 },
+            funnelPrev: { vis: 3000, cliq: 1400, carr: 1100, ped: 1050 },
+            conversion: { current: 35.93, delta: 4.5, trend: 'up', base: 3200 },
+            revenue: { current: 9200, trend: '+8%', ticket: 8.00 },
+            margin: { percent: 85, level: 'high' },
+            status: ['alta_margem'],
+            maestro: { recommendation: 'Sugerir como cross-sell automático', confidence: 97, impact: 'R$ 1.1k' }
         },
         {
             id: 4,
-            name: 'Batata Frita G',
-            cat: 'Entradas',
-            subcat: 'Porções',
+            name: 'Batata Frita Rústica',
+            category: 'Entradas',
             image: 'https://images.unsplash.com/photo-1630384060421-cb20d0e0649d?q=80&w=150&auto=format&fit=crop',
-            funnel: { views: 650, clicks: 210, cart: 110, orders: 98 },
-            conversion: { rate: 22, delta: 0, trend: 'neutral' },
-            financial: { revenue: 3136, ticket: 32.00 },
-            margin: { percent: 60, level: 'high' }
+            funnel: { vis: 1650, cliq: 510, carr: 310, ped: 98 },
+            funnelPrev: { vis: 1500, cliq: 480, carr: 290, ped: 90 },
+            conversion: { current: 5.94, delta: 0.2, trend: 'up', base: 1650 },
+            revenue: { current: 3136, trend: '+5%', ticket: 32.00 },
+            margin: { percent: 60, level: 'high' },
+            status: ['alta_margem', 'em_promo'],
+            maestro: { recommendation: 'Melhorar qualidade da foto do item', confidence: 75, impact: 'R$ 280' }
         },
         {
             id: 5,
-            name: 'Brownie Duplo',
-            cat: 'Sobremesas',
-            subcat: 'Doces',
+            name: 'Brownie de Chocolate com Sorvete',
+            category: 'Sobremesas',
             image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476d?q=80&w=150&auto=format&fit=crop',
-            funnel: { views: 420, clicks: 80, cart: 30, orders: 15 },
-            conversion: { rate: 4, delta: -1, trend: 'down' },
-            financial: { revenue: 450, ticket: 30.00 },
-            margin: { percent: 25, level: 'low' }
-        },
+            funnel: { vis: 420, cliq: 80, carr: 30, ped: 15 },
+            funnelPrev: { vis: 600, cliq: 120, carr: 50, ped: 25 },
+            conversion: { current: 3.57, delta: -2.1, trend: 'down', base: 420 },
+            revenue: { current: 450, trend: '-45%', ticket: 30.00 },
+            margin: { percent: 25, level: 'low' },
+            status: [],
+            maestro: { recommendation: 'Queda de cliques: Posicionar mais acima', confidence: 92, impact: 'R$ 350' }
+        }
     ]
 };
 
 // --- HELPER COMPONENTS ---
 
-function TrendBadge({ value, trend, isPercent = true }) {
-    const isPositive = trend === 'up';
-    const isNeutral = trend === 'neutral';
+function CompactFunnel({ data, prevData }) {
+    const max = data.vis;
+    const stages = [
+        { label: 'Vis', value: data.vis, prev: prevData?.vis, key: 'vis' },
+        { label: 'Cliq', value: data.cliq, prev: prevData?.cliq, key: 'cliq' },
+        { label: 'Carr', value: data.carr, prev: prevData?.carr, key: 'carr' },
+        { label: 'Ped', value: data.ped, prev: prevData?.ped, key: 'ped' },
+    ];
 
-    // Style config based on trend
-    let colors = 'bg-gray-100 text-gray-600';
-    let Icon = Sparkles; // Default
+    // Calculate drops
+    const drops = [
+        { from: 'Vis', to: 'Cliq', drop: ((data.vis - data.cliq) / data.vis * 100).toFixed(0) },
+        { from: 'Cliq', to: 'Carr', drop: ((data.cliq - data.carr) / data.cliq * 100).toFixed(0) },
+        { from: 'Carr', to: 'Ped', drop: ((data.carr - data.ped) / data.carr * 100).toFixed(0) },
+    ];
 
-    if (isPositive) {
-        colors = 'bg-emerald-50 text-emerald-700 border-emerald-100';
-        Icon = TrendingUp;
-    } else if (!isNeutral) {
-        colors = 'bg-red-50 text-red-700 border-red-100';
-        Icon = TrendingDown;
-    }
+    const worstDrop = [...drops].sort((a, b) => b.drop - a.drop)[0];
 
     return (
-        <Badge variant="outline" className={`flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold border ${colors}`}>
-            {value > 0 && '+'}{value}{isPercent && '%'}
-            {!isNeutral && <Icon className="w-3 h-3" />}
-        </Badge>
-    );
-}
-
-function FunnelMetric({ icon: Icon, label, value, colorClass = "text-gray-400" }) {
-    return (
-        <div className="flex flex-col items-center gap-0.5" title={label}>
-            <div className="flex items-center gap-1">
-                <Icon className={`w-3 h-3 ${colorClass}`} />
-                <span className="text-[10px] font-medium text-gray-500">{value}</span>
+        <div className="flex flex-col gap-1.5 min-w-[140px]">
+            <div className="flex items-end justify-between gap-1 h-8">
+                {stages.map((s) => {
+                    const height = Math.max((s.value / max) * 100, 5);
+                    return (
+                        <Tooltip key={s.label}>
+                            <TooltipTrigger>
+                                <div className="flex flex-col items-center gap-1 group/bar">
+                                    <div
+                                        className={cn(
+                                            "w-4 rounded-t-sm transition-all duration-300",
+                                            s.key === 'ped' ? "bg-emerald-500" : "bg-slate-300 group-hover/bar:bg-slate-400"
+                                        )}
+                                        style={{ height: `${height}%` }}
+                                    />
+                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">{s.label}</span>
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">
+                                <div className="flex flex-col gap-0.5">
+                                    <span className="font-bold text-sm">{s.value.toLocaleString()}</span>
+                                    <span className="text-[10px] opacity-70">{s.label === 'Vis' ? 'Visualizações' : s.label === 'Cliq' ? 'Cliques' : s.label === 'Carr' ? 'No Carrinho' : 'Pedidos'}</span>
+                                    {s.prev && (
+                                        <span className={cn(
+                                            "text-[10px] font-bold mt-1",
+                                            s.value >= s.prev ? "text-emerald-400" : "text-red-400"
+                                        )}>
+                                            {s.value >= s.prev ? '▲' : '▼'} {Math.abs(((s.value - s.prev) / s.prev) * 100).toFixed(1)}% vs anterior
+                                        </span>
+                                    )}
+                                </div>
+                            </TooltipContent>
+                        </Tooltip>
+                    );
+                })}
             </div>
-            {/* Optional mini label for tooltip/clarity */}
+            <p className="text-[9px] text-slate-400 font-medium">
+                Maior perda: <span className="text-red-500 font-bold">{worstDrop.drop}% no {worstDrop.to}</span>
+            </p>
         </div>
     );
 }
 
-function ProductRow({ item, index }) {
+function ProductInfo({ item }) {
     return (
-        <div className="group relative flex flex-col md:grid md:grid-cols-12 gap-4 p-4 rounded-xl border border-transparent hover:border-gray-200 hover:bg-gray-50/50 hover:shadow-sm transition-all duration-200">
-
-            {/* COL 1: PRODUCT INFO */}
-            <div className="w-full md:col-span-5 lg:col-span-4 flex items-center gap-3">
-                <div className="relative w-10 h-10 flex-shrink-0 rounded-lg overflow-hidden border border-gray-100 bg-white shadow-sm group-hover:scale-105 transition-transform">
-                    <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
-                    />
-                    <div className="hidden absolute inset-0 items-center justify-center bg-gray-50 text-gray-300">
-                        <ImageIcon className="w-4 h-4" />
+        <div className="flex items-center gap-3">
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden border border-slate-100 bg-slate-50 shrink-0 shadow-sm">
+                {item.image ? (
+                    <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center text-slate-300">
+                        <ImageIcon size={20} />
                     </div>
-
-                    {/* Rank Badge */}
-                    <div className="absolute top-0 left-0 bg-gray-900 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-br-md">
-                        #{index + 1}
-                    </div>
-                </div>
-
-                <div className="min-w-0 flex-1">
-                    <h4 className="font-semibold text-sm text-gray-900 truncate group-hover:text-primary transition-colors">{item.name}</h4>
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 font-normal">{item.cat}</span>
-                        {item.margin.level === 'high' && (
-                            <span className="text-[10px] font-medium text-emerald-600 bg-emerald-50 px-1.5 rounded-full border border-emerald-100">
-                                Alta Margem
-                            </span>
-                        )}
-                    </div>
-                </div>
+                )}
             </div>
-
-            {/* COL 2: FUNNEL METRICS (Hidden on Tablet & Mobile) */}
-            <div className="hidden lg:flex col-span-3 items-center justify-between px-2 border-l border-r border-gray-100/50">
-                <FunnelMetric icon={Eye} value={item.funnel.views} label="Visualizações" />
-                <div className="w-px h-6 bg-gray-100" />
-                <FunnelMetric icon={MousePointer2} value={item.funnel.clicks} label="Cliques" />
-                <div className="w-px h-6 bg-gray-100" />
-                <FunnelMetric icon={ShoppingCart} value={item.funnel.cart} label="Carrinho" />
-                <div className="w-px h-6 bg-gray-100" />
-                <FunnelMetric icon={Receipt} value={item.funnel.orders} label="Pedidos" colorClass="text-emerald-500" />
-            </div>
-
-            {/* MOBILE / TABLET STATS ROW */}
-            <div className="flex items-center justify-between md:contents">
-
-                {/* COL 3: CONVERSION & TREND */}
-                <div className="md:col-span-3 lg:col-span-2 flex flex-col justify-center items-start pl-0 md:pl-2">
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm font-semibold text-gray-900">{item.conversion.rate}%</span>
-                        <TrendBadge value={item.conversion.delta} trend={item.conversion.trend} />
-                    </div>
-                    <span className="text-xs text-gray-400 font-normal mt-0.5">Conversão</span>
+            <div className="flex flex-col min-w-0">
+                <h4 className="text-sm font-bold text-slate-900 leading-tight line-clamp-2">{item.name}</h4>
+                <span className="text-[10px] font-medium text-slate-500 uppercase tracking-wide mt-0.5">{item.category}</span>
+                <div className="flex flex-wrap gap-1 mt-1.5">
+                    {item.status.includes('alta_margem') && (
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-emerald-100 bg-emerald-50 text-emerald-700 font-bold">Alta Margem</Badge>
+                    )}
+                    {item.status.includes('em_destaque') && (
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-amber-100 bg-amber-50 text-amber-700 font-bold">Destaque</Badge>
+                    )}
+                    {item.status.includes('em_promo') && (
+                        <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-blue-100 bg-blue-50 text-blue-700 font-bold">Promoção</Badge>
+                    )}
                 </div>
-
-                {/* COL 4: REVENUE */}
-                <div className="md:col-span-3 lg:col-span-2 flex flex-col justify-center items-end pr-0 md:pr-2">
-                    <span className="text-sm font-semibold text-gray-900">
-                        R$ {item.financial.revenue.toLocaleString('pt-BR')}
-                    </span>
-                    <span className="text-xs text-gray-400 font-normal mt-0.5">
-                        Ticket: R$ {item.financial.ticket.toLocaleString('pt-BR')}
-                    </span>
-                </div>
-            </div>
-
-            {/* COL 5: ACTIONS (Hover only on desktop) */}
-            <div className="hidden md:flex col-span-1 items-center justify-end">
-                <Button variant="ghost" size="icon" className="w-8 h-8 text-gray-400 hover:text-gray-900 hover:bg-gray-100 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <MoreVertical className="w-4 h-4" />
-                </Button>
-            </div>
-
-            {/* Mobile Actions Hint */}
-            <div className="md:hidden absolute right-2 top-2">
-                <Button variant="ghost" size="icon" className="w-8 h-8 text-gray-300">
-                    <MoreVertical className="w-4 h-4" />
-                </Button>
             </div>
         </div>
     );
-
 }
 
-export default function DashboardProductsBlock() {
-    const [period, setPeriod] = useState('Hoje');
-    const [segment, setSegment] = useState('Todos');
-    const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
+function OptimizePopover({ item }) {
+    const [isApplying, setIsApplying] = useState(false);
 
-    // Use mock data, fallback to today if specific period data missing in mock
-    const products = RICH_PRODUCTS_DATA[period] || RICH_PRODUCTS_DATA['Hoje'];
+    const handleApply = (e) => {
+        e.stopPropagation();
+        setIsApplying(true);
+        const toastId = toast.loading('Aplicando recomendação...');
 
-    const handlePeriodChange = (e) => {
-        setIsLoading(true);
-        setPeriod(e.target.value);
-        setTimeout(() => setIsLoading(false), 600);
+        // Simulate API call
+        setTimeout(() => {
+            toast.success('Alteração aplicada com sucesso!', { id: toastId });
+            setIsApplying(false);
+        }, 1500);
     };
 
     return (
-        <div className="h-full flex flex-col bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-            {/* HEADER */}
-            <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h3 className="text-base font-semibold text-gray-900">Top Vendas e Conversão</h3>
-                    <p className="text-xs font-normal text-gray-500 mt-1">Ranking dos itens com melhor performance</p>
+        <Popover>
+            <PopoverTrigger asChild>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-3 text-xs font-bold gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800 transition-all active:scale-95"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <Zap size={14} className="fill-current" />
+                    Otimizar
+                </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-[320px] p-0 overflow-hidden border-emerald-100 shadow-2xl">
+                <div className="bg-emerald-50 px-4 py-3 border-b border-emerald-100 flex items-center gap-2">
+                    <Sparkles size={16} className="text-emerald-600" />
+                    <span className="text-xs font-bold text-emerald-900 uppercase tracking-wider">Recomendação Maestro</span>
                 </div>
-
-                <div className="flex items-center gap-3">
-                    {/* Elements removed as requested */}
-                </div>
-            </div>
-
-            {/* CONTENT */}
-            {isLoading ? (
-                <div className="flex-1 flex items-center justify-center min-h-[300px]">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary/20" />
-                </div>
-            ) : (
-                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                    {/* Column Headers (Desktop Only) */}
-                    <div className="hidden md:grid grid-cols-12 gap-4 px-4 pb-2 text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                        <div className="col-span-4">Produto / Categoria</div>
-                        <div className="col-span-3 text-center">Funil (Vis / Cliq / Carr / Ped)</div>
-                        <div className="col-span-2">Conversão</div>
-                        <div className="col-span-2 text-right">Receita</div>
-                        <div className="col-span-1"></div>
+                <div className="p-4 space-y-3">
+                    <div className="space-y-1">
+                        <p className="text-sm font-bold text-slate-900">{item.maestro.recommendation}</p>
+                        <div className="flex items-center gap-2 text-[11px] text-slate-500">
+                            <span className="flex items-center gap-0.5"><Check size={12} className="text-emerald-500" /> Confiança: {item.maestro.confidence}%</span>
+                            <span className="w-1 h-1 rounded-full bg-slate-300" />
+                            <span className="text-emerald-600 font-bold">Impacto: {item.maestro.impact}</span>
+                        </div>
                     </div>
 
-                    <div className="flex flex-col gap-1">
-                        {products.map((item, index) => (
-                            <ProductRow key={item.id} item={item} index={index} />
+                    <div className="bg-slate-50 rounded-lg p-2 border border-slate-100">
+                        <p className="text-[10px] text-slate-500 leading-relaxed italic">
+                            "Evidência: O fluxo de pedidos entre 19h-21h para {item.category} apresentou um levantamento de 15%, porém {item.name} converte 8% menos que a média da categoria neste turno."
+                        </p>
+                    </div>
+
+                    <div className="flex gap-2 pt-1">
+                        <Button
+                            className="flex-1 h-9 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                            onClick={handleApply}
+                            disabled={isApplying}
+                        >
+                            {isApplying ? <Loader2 size={14} className="animate-spin" /> : 'Aplicar agora'}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="flex-1 h-9 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            Editar antes
+                        </Button>
+                    </div>
+                </div>
+                <div className="bg-slate-50/50 px-4 py-2 border-top border-slate-100 text-center">
+                    <button className="text-[10px] font-bold text-slate-400 hover:text-slate-600 uppercase tracking-widest transition-colors">
+                        Ver todas as 3 recomendações
+                    </button>
+                </div>
+            </PopoverContent>
+        </Popover>
+    );
+}
+
+function ItemDetailDrawer({ item, isOpen, onClose }) {
+    if (!item) return null;
+
+    return (
+        <Drawer
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Detalhes do Item"
+            size="lg"
+            footer={
+                <div className="flex gap-2 w-full">
+                    <Button variant="outline" className="flex-1">Ver no Cardápio</Button>
+                    <Button className="flex-1 bg-slate-900 text-white hover:bg-black">Salvar Alterações</Button>
+                </div>
+            }
+        >
+            <div className="space-y-8 animate-in fade-in duration-300">
+                {/* Header Resumo */}
+                <div className="flex gap-4">
+                    <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-md shrink-0 border border-slate-100">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                    </div>
+                    <div className="space-y-1">
+                        <Badge variant="outline" className="font-bold text-[10px] uppercase">{item.category}</Badge>
+                        <h3 className="text-2xl font-bold text-slate-900 leading-tight">{item.name}</h3>
+                        <div className="flex items-center gap-3 mt-2">
+                            <div className="flex flex-col">
+                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Receita</span>
+                                <span className="text-lg font-bold text-slate-900">{formatCurrency(item.revenue.current)}</span>
+                            </div>
+                            <div className="w-px h-8 bg-slate-100" />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Conversão</span>
+                                <span className="text-lg font-bold text-emerald-600">{item.conversion.current}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Funil Detalhado Section */}
+                <div className="space-y-4">
+                    <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <BarChart3 size={18} className="text-slate-400" />
+                        Funil de Conversão Detalhado
+                    </h4>
+                    <div className="grid grid-cols-4 gap-2">
+                        {[
+                            { label: 'Visualizações', val: item.funnel.vis, icon: Eye, color: 'bg-blue-50 text-blue-600' },
+                            { label: 'Cliques', val: item.funnel.cliq, icon: MousePointer2, color: 'bg-purple-50 text-purple-600' },
+                            { label: 'Carrinho', val: item.funnel.carr, icon: ShoppingCart, color: 'bg-amber-50 text-amber-600' },
+                            { label: 'Pedidos', val: item.funnel.ped, icon: Receipt, color: 'bg-emerald-50 text-emerald-600' },
+                        ].map(stage => (
+                            <div key={stage.label} className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+                                <div className={cn("p-1.5 rounded-lg w-fit", stage.color)}>
+                                    <stage.icon size={14} />
+                                </div>
+                                <p className="text-lg font-extrabold text-slate-900">{stage.val.toLocaleString()}</p>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase">{stage.label}</p>
+                            </div>
                         ))}
                     </div>
+                    <div className="h-40 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 text-xs italic">
+                        [Gráfico de Série Temporal do Funil]
+                    </div>
+                </div>
 
-                    {/* Footer / Empty State */}
-                    {products.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-12 text-center text-gray-400">
-                            <ShoppingBag className="w-12 h-12 text-gray-200 mb-3" />
-                            <p className="text-sm font-medium">Nenhum dado encontrado para o período.</p>
-                            <Button variant="link" size="sm" className="mt-2 text-primary">Ajustar filtros</Button>
+                {/* Segmentos e Problemas */}
+                <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                        <h5 className="text-xs font-bold text-slate-900 uppercase tracking-widest">Perform melhor em</h5>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between p-2 bg-emerald-50/50 rounded-lg text-xs">
+                                <span className="font-medium text-slate-700">Turno: Jantar</span>
+                                <span className="font-bold text-emerald-600">32% conv.</span>
+                            </div>
+                            <div className="flex items-center justify-between p-2 bg-emerald-50/50 rounded-lg text-xs">
+                                <span className="font-medium text-slate-700">Canal: Desk</span>
+                                <span className="font-bold text-emerald-600">18% conv.</span>
+                            </div>
                         </div>
+                    </div>
+                    <div className="space-y-3">
+                        <h5 className="text-xs font-bold text-slate-900 uppercase tracking-widest">Problemas Críticos</h5>
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2 p-2 bg-red-50/50 rounded-lg text-xs border border-red-100">
+                                <AlertTriangle size={14} className="text-red-500" />
+                                <span className="font-medium text-red-700">Abandono no Carrinho: 52%</span>
+                            </div>
+                            <div className="flex items-center gap-2 p-2 bg-amber-50/50 rounded-lg text-xs border border-amber-100">
+                                <Clock size={14} className="text-amber-500" />
+                                <span className="font-medium text-amber-700">Queda de 8% vs última 24h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Maestro Recommendations */}
+                <div className="space-y-4">
+                    <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                        <Sparkles size={18} className="text-emerald-500" />
+                        Otimizações do Maestro
+                    </h4>
+                    <div className="space-y-3">
+                        {[
+                            { icon: Zap, title: item.maestro.recommendation, impact: item.maestro.impact, confidence: item.maestro.confidence, time: '2 min' },
+                            { icon: Camera, title: 'Atualizar foto para padrão alta resolução', impact: 'R$ 180', confidence: 82, time: '5 min' },
+                            { icon: FileText, title: 'Adicionar termos técnicos na descrição', impact: 'R$ 120', confidence: 78, time: '3 min' },
+                        ].map((rec, i) => (
+                            <div key={i} className="group p-4 bg-white border border-slate-200 rounded-xl hover:border-emerald-200 hover:shadow-md transition-all">
+                                <div className="flex justify-between items-start mb-2">
+                                    <div className="flex gap-3">
+                                        <div className="p-2 bg-slate-50 rounded-lg group-hover:bg-emerald-50 group-hover:text-emerald-600 transition-colors">
+                                            <rec.icon size={18} />
+                                        </div>
+                                        <div>
+                                            <h5 className="text-sm font-bold text-slate-900 underline decoration-slate-200 group-hover:decoration-emerald-200 underline-offset-4">{rec.title}</h5>
+                                            <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-500 font-medium">
+                                                <span className="flex items-center gap-1 text-emerald-600"><TrendingUp size={12} /> Impacto: {rec.impact}</span>
+                                                <span className="w-1 h-1 rounded-full bg-slate-200" />
+                                                <span>Confiança: {rec.confidence}%</span>
+                                                <span className="w-1 h-1 rounded-full bg-slate-200" />
+                                                <span>Tempo: {rec.time}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <Button size="sm" className="h-8 bg-slate-900 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">Aplicar</Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </Drawer>
+    );
+}
+
+// --- MAIN WRAPPER ---
+export default function DashboardProductsBlock() {
+    const [period, setPeriod] = useState('Hoje');
+    const [sortBy, setSortBy] = useState('Receita');
+    const [showCompare, setShowCompare] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const navigate = useNavigate();
+
+    const products = RICH_PRODUCTS_DATA[period] || RICH_PRODUCTS_DATA['Hoje'];
+
+    const handlePeriodChange = (val) => {
+        setIsLoading(true);
+        setPeriod(val);
+        setTimeout(() => setIsLoading(false), 800);
+    };
+
+    const handleSortChange = (e) => {
+        setSortBy(e.target.value);
+        setIsLoading(true);
+        setTimeout(() => setIsLoading(false), 400);
+    };
+
+    return (
+        <TooltipProvider>
+            <div className="flex flex-col bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden group/card hover:shadow-lg hover:border-slate-300 transition-all duration-300">
+                {/* --- HEADER --- */}
+                <div className="p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-colors group-hover/card:bg-slate-50/30">
+                    <div className="space-y-1">
+                        <h3 className="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                            Top Vendas e Conversão
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <HelpCircle size={16} className="text-slate-300 hover:text-slate-900 transition-colors cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent side="right" className="max-w-[200px] whitespace-normal">
+                                    <p className="font-bold mb-1">Dicionário de Termos:</p>
+                                    <ul className="space-y-1 text-[10px]">
+                                        <li><strong>Vis:</strong> Vezes que o item apareceu na tela</li>
+                                        <li><strong>Cliq:</strong> Vezes que o item foi aberto</li>
+                                        <li><strong>Carr:</strong> Adições ao carrinho</li>
+                                        <li><strong>Ped:</strong> Pedidos concluídos</li>
+                                    </ul>
+                                </TooltipContent>
+                            </Tooltip>
+                        </h3>
+                        <p className="text-sm font-medium text-slate-500">
+                            Ranking por <span className="text-slate-900 font-bold underline decoration-slate-200">{sortBy}</span> no recorte <span className="text-slate-900 font-bold">{period}</span>
+                        </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-3 md:gap-4">
+                        {/* Sort Selector */}
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ordenar por:</span>
+                            <Select
+                                value={sortBy}
+                                onChange={handleSortChange}
+                                className="h-9 min-w-[130px] rounded-full border-slate-200 bg-white shadow-sm font-bold text-xs"
+                            >
+                                <option value="Receita">Receita</option>
+                                <option value="Conversão">Conversão</option>
+                                <option value="Margem">Margem Est.</option>
+                                <option value="Potencial">Potencial</option>
+                            </Select>
+                        </div>
+
+                        <div className="w-px h-6 bg-slate-200 hidden sm:block" />
+
+                        {/* Compare Toggle */}
+                        <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 px-3 py-1.5 rounded-full">
+                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Comparar:</span>
+                            <Switch checked={showCompare} onCheckedChange={setShowCompare} className="scale-75" />
+                        </div>
+
+                        {/* Period Chip Heritage */}
+                        <Badge variant="secondary" className="bg-slate-900 text-white font-bold h-9 px-4 rounded-full flex items-center gap-2 border-0 shadow-inner">
+                            <Clock size={14} className="text-slate-400" />
+                            {period}
+                        </Badge>
+                    </div>
+                </div>
+
+                {/* --- SUMMARY STRIP --- */}
+                {!isLoading && (
+                    <div className="px-6 py-2 bg-slate-50/50 border-b border-slate-100 flex flex-wrap items-center gap-6 overflow-hidden animate-in slide-in-from-top-2 duration-300">
+                        <div
+                            className="flex items-center gap-2 cursor-pointer group/sum hover:bg-white px-2 py-1 rounded-md transition-all"
+                            onClick={() => toast.info('Abrindo resumo completo...')}
+                        >
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
+                                <Layout size={12} />
+                                Partic. Top 5:
+                            </div>
+                            <span className="text-[11px] font-extrabold text-slate-900">42.8% da Receita</span>
+                            <ArrowUpRight size={10} className="text-emerald-500 opacity-0 group-hover/sum:opacity-100 transition-opacity" />
+                        </div>
+
+                        <div className="w-px h-4 bg-slate-200" />
+
+                        <div className="flex items-center gap-2 group/sum cursor-pointer">
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
+                                <Percent size={12} />
+                                Média Conv. Top 5:
+                            </div>
+                            <span className="text-[11px] font-extrabold text-slate-900">18.4%</span>
+                        </div>
+
+                        <div className="w-px h-4 bg-slate-200" />
+
+                        <div className="flex items-center gap-2 group/sum cursor-pointer">
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
+                                <TrendingUp size={12} className="text-emerald-500" />
+                                Destaque:
+                            </div>
+                            <span className="text-[11px] font-extrabold text-emerald-600 underline underline-offset-2">Cola Zero (+35%)</span>
+                        </div>
+
+                        <div className="w-px h-4 bg-slate-200" />
+
+                        <div className="flex items-center gap-2 group/sum cursor-pointer">
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
+                                <TrendingDown size={12} className="text-red-500" />
+                                Atenção:
+                            </div>
+                            <span className="text-[11px] font-extrabold text-red-600 underline underline-offset-2">Brownie Chocol. (-22%)</span>
+                        </div>
+                    </div>
+                )}
+
+                {/* --- CONTENT TABLE --- */}
+                <div className="flex-1 overflow-x-auto min-h-[400px]">
+                    {isLoading ? (
+                        <div className="p-6 space-y-4">
+                            <Skeleton className="h-10 w-full rounded-xl" />
+                            {[1, 2, 3, 4, 5].map(i => (
+                                <div key={i} className="flex gap-4 items-center">
+                                    <Skeleton className="w-12 h-12 rounded-lg" />
+                                    <div className="flex-1 space-y-2">
+                                        <Skeleton className="h-4 w-[40%] rounded" />
+                                        <Skeleton className="h-3 w-[20%] rounded" />
+                                    </div>
+                                    <Skeleton className="w-32 h-10 rounded-lg" />
+                                    <Skeleton className="w-24 h-10 rounded-lg" />
+                                    <Skeleton className="w-24 h-10 rounded-lg" />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <table className="w-full border-collapse">
+                            <thead>
+                                <tr className="bg-slate-50/30 border-b border-slate-100">
+                                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[30%]">Produto e Categoria</th>
+                                    <th className="px-4 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[18%]">
+                                        <div className="flex items-center gap-1.5">
+                                            Qualidade do Funil
+                                            <Tooltip>
+                                                <TooltipTrigger><Info size={12} /></TooltipTrigger>
+                                                <TooltipContent>Evolução V-C-C-P</TooltipContent>
+                                            </Tooltip>
+                                        </div>
+                                    </th>
+                                    <th className="px-4 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[15%]">Conversão</th>
+                                    <th className="px-4 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[18%]">Receita</th>
+                                    <th className="px-6 py-4 text-right text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100/50">
+                                {products.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={5} className="py-12 text-center">
+                                            <div className="flex flex-col items-center gap-2 text-slate-400">
+                                                <ShoppingBag size={48} className="text-slate-100" />
+                                                <p className="font-bold">Nenhum dado encontrado</p>
+                                                <Button variant="ghost" className="text-xs text-primary" onClick={() => handlePeriodChange('30 dias')}>Ampliar período</Button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : (
+                                    products.map((item, index) => (
+                                        <tr
+                                            key={item.id}
+                                            className="group/row hover:bg-slate-50/80 active:bg-slate-100/50 transition-all duration-160 cursor-pointer"
+                                            onClick={() => setSelectedItem(item)}
+                                        >
+                                            <td className="px-6 py-4">
+                                                <ProductInfo item={item} />
+                                            </td>
+                                            <td className="px-4 py-4">
+                                                <CompactFunnel data={item.funnel} prevData={showCompare ? item.funnelPrev : null} />
+                                            </td>
+                                            <td className="px-4 py-4">
+                                                <div className="flex flex-col">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-base font-extrabold text-slate-900">{item.conversion.current}%</span>
+                                                        {showCompare && (
+                                                            <Badge variant="outline" className={cn(
+                                                                "text-[9px] px-1.5 py-0 border-0 font-bold",
+                                                                item.conversion.trend === 'up' ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
+                                                            )}>
+                                                                {item.conversion.trend === 'up' ? '▲' : '▼'} {item.conversion.delta}%
+                                                            </Badge>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-[10px] font-medium text-slate-400 tracking-tight">
+                                                        Base: <span className="font-bold">{item.conversion.base} sessões</span>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-4 text-right md:text-left">
+                                                <div className="flex flex-col">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-base font-extrabold text-slate-900">{formatCurrency(item.revenue.current)}</span>
+                                                        {showCompare && (
+                                                            <span className={cn(
+                                                                "text-[10px] font-bold",
+                                                                item.revenue.trend.startsWith('+') ? "text-emerald-500" : "text-red-500"
+                                                            )}>
+                                                                {item.revenue.trend}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <span className="text-[10px] font-medium text-slate-400 tracking-tight">
+                                                        Ticket Médio: <span className="font-bold">{formatCurrency(item.revenue.ticket)}</span>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <OptimizePopover item={item} />
+
+                                                    <DropdownMenu>
+                                                        <DropdownMenuTrigger asChild>
+                                                            <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-900 transition-colors" onClick={(e) => e.stopPropagation()}>
+                                                                <MoreVertical size={16} />
+                                                            </Button>
+                                                        </DropdownMenuTrigger>
+                                                        <DropdownMenuContent align="end" className="w-56 overflow-hidden">
+                                                            <DropdownMenuItem className="gap-2" onClick={() => setSelectedItem(item)}>
+                                                                <BarChart3 size={14} className="text-slate-400" /> Ver item detale
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem className="gap-2">
+                                                                <Camera size={14} className="text-slate-400" /> Melhorar foto
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem className="gap-2">
+                                                                <FileText size={14} className="text-slate-400" /> Melhorar descrição
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem className="gap-2">
+                                                                <Move size={14} className="text-slate-400" /> Ajustar posição
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem className="gap-2 text-emerald-600 font-bold">
+                                                                <DollarSign size={14} /> Sugerir ajuste preço
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuItem className="gap-2">
+                                                                <Tag size={14} className="text-slate-400" /> Criar upsell / combo
+                                                            </DropdownMenuItem>
+                                                            <DropdownMenuSeparator />
+                                                            <DropdownMenuItem className="gap-2 text-red-600 focus:text-red-700 focus:bg-red-50">
+                                                                <Info size={14} /> Ver evidência Maestro
+                                                            </DropdownMenuItem>
+                                                        </DropdownMenuContent>
+                                                    </DropdownMenu>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
                     )}
                 </div>
-            )}
-        </div>
+
+                {/* --- FOOTER CTA --- */}
+                <div className="p-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center transition-colors group-hover/card:bg-slate-100/50">
+                    <p className="text-[10px] font-medium text-slate-400 uppercase tracking-widest pl-2">
+                        Mostrando 5 de 124 itens • Última atualização 10:43
+                    </p>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-primary hover:bg-primary/5 font-bold text-xs gap-1 transition-all group/btn"
+                        onClick={() => navigate('/analytics/products')}
+                    >
+                        Ver Relatório Completo
+                        <ArrowRight size={14} className="transition-transform group-hover/btn:translate-x-1" />
+                    </Button>
+                </div>
+
+                {/* DRAWER DRILLDOWN */}
+                <ItemDetailDrawer
+                    item={selectedItem}
+                    isOpen={!!selectedItem}
+                    onClose={() => setSelectedItem(null)}
+                />
+            </div>
+        </TooltipProvider>
     );
 }
