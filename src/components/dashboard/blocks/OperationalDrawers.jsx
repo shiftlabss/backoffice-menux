@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Drawer } from '../../ui/Drawer';
 import { Button } from '../../ui/Form';
 import {
@@ -183,50 +183,218 @@ export function BottleneckSummaryDrawer({ isOpen, onClose }) {
 
 // --- BOTTLENECK DRAWERS ---
 
+// --- SUBS FOR KITCHEN DRAWER ---
+
+const OrderDetailsDrawer = ({ orderId, isOpen, onClose }) => {
+  if (!orderId) return null;
+
+  return (
+    <Drawer
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Detalhes do Pedido #${orderId}`}
+      size="sm"
+      className="border-l border-gray-100 shadow-2xl"
+    >
+      <div className="space-y-4">
+        <div className="bg-red-50 p-3 rounded-lg border border-red-100 flex justify-between items-start">
+          <div>
+            <span className="text-[10px] font-bold text-red-600 uppercase tracking-wide">Status Crítico</span>
+            <p className="text-lg font-bold text-gray-900 mt-1">32 min</p>
+            <p className="text-xs text-gray-500">Tempo total de espera</p>
+          </div>
+          <Badge variant="destructive" className="bg-red-200 text-red-800 border-red-200">Atrasado</Badge>
+        </div>
+
+        <div>
+          <h4 className="text-xs font-bold text-gray-500 uppercase mb-2">Itens do Pedido</h4>
+          <ul className="space-y-2">
+            <li className="flex justify-between text-sm py-2 border-b border-gray-100 last:border-0">
+              <span>1x Bife Ancho (Ao Ponto)</span>
+              <span className="font-bold text-red-600">32m</span>
+            </li>
+            <li className="flex justify-between text-sm py-2 border-b border-gray-100 last:border-0 text-gray-400">
+              <span>1x Coca-Cola Zero</span>
+              <span className="font-medium text-green-600 animate-pulse">Entregue</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="space-y-2 pt-4">
+          <Button className="w-full justify-start gap-2" variant="outline" onClick={() => toast.success(`Pedido #${orderId} priorizado na tela da cozinha!`)}>
+            <AlertTriangle className="w-4 h-4 text-orange-500" />
+            Priorizar na Cozinha
+          </Button>
+          <Button className="w-full justify-start gap-2" variant="outline" onClick={() => toast.success(`Pedido #${orderId} transferido para Estação 2`)}>
+            <Utensils className="w-4 h-4 text-blue-500" />
+            Transferir para Outra Estação
+          </Button>
+          <Button className="w-full justify-start gap-2" variant="outline" onClick={() => toast('Cliente notificado sobre o atraso', { icon: '💬' })}>
+            <Users className="w-4 h-4 text-gray-500" />
+            Notificar Cliente
+          </Button>
+        </div>
+      </div>
+    </Drawer>
+  );
+};
+
+const RedistributeConfirmModal = ({ isOpen, onClose, onConfirm, count }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-5 animate-in zoom-in-95 duration-200">
+        <h3 className="text-lg font-bold text-gray-900 mb-2">Redistribuir Pedidos?</h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Você está prestes a redistribuir <strong>{count} pedidos</strong> críticos da Estação Principal para a <strong>Cozinha Auxiliar 2</strong>.
+        </p>
+        <div className="bg-blue-50 text-blue-800 text-xs p-3 rounded-lg border border-blue-100 mb-4">
+          Estação 2 está com 40% de capacidade livre.
+        </div>
+        <div className="flex gap-2 justify-end">
+          <Button variant="ghost" onClick={onClose} size="sm">Cancelar</Button>
+          <Button onClick={onConfirm} size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+            Confirmar Redistribuição
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PauseDishesModal = ({ isOpen, onClose, onConfirm }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 backdrop-blur-sm animate-in fade-in">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-sm p-5 animate-in zoom-in-95 duration-200">
+        <h3 className="text-lg font-bold text-gray-900 mb-2">Pausar Pratos Críticos</h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Os seguintes itens serão removidos temporariamente do cardápio digital:
+        </p>
+        <ul className="space-y-1 mb-4 text-sm font-medium text-gray-800 bg-gray-50 p-2 rounded">
+          <li>• Bife Ancho</li>
+          <li>• Risoto de Cogumelos</li>
+        </ul>
+        <div className="mb-4">
+          <label className="text-xs font-semibold text-gray-500 uppercase block mb-1">Tempo de Pausa</label>
+          <select className="w-full text-sm border-gray-300 rounded-md shadow-sm p-2 bg-white border">
+            <option>30 minutos</option>
+            <option>1 hora</option>
+            <option>Até normalizar manualmente</option>
+          </select>
+        </div>
+        <div className="flex gap-2 justify-end">
+          <Button variant="ghost" onClick={onClose} size="sm">Cancelar</Button>
+          <Button onClick={onConfirm} size="sm" variant="destructive">
+            Confirmar Pausa
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // 4. KITCHEN OVERLOAD
 export function KitchenOverloadDrawer({ isOpen, onClose }) {
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [showRedistributeModal, setShowRedistributeModal] = useState(false);
+  const [showPauseModal, setShowPauseModal] = useState(false);
+
+  // Actions
+  const handleRedistribute = () => {
+    setShowRedistributeModal(false);
+    toast.promise(
+      new Promise((resolve) => setTimeout(resolve, 1500)),
+      {
+        loading: 'Redistribuindo pedidos...',
+        success: <b>8 pedidos movidos para Estação 2!</b>,
+        error: <b>Erro ao redistribuir.</b>,
+      }
+    );
+  };
+
+  const handlePause = () => {
+    setShowPauseModal(false);
+    toast.success("Pratos críticos pausados por 30min", { icon: '⏸️' });
+  };
+
   const footer = (
     <div className="flex flex-col gap-2 w-full sm:flex-row sm:justify-end">
-      <Button onClick={() => toast.success('Pedidos redistribuídos para Praça 2')}>
+      <Button
+        onClick={() => setShowRedistributeModal(true)}
+        className="bg-gray-900 text-white hover:bg-black"
+      >
         Redistribuir Pedidos
       </Button>
-      <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={() => toast('Venda de Grelhados Pausada', { icon: '⏸️' })}>
+      <Button
+        variant="outline"
+        className="text-red-600 border-red-200 hover:bg-red-50"
+        onClick={() => setShowPauseModal(true)}
+      >
         Pausar Pratos Críticos
       </Button>
     </div>
   );
 
   return (
-    <Drawer
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Cozinha Sobrecarregada"
-      footer={footer}
-    >
-      <div className="flex items-center gap-2 mb-4 text-red-600">
-        <Utensils className="w-5 h-5" />
-        <span className="text-sm">8 pedidos críticos acima de 25min</span>
-      </div>
+    <>
+      <Drawer
+        isOpen={isOpen}
+        onClose={onClose}
+        title="Cozinha Sobrecarregada"
+        footer={footer}
+      >
+        <div className="flex items-center gap-2 mb-4 text-red-600">
+          <Utensils className="w-5 h-5" />
+          <span className="text-sm">8 pedidos críticos acima de 25min</span>
+        </div>
 
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <div className="flex justify-between items-center p-3 bg-red-50 border border-red-100 rounded-lg">
-            <div>
-              <p className="text-sm font-bold text-gray-900">Pedido #1024 - Mesa 12</p>
-              <p className="text-xs text-red-600">Tempo: 32min • Bife Ancho</p>
-            </div>
-            <Button size="sm" variant="secondary" className="bg-white">Ver</Button>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-red-50 border border-red-100 rounded-lg">
-            <div>
-              <p className="text-sm font-bold text-gray-900">Pedido #1029 - Mesa 04</p>
-              <p className="text-xs text-red-600">Tempo: 28min • Risoto</p>
-            </div>
-            <Button size="sm" variant="secondary" className="bg-white">Ver</Button>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            {[
+              { id: '1024', mesa: '12', time: '32min', item: 'Bife Ancho' },
+              { id: '1029', mesa: '04', time: '28min', item: 'Risoto' },
+              { id: '1033', mesa: '08', time: '26min', item: 'Bife Ancho' }
+            ].map((order) => (
+              <div key={order.id} className="flex justify-between items-center p-3 bg-red-50 border border-red-100 rounded-lg hover:bg-red-100 transition-colors">
+                <div>
+                  <p className="text-sm font-bold text-gray-900">Pedido #{order.id} - Mesa {order.mesa}</p>
+                  <p className="text-xs text-red-600">Tempo: {order.time} • {order.item}</p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  className="bg-white shadow-sm border border-gray-200 hover:bg-gray-50"
+                  onClick={() => setSelectedOrder(order.id)}
+                >
+                  Ver
+                </Button>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
-    </Drawer>
+      </Drawer>
+
+      {/* Nested Interactions */}
+      <OrderDetailsDrawer
+        isOpen={!!selectedOrder}
+        orderId={selectedOrder}
+        onClose={() => setSelectedOrder(null)}
+      />
+
+      <RedistributeConfirmModal
+        isOpen={showRedistributeModal}
+        count={8}
+        onClose={() => setShowRedistributeModal(false)}
+        onConfirm={handleRedistribute}
+      />
+
+      <PauseDishesModal
+        isOpen={showPauseModal}
+        onClose={() => setShowPauseModal(false)}
+        onConfirm={handlePause}
+      />
+    </>
   );
 }
 
