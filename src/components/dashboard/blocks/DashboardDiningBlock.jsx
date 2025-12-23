@@ -31,8 +31,8 @@ export default function DashboardDiningBlock() {
                 </div>
             </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-3 gap-3 lg:gap-4 flex-1 content-start overflow-y-auto pr-2 custom-scrollbar max-h-[320px]">
+            {/* Grid - Expanded to bottom */}
+            <div className="grid grid-cols-3 gap-3 lg:gap-4 flex-1 content-start overflow-y-auto pr-2 custom-scrollbar max-h-[380px]">
                 {TABLES.map((table) => (
                     <div
                         key={table.id}
@@ -66,11 +66,6 @@ export default function DashboardDiningBlock() {
                         )}
                     </div>
                 ))}
-            </div>
-
-            {/* Hint */}
-            <div className="mt-4 pt-4 border-t border-gray-100 text-center">
-                <span className="text-[10px] text-gray-400 font-medium">Toque em uma mesa para ver detalhes</span>
             </div>
         </Card>
     );
