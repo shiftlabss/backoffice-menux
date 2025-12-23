@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { ApplySuggestionsModal } from './ApplySuggestionsModal';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Form';
 import { Badge } from '../../ui/Badge';
@@ -80,60 +81,106 @@ function ImpactoRealCard() {
 
 /* CARD 2: PROJEÇÃO DO DIA */
 function ProjecaoCard() {
-  return (
-    <Card className="h-full p-5 flex flex-col justify-between bg-white border-gray-200 shadow-sm relative overflow-hidden">
-      {/* Header */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-1">
-          <h3 className="text-base font-semibold text-gray-900">Projeção do Dia</h3>
-          <Badge variant="outline" className="text-[10px] font-bold text-purple-600 bg-purple-50 border-purple-100 px-2 py-0.5">
-            IA Beta
-          </Badge>
-        </div>
-        <p className="text-xs text-gray-500 font-normal">Previsão e gap para meta</p>
-      </div>
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-      {/* Main Projections */}
-      <div className="flex items-end justify-between mb-4">
-        <div>
-          <span className="text-xs font-medium uppercase tracking-wide text-gray-400 block mb-1">Receita Projetada</span>
-          <span className="text-[24px] font-bold text-gray-900 tabular-nums">R$ 28.4k</span>
+  // MOCK DATA SUGGESTIONS
+  const suggestions = [
+    {
+      id: 1,
+      title: "Ativar Combo Família no jantar",
+      type: "combo",
+      impact: "+R$ 450",
+      confidence: 94,
+      effort: "2 min"
+    },
+    {
+      id: 2,
+      title: "Sugerir 2ª bebida (mesas > 14min)",
+      type: "upsell",
+      impact: "+R$ 320",
+      confidence: 88,
+      effort: "Config. auto"
+    },
+    {
+      id: 3,
+      title: "Aumentar preço Batata Rústica (+R$ 2.00)",
+      type: "price",
+      impact: "+R$ 180",
+      confidence: 92,
+      effort: "1 min"
+    }
+  ];
+
+  return (
+    <>
+      <Card className="h-full p-5 flex flex-col justify-between bg-white border-gray-200 shadow-sm relative overflow-hidden">
+        {/* Header */}
+        <div className="mb-4">
+          <div className="flex items-center justify-between mb-1">
+            <h3 className="text-base font-semibold text-gray-900">Projeção do Dia</h3>
+            <Badge variant="outline" className="text-[10px] font-bold text-purple-600 bg-purple-50 border-purple-100 px-2 py-0.5">
+              IA Beta
+            </Badge>
+          </div>
+          <p className="text-xs text-gray-500 font-normal">Previsão e gap para meta</p>
         </div>
-        <div className="text-right">
-          <span className="text-xs font-medium text-red-500 flex items-center justify-end gap-1 mb-1">
-            Faltam <span className="font-bold">R$ 1.2k</span>
-          </span>
-          <div className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded inline-block">
-            Probabilidade: 82%
+
+        {/* Main Projections */}
+        <div className="flex items-end justify-between mb-4">
+          <div>
+            <span className="text-xs font-medium uppercase tracking-wide text-gray-400 block mb-1">Receita Projetada</span>
+            <span className="text-[24px] font-bold text-gray-900 tabular-nums">R$ 28.4k</span>
+          </div>
+          <div className="text-right">
+            <span className="text-xs font-medium text-red-500 flex items-center justify-end gap-1 mb-1">
+              Faltam <span className="font-bold">R$ 1.2k</span>
+            </span>
+            <div className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded inline-block">
+              Probabilidade: 82%
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Suggestions List */}
-      <div className="flex-1 bg-amber-50/50 rounded-xl p-3 border border-amber-100/50 mb-4 transition-colors hover:border-amber-200">
-        <div className="flex items-center gap-2 mb-2">
-          <Zap className="w-3.5 h-3.5 text-amber-500" />
-          <span className="text-xs font-bold text-amber-700 uppercase tracking-wide">Melhor Aceleração: 12h - 13h</span>
+        {/* Suggestions List */}
+        <div className="flex-1 bg-amber-50/50 rounded-xl p-3 border border-amber-100/50 mb-4 transition-colors hover:border-amber-200">
+          <div className="flex items-center gap-2 mb-2">
+            <Zap className="w-3.5 h-3.5 text-amber-500" />
+            <span className="text-xs font-bold text-amber-700 uppercase tracking-wide">Melhor Aceleração: 12h - 13h</span>
+          </div>
+          <ul className="space-y-2">
+            {suggestions.slice(0, 2).map((s) => (
+              <li key={s.id} className="flex justify-between items-start text-xs border-b border-amber-100/50 last:border-0 pb-2 last:pb-0">
+                <span className="text-gray-700 font-medium leading-tight">
+                  {s.title.split(' ').map((word, i) =>
+                    // Simple bold logic for demo
+                    (word === 'Combo' || word === 'Família' || word === '2ª' || word === 'bebida')
+                      ? <span key={i} className="font-bold text-amber-800">{word} </span>
+                      : word + ' '
+                  )}
+                </span>
+                <span className="font-bold text-emerald-600 ml-2 whitespace-nowrap">{s.impact}</span>
+              </li>
+            ))}
+          </ul>
         </div>
-        <ul className="space-y-2">
-          <li className="flex justify-between items-start text-xs border-b border-amber-100/50 pb-2 last:border-0 last:pb-0">
-            <span className="text-gray-700 font-medium leading-tight">Ativar <span className="font-bold text-amber-800">Combo Família</span> no jantar</span>
-            <span className="font-bold text-emerald-600 ml-2 whitespace-nowrap">+R$ 450</span>
-          </li>
-          <li className="flex justify-between items-start text-xs">
-            <span className="text-gray-700 font-medium leading-tight">Sugerir <span className="font-bold text-amber-800">2ª bebida</span> (mesas {'>'} 14min)</span>
-            <span className="font-bold text-emerald-600 ml-2 whitespace-nowrap">+R$ 320</span>
-          </li>
-        </ul>
-      </div>
 
-      {/* Actions */}
-      <div className="flex gap-2 mt-auto">
-        <Button className="flex-1 h-8 text-xs font-bold bg-gray-900 text-white hover:bg-black">
-          Aplicar Sugestões
-        </Button>
-      </div>
-    </Card>
+        {/* Actions */}
+        <div className="flex gap-2 mt-auto">
+          <Button
+            className="flex-1 h-8 text-xs font-bold bg-gray-900 text-white hover:bg-black transition-all active:scale-95"
+            onClick={() => setIsModalOpen(true)}
+          >
+            Aplicar Sugestões
+          </Button>
+        </div>
+      </Card>
+
+      <ApplySuggestionsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        suggestions={suggestions}
+      />
+    </>
   );
 }
 
