@@ -217,27 +217,7 @@ export default function DashboardProductsBlock() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    {/* Period Selector */}
-                    <select
-                        value={period}
-                        onChange={handlePeriodChange}
-                        className="bg-gray-50 border border-gray-200 text-gray-700 text-xs font-medium rounded-lg px-3 py-2 cursor-pointer outline-none focus:ring-2 focus:ring-primary/20 hover:bg-gray-100 transition-colors"
-                    >
-                        <option value="Hoje">Hoje</option>
-                        <option value="7 dias">7 dias</option>
-                        <option value="30 dias">30 dias</option>
-                    </select>
-
-                    {/* CTA */}
-                    <Button
-                        size="sm"
-                        variant="ghost"
-                        className="hidden sm:flex text-primary hover:bg-primary/5 hover:text-primary font-semibold text-xs gap-1"
-                        onClick={() => navigate('/analytics/products')}
-                    >
-                        Relatório
-                        <ArrowRight className="w-3.5 h-3.5" />
-                    </Button>
+                    {/* Elements removed as requested */}
                 </div>
             </div>
 
