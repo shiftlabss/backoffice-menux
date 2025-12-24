@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Drawer } from '../../ui/Drawer';
-import { Button } from '../../ui/Form';
+import { Button } from '../../ui/Button';
+import { Badge } from '../../ui/Badge';
 import { Skeleton } from '../../ui/Skeleton';
 import {
   TrendingUp,
@@ -11,224 +12,262 @@ import {
   Check,
   Calendar,
   Clock,
-  Loader2
+  Loader2,
+  Copy,
+  FileDown,
+  ExternalLink,
+  Eye,
+  MousePointerClick,
+  Monitor
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import toast from 'react-hot-toast';
+import { useAudit } from '../../../hooks/useAudit';
 
 // Mock Data Generator for Evidence
 const getMockEvidence = (suggestionId) => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      // Simulate randomization for demo purposes
-      if (Math.random() > 0.95) {
-        reject(new Error("Failed to fetch evidence"));
-        return;
-      }
+      // Generate mock event logs
+      const events = Array.from({ length: 8 }).map((_, i) => {
+        const types = ['shown', 'viewed', 'accepted'];
+        // Weighted random to have more shown than viewed than accepted
+        const typeIndex = Math.random() > 0.6 ? (Math.random() > 0.7 ? 2 : 1) : 0;
+        const type = types[typeIndex];
+
+        const timeOffset = Math.floor(Math.random() * 60) + i * 60; // Minutes ago
+        const date = new Date(Date.now() - timeOffset * 60000);
+
+        return {
+          id: `evt_${Math.random().toString(36).substr(2, 9)}`,
+          type: type,
+          timestamp: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          context: type === 'shown' ? 'Modal de Ociosidade' : (type === 'viewed' ? 'Tempo de tela: 4s' : 'Adicionado ao carrinho'),
+          device: Math.random() > 0.3 ? 'Mobile' : 'Desktop'
+        };
+      }).sort((a, b) => b.timestamp.localeCompare(a.timestamp));
 
       resolve({
         id: suggestionId,
-        type: 'pricing_optimization',
+        context: {
+          period: 'Hoje',
+          turn: 'Almoço',
+          channels: ['Salão', 'Delivery']
+        },
         stats: {
-          current_conversion: '12.5%',
-          projected_conversion: '15.8%',
-          uplift: '+26%',
-          base_orders: 1450,
-          period: 'Últimos 30 dias'
+          analyzed_orders: 142,
+          uplift: '+15%',
+          conversion_rate: '22.4%'
         },
         insight: {
-          main: "Tivemos 1450 pedidos deste item nos últimos 30 dias. A elasticidade de preço indica que um aumento de R$ 2,00 não afetará a conversão negativa.",
-          secondary: "Itens similares na região estão com preço médio 15% acima do seu."
+          main: "Analisamos 142 sessões onde este item foi sugerido via Maestro hoje. A taxa de aceitação é 3.1% superior à média da categoria.",
+          secondary: "O gatilho de 'Ociosidade' demonstrou ser o momento mais propício para conversão."
         },
-        segments: {
-          top: "Famílias (Jantar)",
-          bottom: "Almoço individual"
-        },
-        chartData: [45, 48, 42, 55, 59, 65] // simple trend
+        events: events
       });
-    }, 1200); // 1.2s delay for realism
+    }, 800);
   });
 };
 
-export function SuggestionEvidenceDrawer({ isOpen, onClose, suggestion, onApply, onRefuse }) {
+export function SuggestionEvidenceDrawer({ isOpen, onClose, suggestion }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
-  const [isApplying, setIsApplying] = useState(false);
+  const { log } = useAudit();
 
   // Fetch logic
   useEffect(() => {
     if (isOpen && suggestion?.id) {
       setLoading(true);
       setError(null);
+
+      log('maestro.acceptance.evidence.open', { itemId: suggestion.id });
+
       getMockEvidence(suggestion.id)
         .then(data => {
           setData(data);
           setLoading(false);
-          // Audit Log
-          console.log(`[AUDIT] actionId: maestro.suggestion.evidence.open | suggestionId: ${suggestion.id}`);
         })
         .catch(err => {
           setError(err.message);
           setLoading(false);
         });
     } else if (!isOpen) {
-      // Reset on close
       setData(null);
       setLoading(true);
     }
-  }, [isOpen, suggestion]);
+  }, [isOpen, suggestion, log]);
 
-  const handleApply = async () => {
-    setIsApplying(true);
-    // Audit Log handled by parent or here? Spec says "maestro.suggestion.apply.single"
-    // We'll trust parent `onApply` to handle the actual logic which triggers the toast/state update
-    await onApply(suggestion.id);
-    setIsApplying(false);
-    onClose();
+  const handleCopyLink = () => {
+    toast.success('Link do relatório copiado!');
+    log('maestro.evidence.copyLink', { itemId: suggestion?.id });
+  };
+
+  const handleExportCSV = () => {
+    toast.success('Exportando CSV de evidências...');
+    log('maestro.evidence.exportCsv', { itemId: suggestion?.id });
   };
 
   return (
     <Drawer
       isOpen={isOpen}
       onClose={onClose}
-      title="Evidência da Sugestão"
-      size="md"
-      className="z-[60]" // Higher Z-Index than Modal (50)
+      title="Evidências de Aceitação"
+      subtitle={`Auditoria detalhada de sugestões para ${suggestion?.name}`}
+      size="lg"
       footer={
-        <div className="flex w-full gap-3">
-          <Button variant="outline" onClick={onClose} className="flex-1">
+        <div className="flex w-full justify-between items-center">
+          <div className="text-xs text-slate-400">
+            ID da Análise: <span className="font-mono">{String(suggestion?.id || '').substring(0, 8) || '---'}</span>
+          </div>
+          <Button variant="outline" onClick={onClose}>
             Fechar
           </Button>
-          {!suggestion?.isApplied && (
-            <Button
-              className="flex-[2] bg-slate-900 hover:bg-black text-white"
-              onClick={handleApply}
-              disabled={loading || error || isApplying}
-            >
-              {isApplying ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Aplicando...
-                </>
-              ) : (
-                "Aplicar agora"
-              )}
-            </Button>
-          )}
         </div>
       }
     >
-      <div className="space-y-8">
+      <div className="space-y-8 pb-4">
 
-        {/* Header Section */}
-        <div className="space-y-4">
-          {loading ? (
-            <div className="space-y-2">
-              <Skeleton className="h-6 w-3/4" />
-              <Skeleton className="h-4 w-1/2" />
+        {/* Loading State */}
+        {loading && (
+          <div className="space-y-6">
+            <div className="flex gap-2">
+              <Skeleton className="h-6 w-24" />
+              <Skeleton className="h-6 w-24" />
             </div>
-          ) : (
-            <>
-              <div className="flex flex-wrap gap-2">
-                <span className="text-xs font-bold px-2 py-0.5 rounded bg-slate-100 text-slate-600 uppercase">
-                  {data?.type?.replace('_', ' ') || 'Oportunidade'}
-                </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 flex items-center gap-1">
-                  <TrendingUp size={12} /> {suggestion?.impact}
-                </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700">
-                  {suggestion?.confidence}% Confiança
-                </span>
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 leading-tight">
-                {suggestion?.title}
-              </h3>
-            </>
-          )}
-        </div>
+            <Skeleton className="h-24 w-full rounded-xl" />
+            <div className="space-y-2">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </div>
+          </div>
+        )}
 
         {/* Error State */}
         {error && !loading && (
           <div className="p-4 bg-red-50 border border-red-100 rounded-lg flex flex-col items-center text-center gap-2">
             <AlertTriangle className="text-red-500 h-8 w-8" />
-            <p className="text-sm text-red-700 font-medium">Não foi possível carregar a evidência.</p>
+            <p className="text-sm text-red-700 font-medium">Não foi possível carregar as evidências.</p>
             <Button variant="outline" size="sm" onClick={() => getMockEvidence(suggestion.id)} className="mt-2">
               Tentar novamente
             </Button>
           </div>
         )}
 
-        {/* Main Evidence Content */}
+        {/* Main Content */}
         {!loading && !error && data && (
           <>
-            {/* Section 2: Objective Evidence */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center gap-2">
-                <Target size={14} /> Por que sugerimos isso?
-              </h4>
-              <p className="text-sm text-slate-700 leading-relaxed font-medium">
-                {data.insight.main}
-              </p>
-              <p className="text-xs text-slate-500 mt-2 pl-3 border-l-2 border-slate-200">
-                {data.insight.secondary}
-              </p>
+            {/* 1. Context Header */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="secondary" className="bg-slate-100 text-slate-600 gap-1.5 hover:bg-slate-200">
+                <Calendar size={12} /> {data.context.period}
+              </Badge>
+              <Badge variant="secondary" className="bg-slate-100 text-slate-600 gap-1.5 hover:bg-slate-200">
+                <Clock size={12} /> {data.context.turn}
+              </Badge>
+              {data.context.channels.map(channel => (
+                <Badge key={channel} variant="outline" className="text-slate-500 border-slate-200">
+                  {channel}
+                </Badge>
+              ))}
             </div>
 
-            {/* Section 3: Comparative */}
-            <div>
-              <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center gap-2">
-                <BarChart3 size={14} /> Comparativo ({data.stats.period})
-              </h4>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3 rounded-lg border border-slate-100 bg-white shadow-sm">
-                  <span className="text-[10px] text-slate-400 font-semibold uppercase">Atual</span>
-                  <div className="text-2xl font-bold text-slate-700 mt-1">{data.stats.current_conversion}</div>
-                  <span className="text-xs text-slate-500">Conversão de vendas</span>
+            {/* 2. Analytical Statement & Stats */}
+            <div className="bg-emerald-50/50 border border-emerald-100 rounded-xl p-5">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-emerald-100 rounded-lg shrink-0">
+                  <TrendingUp className="w-5 h-5 text-emerald-600" />
                 </div>
-                <div className="p-3 rounded-lg border border-emerald-100 bg-emerald-50/30 relative overflow-hidden">
-                  <div className="absolute right-0 top-0 p-1 bg-emerald-100 rounded-bl-lg">
-                    <ArrowRight className="w-3 h-3 text-emerald-600 -rotate-45" />
+                <div>
+                  <h4 className="text-sm font-bold text-emerald-900 mb-1">
+                    Análise de Impacto
+                  </h4>
+                  <p className="text-sm text-emerald-800/80 leading-relaxed">
+                    {data.insight.main}
+                  </p>
+                  <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-emerald-100/60">
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-emerald-600/70">Pedidos Analisados</span>
+                      <div className="text-lg font-bold text-emerald-900">{data.stats.analyzed_orders}</div>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-emerald-600/70">Conversão Real</span>
+                      <div className="text-lg font-bold text-emerald-900">{data.stats.conversion_rate}</div>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-bold text-emerald-600/70">Uplift vs Média</span>
+                      <div className="text-lg font-bold text-emerald-600">+{data.stats.uplift}</div>
+                    </div>
                   </div>
-                  <span className="text-[10px] text-emerald-600 font-bold uppercase">Projetado</span>
-                  <div className="text-2xl font-bold text-emerald-700 mt-1">{data.stats.projected_conversion}</div>
-                  <span className="text-xs text-emerald-600 font-medium">Uplift de {data.stats.uplift}</span>
                 </div>
               </div>
             </div>
 
-            {/* Section 4: Context Data */}
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
-              <div>
-                <span className="block text-xs text-slate-400 mb-1">Funciona melhor com</span>
-                <div className="text-sm font-semibold text-slate-800 flex items-center gap-1.5">
-                  <Check className="w-3 h-3 text-emerald-500" />
-                  {data.segments.top}
+            {/* 3. Event Sample List */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                  <Monitor className="w-4 h-4 text-slate-400" />
+                  Amostra de Eventos
+                  <Badge variant="secondary" className="ml-2 text-[10px] h-5 px-1.5">Últimos eventos</Badge>
+                </h4>
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={handleCopyLink}>
+                    <Copy size={14} className="text-slate-400" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={handleExportCSV}>
+                    <FileDown size={14} className="text-slate-400" />
+                  </Button>
                 </div>
               </div>
-              <div>
-                <span className="block text-xs text-slate-400 mb-1">Base de análise</span>
-                <div className="text-sm font-semibold text-slate-800">
-                  {data.stats.base_orders} pedidos
+
+              <div className="rounded-lg border border-slate-100 overflow-hidden">
+                <div className="bg-slate-50 px-4 py-2 border-b border-slate-100 grid grid-cols-12 gap-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                  <div className="col-span-2">Hora</div>
+                  <div className="col-span-3">Evento</div>
+                  <div className="col-span-5">Contexto</div>
+                  <div className="col-span-2 text-right">Device</div>
+                </div>
+                <div className="divide-y divide-slate-50">
+                  {data.events.map((event) => (
+                    <div key={event.id} className="px-4 py-3 grid grid-cols-12 gap-4 items-center text-sm hover:bg-slate-50/50 transition-colors">
+                      <div className="col-span-2 font-mono text-xs text-slate-500">
+                        {event.timestamp}
+                      </div>
+                      <div className="col-span-3 flex items-center gap-2">
+                        {event.type === 'accepted' && <Check className="w-3.5 h-3.5 text-emerald-500" />}
+                        {event.type === 'viewed' && <Eye className="w-3.5 h-3.5 text-blue-500" />}
+                        {event.type === 'shown' && <MousePointerClick className="w-3.5 h-3.5 text-slate-400" />}
+
+                        <span className={cn(
+                          "font-medium",
+                          event.type === 'accepted' ? "text-emerald-700" :
+                            event.type === 'viewed' ? "text-blue-700" : "text-slate-600"
+                        )}>
+                          {event.type === 'accepted' ? 'Sugestão Aceita' :
+                            event.type === 'viewed' ? 'Visualizada' : 'Exibida'}
+                        </span>
+                      </div>
+                      <div className="col-span-5 text-slate-600 text-xs">
+                        {event.context}
+                      </div>
+                      <div className="col-span-2 text-right text-xs text-slate-400">
+                        {event.device}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="bg-slate-50 px-4 py-3 border-t border-slate-100 text-center">
+                  <span className="text-xs text-slate-400">Amostra anonimizada para conformidade LGPD</span>
                 </div>
               </div>
             </div>
+
           </>
         )}
 
-        {/* Loading Skeleton for Content */}
-        {loading && (
-          <div className="space-y-6">
-            <Skeleton className="h-32 w-full rounded-xl" />
-            <div className="grid grid-cols-2 gap-4">
-              <Skeleton className="h-20 w-full" />
-              <Skeleton className="h-20 w-full" />
-            </div>
-          </div>
-        )}
-
       </div>
-    </Drawer>
+    </Drawer >
   );
 }

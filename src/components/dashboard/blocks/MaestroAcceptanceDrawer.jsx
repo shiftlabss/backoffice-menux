@@ -17,12 +17,17 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { useAudit } from '../../../hooks/useAudit';
+import { useState } from 'react';
+import { SuggestionEvidenceDrawer } from './SuggestionEvidenceDrawer';
+import { MaestroRuleWizard } from './MaestroRuleWizard';
 
 /**
  * Drawer para detalhamento da KPI "Aceitação do Maestro"
  */
 export function MaestroAcceptanceDrawer({ isOpen, onClose, item }) {
   const { log } = useAudit();
+  const [showEvidence, setShowEvidence] = useState(false);
+  const [showRuleWizard, setShowRuleWizard] = useState(false);
 
   // MOCK DATA - Em produção viria do item ou hook
   const acceptanceData = {
@@ -71,15 +76,17 @@ export function MaestroAcceptanceDrawer({ isOpen, onClose, item }) {
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-1 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Aceitação Geral</span>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-emerald-600" />
+                  <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Aceitação Geral</span>
+                </div>
+                <Badge variant="outline" className="bg-white text-emerald-700 border-emerald-200 font-bold text-[10px] h-5 px-1.5">
+                  {acceptanceData.trend === 'up' ? '+' : ''}{acceptanceData.delta}%
+                </Badge>
               </div>
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-extrabold text-gray-900">{acceptanceData.rate}%</span>
-                <Badge variant="outline" className="bg-white text-emerald-700 border-emerald-200 font-bold">
-                  {acceptanceData.trend === 'up' ? '+' : ''}{acceptanceData.delta}%
-                </Badge>
               </div>
             </div>
             <div className="mt-4 text-xs text-emerald-800/70">
@@ -186,23 +193,32 @@ export function MaestroAcceptanceDrawer({ isOpen, onClose, item }) {
         {/* 4. ACTIONS */}
         <div className="bg-gray-50 rounded-xl p-6 border border-gray-100 flex items-center justify-between mt-4">
           <div>
-            <h4 className="text-sm font-bold text-gray-900">Quer melhorar essa conversão?</h4>
+            <h4 className="text-sm font-bold text-gray-900">Entenda os motivos da aceitação</h4>
             <p className="text-xs text-gray-500 mt-1 max-w-xs">
-              Crie uma regra específica para este item baseada nos gatilhos de maior sucesso.
+              Veja em detalhes os eventos e gatilhos que geraram estas conversões.
             </p>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" size="sm" onClick={() => log('dashboard.maestro.evidence', { itemId: item.id })}>
-              Ver Evidências
-            </Button>
-            <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white gap-2" onClick={() => log('dashboard.maestro.createRule', { itemId: item.id })}>
-              <Sparkles className="w-3.5 h-3.5" />
-              Criar Regra
+            <Button variant="outline" className="bg-white hover:bg-slate-50" size="sm" onClick={() => {
+              setShowEvidence(true);
+              log('dashboard.maestro.evidence.open', { itemId: item.id });
+            }}>
+              Ver Evidências completas
             </Button>
           </div>
         </div>
 
       </div>
+
+      {/* Secondary Drawers */}
+      <SuggestionEvidenceDrawer
+        isOpen={showEvidence}
+        onClose={() => setShowEvidence(false)}
+        suggestion={item}
+      />
+
+      {/* Rule Wizard removed as per request */}
+
     </Drawer>
   );
 }
