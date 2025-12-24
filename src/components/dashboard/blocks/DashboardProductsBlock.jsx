@@ -494,11 +494,22 @@ export default function DashboardProductsBlock() {
                             <tbody className="divide-y divide-slate-100/50">
                                 {products.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="py-12 text-center">
-                                            <div className="flex flex-col items-center gap-2 text-slate-400">
-                                                <ShoppingBag size={48} className="text-slate-100" />
-                                                <p className="font-bold">Nenhum dado encontrado</p>
-                                                <Button variant="ghost" className="text-xs text-primary" onClick={() => handlePeriodChange('30 dias')}>Ampliar período</Button>
+                                        <td colSpan={5} className="py-12">
+                                            <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50/50 mx-6">
+                                                <div className="p-4 bg-white rounded-full shadow-sm mb-4">
+                                                    <Package className="w-8 h-8 text-gray-300" />
+                                                </div>
+                                                <h4 className="text-base font-semibold text-gray-900">Nenhum produto encontrado</h4>
+                                                <p className="text-sm text-gray-500 mt-1 max-w-sm">
+                                                    Não encontramos vendas ou dados para o período de <strong>{period}</strong>.
+                                                </p>
+                                                <Button
+                                                    variant="outline"
+                                                    className="mt-4 bg-white"
+                                                    onClick={() => handlePeriodChange('30 dias')}
+                                                >
+                                                    Ver histórico de 30 dias
+                                                </Button>
                                             </div>
                                         </td>
                                     </tr>

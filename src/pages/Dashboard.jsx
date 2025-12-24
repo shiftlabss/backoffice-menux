@@ -32,6 +32,14 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const [selectedPeriod, setSelectedPeriod] = useState('Hoje');
     const [showAnalysis, setShowAnalysis] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handlePeriodChange = (p) => {
+        setSelectedPeriod(p);
+        // Simulate loading on period change
+        setIsLoading(true);
+        setTimeout(() => setIsLoading(false), 800);
+    };
 
     // Global Actions (Chips + Search)
     const HeaderActions = (
@@ -41,7 +49,7 @@ export default function Dashboard() {
                 {PERIOD_CHIPS.map((p) => (
                     <button
                         key={p}
-                        onClick={() => setSelectedPeriod(p)}
+                        onClick={() => handlePeriodChange(p)}
                         className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${selectedPeriod === p
                             ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
                             : 'text-gray-500 hover:text-gray-700'
@@ -73,10 +81,10 @@ export default function Dashboard() {
                 <section>
                     <h2 className="text-lg font-bold text-gray-900 mb-4 px-1">Resultado do Dia</h2>
                     <div className="space-y-6">
-                        <DashboardKPIsBlock />
+                        <DashboardKPIsBlock isLoading={isLoading} />
 
                         {/* Products Block (Bento Showcase) */}
-                        <DashboardProductsBlock />
+                        <DashboardProductsBlock period={selectedPeriod} isLoading={isLoading} />
                     </div>
                 </section>
 
@@ -93,19 +101,19 @@ export default function Dashboard() {
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-6 items-start">
                         {/* 2.1 Ações Prioritárias (Hero List) - 4 cols */}
                         <div className="md:col-span-1 xl:col-span-4 h-full min-h-[380px]">
-                            <PriorityActions />
+                            <PriorityActions isLoading={isLoading} />
                         </div>
 
                         {/* 2.2 Status & Gargalos - 4 cols */}
                         <div className="md:col-span-1 xl:col-span-4 flex flex-col gap-4 h-full min-h-[420px]">
                             <div className="flex-1">
-                                <RadarDeGargalos />
+                                <RadarDeGargalos isLoading={isLoading} />
                             </div>
                         </div>
 
                         {/* 2.3 Mapa de Mesas - 4 cols */}
                         <div className="md:col-span-2 xl:col-span-4 h-full min-h-[380px]">
-                            <DashboardDiningBlock />
+                            <DashboardDiningBlock isLoading={isLoading} />
                         </div>
                     </div>
                 </section>

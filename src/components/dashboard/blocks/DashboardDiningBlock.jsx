@@ -11,64 +11,93 @@ const TABLES = Array(20).fill(null).map((_, i) => ({
     time: i % 3 === 0 ? 0 : Math.floor(Math.random() * 45) + 5
 }));
 
-export default function DashboardDiningBlock() {
+import { Skeleton } from '../../ui/Skeleton';
+
+export default function DashboardDiningBlock({ isLoading = false }) {
     const navigate = useNavigate();
 
     const { log } = useAudit();
+
+    // Filter tables logic
+    const occupiedTables = TABLES.filter(t => t.status !== 'free');
 
     return (
         <Card className="h-full p-4 lg:p-6 bg-white border-gray-200 shadow-sm flex flex-col relative overflow-hidden">
             {/* Header */}
             <div className="flex justify-between items-center mb-4 lg:mb-6 shrink-0">
                 <h3 className="text-base font-semibold text-gray-900">Mapa de Mesas</h3>
-                <div className="flex gap-3 text-[10px] font-medium text-gray-500">
-                    <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full bg-white border-2 border-emerald-500"></div> Ocupada
+                {!isLoading && (
+                    <div className="flex gap-3 text-[10px] font-medium text-gray-500">
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-white border-2 border-emerald-500"></div> Ocupada
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-red-50 border border-red-500"></div> Risco
+                        </div>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full bg-red-50 border border-red-500"></div> Risco
-                    </div>
-                </div>
+                )}
             </div>
 
             {/* Grid - Expanded to bottom */}
             <div className="grid grid-cols-3 gap-3 lg:gap-4 flex-1 content-start overflow-y-auto pr-2 custom-scrollbar max-h-[380px]">
-                {TABLES.filter(t => t.status !== 'free').map((table) => (
-                    <div
-                        key={table.id}
-                        onClick={() => {
-                            log('dashboard.tables.open', { tableId: table.id });
-                            navigate(`/orders?table=${table.id}`);
-                        }}
-                        className={cn(
-                            "w-full aspect-square rounded-xl flex flex-col items-center justify-center relative cursor-pointer transition-all hover:scale-105 border-2",
-                            table.status === 'free' && "bg-gray-50 border-gray-100 text-gray-400 hover:border-gray-300",
-                            table.status === 'occupied' && "bg-white border-emerald-500 text-gray-900 shadow-sm",
-                            table.status === 'risk' && "bg-red-50 border-red-500 text-red-900"
-                        )}
-                    >
-                        {table.status === 'risk' && (
-                            <div className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 border-2 border-white">
-                                <AlertCircle className="w-3 h-3" />
-                            </div>
-                        )}
-
-                        <span className="text-lg font-bold mb-0.5">{table.id}</span>
-
-                        {table.status !== 'free' ? (
-                            <div className="flex flex-col items-center">
-                                <span className={cn(
-                                    "text-[10px] font-bold flex items-center gap-0.5",
-                                    table.status === 'risk' ? "text-red-700" : "text-gray-500"
-                                )}>
-                                    <Clock className="w-3 h-3" /> {table.time}'
-                                </span>
-                            </div>
-                        ) : (
-                            <span className="text-[10px] font-medium opacity-50">Livre</span>
-                        )}
+                {isLoading ? (
+                    // Loading State: 9 Skeletons to fill the grid
+                    Array(9).fill(null).map((_, i) => (
+                        <div key={i} className="w-full aspect-square rounded-xl bg-gray-50 border border-gray-100 flex flex-col items-center justify-center p-2">
+                            <Skeleton className="h-8 w-8 rounded-md mb-2" />
+                            <Skeleton className="h-3 w-12 rounded-full" />
+                        </div>
+                    ))
+                ) : occupiedTables.length === 0 ? (
+                    // Empty State
+                    <div className="col-span-3 flex flex-col items-center justify-center h-48 text-center p-4 border-2 border-dashed border-gray-100 rounded-xl bg-gray-50/50">
+                        <div className="p-3 bg-white rounded-full shadow-sm mb-3">
+                            <Clock className="w-6 h-6 text-gray-300" />
+                        </div>
+                        <h4 className="text-sm font-medium text-gray-900">Salão Livre</h4>
+                        <p className="text-xs text-gray-500 mt-1 max-w-[180px]">
+                            Nenhuma mesa ocupada ou em risco no momento.
+                        </p>
                     </div>
-                ))}
+                ) : (
+                    // Data State
+                    occupiedTables.map((table) => (
+                        <div
+                            key={table.id}
+                            onClick={() => {
+                                log('dashboard.tables.open', { tableId: table.id });
+                                navigate(`/orders?table=${table.id}`);
+                            }}
+                            className={cn(
+                                "w-full aspect-square rounded-xl flex flex-col items-center justify-center relative cursor-pointer transition-all hover:scale-105 border-2",
+                                table.status === 'free' && "bg-gray-50 border-gray-100 text-gray-400 hover:border-gray-300",
+                                table.status === 'occupied' && "bg-white border-emerald-500 text-gray-900 shadow-sm",
+                                table.status === 'risk' && "bg-red-50 border-red-500 text-red-900"
+                            )}
+                        >
+                            {table.status === 'risk' && (
+                                <div className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 border-2 border-white">
+                                    <AlertCircle className="w-3 h-3" />
+                                </div>
+                            )}
+
+                            <span className="text-lg font-bold mb-0.5">{table.id}</span>
+
+                            {table.status !== 'free' ? (
+                                <div className="flex flex-col items-center">
+                                    <span className={cn(
+                                        "text-[10px] font-bold flex items-center gap-0.5",
+                                        table.status === 'risk' ? "text-red-700" : "text-gray-500"
+                                    )}>
+                                        <Clock className="w-3 h-3" /> {table.time}'
+                                    </span>
+                                </div>
+                            ) : (
+                                <span className="text-[10px] font-medium opacity-50">Livre</span>
+                            )}
+                        </div>
+                    ))
+                )}
             </div>
         </Card>
     );

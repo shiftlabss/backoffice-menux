@@ -11,7 +11,7 @@ import { RadarNextItem } from './RadarNextItem';
 import { KitchenOverloadDrawer, EntranceWaitDrawer, BarIceBreakDrawer, BottleneckSummaryDrawer } from './OperationalDrawers';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../ui/Tooltip';
 
-export default function RadarDeGargalos() {
+export default function RadarDeGargalos({ isLoading = false }) {
   const [activeDrawer, setActiveDrawer] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
@@ -96,24 +96,40 @@ export default function RadarDeGargalos() {
                 Gargalos no turno
               </h3>
             </div>
-            {activeCount > 0 && (
+            {!isLoading && activeCount > 0 && (
               <Badge variant="secondary" className="bg-red-50 text-red-700 border-red-100 font-bold whitespace-nowrap">
                 {activeCount} Ativos
               </Badge>
             )}
           </div>
-
-
         </div>
 
         {/* CONTENT */}
         <div className="flex-1 p-4 bg-gray-50/30 overflow-y-auto">
-          {activeCount === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-gray-400 py-6">
-              <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mb-3">
-                <CheckCircle2 className="w-6 h-6 text-green-500" />
+          {isLoading ? (
+            <div className="space-y-4">
+              <div className="bg-white p-4 rounded-xl border border-gray-100 animate-pulse">
+                <div className="flex justify-between mb-3">
+                  <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                  <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                </div>
+                <div className="h-3 w-48 bg-gray-100 rounded mb-4"></div>
+                <div className="h-8 w-full bg-gray-100 rounded"></div>
               </div>
-              <p className="text-sm font-medium text-gray-600">Operação estável no momento</p>
+              <div className="space-y-2">
+                <div className="h-16 w-full bg-white rounded-lg border border-gray-100 animate-pulse"></div>
+                <div className="h-16 w-full bg-white rounded-lg border border-gray-100 animate-pulse"></div>
+              </div>
+            </div>
+          ) : activeCount === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center py-6 px-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-full flex items-center justify-center mb-4 shadow-sm border border-emerald-100">
+                <CheckCircle2 className="w-8 h-8 text-emerald-500" />
+              </div>
+              <h4 className="text-base font-bold text-gray-900 mb-1">Operação fluindo bem!</h4>
+              <p className="text-xs text-gray-500 max-w-[200px]">
+                Nenhum gargalo de cozinha, bar ou atendimento detectado no momento.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 h-full">
