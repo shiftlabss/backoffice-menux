@@ -23,9 +23,6 @@ export default function DashboardDiningBlock() {
                 <h3 className="text-base font-semibold text-gray-900">Mapa de Mesas</h3>
                 <div className="flex gap-3 text-[10px] font-medium text-gray-500">
                     <div className="flex items-center gap-1.5">
-                        <div className="w-2 h-2 rounded-full bg-gray-200 border border-gray-300"></div> Livre
-                    </div>
-                    <div className="flex items-center gap-1.5">
                         <div className="w-2 h-2 rounded-full bg-white border-2 border-emerald-500"></div> Ocupada
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -36,7 +33,7 @@ export default function DashboardDiningBlock() {
 
             {/* Grid - Expanded to bottom */}
             <div className="grid grid-cols-3 gap-3 lg:gap-4 flex-1 content-start overflow-y-auto pr-2 custom-scrollbar max-h-[380px]">
-                {TABLES.map((table) => (
+                {TABLES.filter(t => t.status !== 'free').map((table) => (
                     <div
                         key={table.id}
                         onClick={() => {
