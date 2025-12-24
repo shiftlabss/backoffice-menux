@@ -22,6 +22,7 @@ import { cn, formatCurrency } from '../../../lib/utils';
 import toast from 'react-hot-toast';
 import { OptimizeButton } from './OptimizeButton';
 import { ItemOverflowMenu } from './ItemOverflowMenu';
+import { MaestroAcceptanceDrawer } from './MaestroAcceptanceDrawer';
 
 // --- MOCK DATA ENRICHED ---
 const RICH_PRODUCTS_DATA = {
@@ -37,7 +38,12 @@ const RICH_PRODUCTS_DATA = {
             revenue: { current: 4970, trend: '+14%', ticket: 35.00 },
             margin: { percent: 45, level: 'high' },
             status: ['alta_margem', 'em_destaque'],
-            maestro: { recommendation: 'Aumentar exposição no jantar', confidence: 94, impact: 'R$ 450' }
+            maestro: {
+                recommendation: 'Aumentar exposição no jantar',
+                confidence: 94,
+                impact: 'R$ 450',
+                acceptance: { rate: 22.4, delta: 3.1, trend: 'up', base: 142, accepted: 32 }
+            }
         },
         {
             id: 2,
@@ -50,7 +56,12 @@ const RICH_PRODUCTS_DATA = {
             revenue: { current: 7380, trend: '-2%', ticket: 89.90 },
             margin: { percent: 32, level: 'medium' },
             status: ['em_destaque'],
-            maestro: { recommendation: 'Revisar descrição e itens inclusos', confidence: 88, impact: 'R$ 820' }
+            maestro: {
+                recommendation: 'Revisar descrição e itens inclusos',
+                confidence: 88,
+                impact: 'R$ 820',
+                acceptance: { rate: 18.2, delta: -1.2, trend: 'down', base: 85, accepted: 15 }
+            }
         },
         {
             id: 3,
@@ -63,7 +74,12 @@ const RICH_PRODUCTS_DATA = {
             revenue: { current: 9200, trend: '+8%', ticket: 8.00 },
             margin: { percent: 85, level: 'high' },
             status: ['alta_margem'],
-            maestro: { recommendation: 'Sugerir como cross-sell automático', confidence: 97, impact: 'R$ 1.1k' }
+            maestro: {
+                recommendation: 'Sugerir como cross-sell automático',
+                confidence: 97,
+                impact: 'R$ 1.1k',
+                acceptance: { rate: 45.0, delta: 5.2, trend: 'up', base: 890, accepted: 400 }
+            }
         },
         {
             id: 4,
@@ -76,7 +92,12 @@ const RICH_PRODUCTS_DATA = {
             revenue: { current: 3136, trend: '+5%', ticket: 32.00 },
             margin: { percent: 60, level: 'high' },
             status: ['alta_margem', 'em_promo'],
-            maestro: { recommendation: 'Melhorar qualidade da foto do item', confidence: 75, impact: 'R$ 280' }
+            maestro: {
+                recommendation: 'Melhorar qualidade da foto do item',
+                confidence: 75,
+                impact: 'R$ 280',
+                acceptance: { rate: 12.5, delta: 0.0, trend: 'stable', base: 45, accepted: 5 }
+            }
         },
         {
             id: 5,
@@ -89,7 +110,12 @@ const RICH_PRODUCTS_DATA = {
             revenue: { current: 450, trend: '-45%', ticket: 30.00 },
             margin: { percent: 25, level: 'low' },
             status: [],
-            maestro: { recommendation: 'Queda de cliques: Posicionar mais acima', confidence: 92, impact: 'R$ 350' }
+            maestro: {
+                recommendation: 'Queda de cliques: Posicionar mais acima',
+                confidence: 92,
+                impact: 'R$ 350',
+                acceptance: null // Testar estado vazio
+            }
         }
     ]
 };
@@ -347,6 +373,7 @@ export default function DashboardProductsBlock({ isLoading: propLoading = false,
     const [showCompare, setShowCompare] = useState(true);
     const [isLoading, setIsLoading] = useState(propLoading);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [maestroItem, setMaestroItem] = useState(null); // For Maestro Acceptance Drawer
 
     useEffect(() => {
         setIsLoading(propLoading);
@@ -482,24 +509,27 @@ export default function DashboardProductsBlock({ isLoading: propLoading = false,
                         <table className="w-full border-collapse">
                             <thead>
                                 <tr className="bg-slate-50/30 border-b border-slate-100">
-                                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[30%]">Produto e Categoria</th>
-                                    <th className="px-4 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[18%]">
+                                    <th className="px-6 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[34%]">Produto e Categoria</th>
+                                    <th className="px-4 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[22%]">
                                         <div className="flex items-center gap-1.5">
-                                            Qualidade do Funil
+                                            Aceitação Maestro
                                             <Tooltip>
-                                                <TooltipTrigger><Info size={12} /></TooltipTrigger>
-                                                <TooltipContent>Evolução V-C-C-P</TooltipContent>
+                                                <TooltipTrigger><Sparkles size={12} className="text-emerald-500" /></TooltipTrigger>
+                                                <TooltipContent className="max-w-[220px]">
+                                                    <p>Taxa de sugestões aceitas pelos clientes.</p>
+                                                    <p className="text-[10px] mt-1 opacity-80">Exibidas vs Adicionadas ao pedido</p>
+                                                </TooltipContent>
                                             </Tooltip>
                                         </div>
                                     </th>
-                                    <th className="px-4 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[15%]">Conversão</th>
-                                    <th className="px-4 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[18%]">Receita</th>
+                                    <th className="px-4 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[22%]">Conversão</th>
+                                    <th className="px-4 py-4 text-left text-[10px] font-bold text-slate-400 uppercase tracking-widest w-[22%]">Receita</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100/50">
                                 {products.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="py-12">
+                                        <td colSpan={4} className="py-12">
                                             <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50/50 mx-6">
                                                 <div className="p-4 bg-white rounded-full shadow-sm mb-4">
                                                     <Package className="w-8 h-8 text-gray-300" />
@@ -528,9 +558,36 @@ export default function DashboardProductsBlock({ isLoading: propLoading = false,
                                             <td className="px-6 py-4">
                                                 <ProductInfo item={item} />
                                             </td>
-                                            <td className="px-4 py-4">
-                                                <CompactFunnel data={item.funnel} prevData={showCompare ? item.funnelPrev : null} />
+
+                                            {/* COLUNA ACEITAÇÃO MAESTRO */}
+                                            <td className="px-4 py-4" onClick={(e) => { e.stopPropagation(); setMaestroItem(item); log('dashboard.topSales.maestroAcceptance.open', { itemId: item.id }); }}>
+                                                {item.maestro.acceptance ? (
+                                                    <div className="flex flex-col group/maestro hover:scale-[1.02] transition-transform origin-left w-fit p-1 -ml-1 rounded-lg cursor-pointer">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-base font-extrabold text-slate-900">{item.maestro.acceptance.rate}%</span>
+                                                            {showCompare && (
+                                                                <span className={cn(
+                                                                    "text-[9px] font-bold",
+                                                                    item.maestro.acceptance.trend === 'up' ? "text-emerald-500" : "text-gray-400"
+                                                                )}>
+                                                                    {item.maestro.acceptance.trend === 'up' ? '▲' : '▼'} {Math.abs(item.maestro.acceptance.delta)}%
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="flex flex-col gap-0.5">
+                                                            <span className="text-[10px] font-medium text-slate-400 tracking-tight">
+                                                                Base: <span className="font-bold">{item.maestro.acceptance.base} sug.</span>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col">
+                                                        <span className="text-sm font-bold text-slate-300">—</span>
+                                                        <span className="text-[9px] text-slate-400">Sem sugestões</span>
+                                                    </div>
+                                                )}
                                             </td>
+
                                             <td className="px-4 py-4">
                                                 <div className="flex flex-col">
                                                     <div className="flex items-center gap-2">
@@ -549,6 +606,7 @@ export default function DashboardProductsBlock({ isLoading: propLoading = false,
                                                     </span>
                                                 </div>
                                             </td>
+
                                             <td className="px-4 py-4 text-right md:text-left">
                                                 <div className="flex flex-col">
                                                     <div className="flex items-center gap-2">
@@ -587,6 +645,13 @@ export default function DashboardProductsBlock({ isLoading: propLoading = false,
                     item={selectedItem}
                     isOpen={!!selectedItem}
                     onClose={() => setSelectedItem(null)}
+                />
+
+                {/* DRAWER MAESTRO ACCEPTANCE */}
+                <MaestroAcceptanceDrawer
+                    item={maestroItem}
+                    isOpen={!!maestroItem}
+                    onClose={() => setMaestroItem(null)}
                 />
             </div>
         </TooltipProvider>
