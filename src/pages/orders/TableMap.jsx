@@ -84,26 +84,18 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
         // Calculate status for each table based on orders AND generate suggestions
         const newTables = Array.from({ length: TABLE_COUNT }, (_, i) => {
             const tableNum = i + 1;
-            const tableName = `Mesa ${tableNum.toString().padStart(2, '0')}`;
+            const tableName = `Mesa ${tableNum}`; // Standardizing table name format "Mesa 1", "Mesa 10" to match simple ints or we need to align with DB
 
             // Find active orders for this table
+            // Match "Mesa X" or just "X" if DB stores number
             const tableOrders = orders.filter(o =>
-                o.table === tableName &&
-                o.status !== 'ready' &&
-                o.status !== 'finished'
+                (o.table_number && o.table_number.toString() === tableName) ||
+                (typeof o.table_number === 'number' && o.table_number === tableNum)
             );
 
             const isOccupied = tableOrders.length > 0;
             const totalValue = tableOrders.reduce((sum, order) => {
-                let val = 0;
-                if (typeof order.total === 'string') {
-                    // Remove "R$", trim, replace "." with nothing (thousand separator), replace "," with "."
-                    const cleanStr = order.total.replace('R$', '').trim().replace(/\./g, '').replace(',', '.');
-                    val = parseFloat(cleanStr) || 0;
-                } else if (typeof order.total === 'number') {
-                    val = order.total;
-                }
-                return sum + val;
+                return sum + (Number(order.total_amount) || 0);
             }, 0);
 
             // Determine status
@@ -113,14 +105,17 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
 
             if (isOccupied) {
                 status = 'occupied';
-                time = tableOrders[0].time; // Use first order time
+                const firstOrderTime = new Date(tableOrders[0].created_at);
+                const now = new Date();
+                const diffMs = now - firstOrderTime;
+                const minutes = Math.floor(diffMs / 60000);
+                time = `${minutes} min`;
 
-                const minutes = parseInt(time.replace(' min', '')) || 0;
                 if (minutes > 20) status = 'risk';
 
                 // Intelligence Logic
                 if (intelligenceEnabled) {
-                    const allItems = tableOrders.flatMap(o => o.itemsList || []); // Simplified
+                    const allItems = tableOrders.flatMap(o => o.items || []);
                     currentSuggestions = generateSuggestions(tableName, time, allItems, ignoredSuggestions);
                 }
             }

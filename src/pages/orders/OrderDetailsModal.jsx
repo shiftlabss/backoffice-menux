@@ -16,29 +16,36 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onUpdateStat
               <ShoppingBag size={16} />
               <span>Mesa / Origem</span>
             </div>
-            <p className="font-semibold text-gray-900">{order.table}</p>
+            <p className="font-semibold text-gray-900">{order.table_number || 'Sem mesa'}</p>
           </div>
           <div className="space-y-1 text-right">
             <div className="flex items-center justify-end gap-2 text-sm text-gray-500">
               <Clock size={16} />
-              <span>Tempo</span>
+              <span>Criado em</span>
             </div>
-            <p className="font-semibold text-gray-900">{order.time}</p>
+            <p className="font-semibold text-gray-900">
+              {new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </p>
           </div>
         </div>
 
-        {/* Items List (Mocked since we only have summary data in the parent) */}
+        {/* Items List */}
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wider">Itens do Pedido</h3>
+          <h3 className="text-sm font-semibold text-gray-900 mb-3 uppercase tracking-wider">Itens do Pedido ({order.items?.length || 0})</h3>
           <div className="space-y-3">
-            {/* We'll simulate items based on the count for now */}
-            {Array.from({ length: order.items }).map((_, i) => (
+            {order.items && order.items.map((item, i) => (
               <div key={i} className="flex justify-between items-center py-2 border-b border-dashed border-gray-100 last:border-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">1x</div>
-                  <span className="text-gray-700">Item Exemplo #{i + 1}</span>
+                  <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
+                    {item.quantity}x
+                  </div>
+                  <span className="text-gray-700">{item.name}</span>
                 </div>
-                <span className="font-medium text-gray-900">R$ 45,00</span>
+                {item.price && (
+                  <span className="font-medium text-gray-900">
+                    R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}
+                  </span>
+                )}
               </div>
             ))}
           </div>
@@ -47,7 +54,7 @@ export default function OrderDetailsModal({ isOpen, onClose, order, onUpdateStat
         {/* Footer / Actions */}
         <div className="pt-4 border-t border-gray-100 flex justify-between items-center">
           <div className="text-lg font-bold text-gray-900">
-            Total: {order.total}
+            Total: R$ {Number(order.total_amount).toFixed(2).replace('.', ',')}
           </div>
           <div className="flex gap-2">
             <Button variant="ghost" onClick={onClose}>Fechar</Button>

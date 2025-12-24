@@ -7,96 +7,29 @@ import ModuleLayout from '../components/layout/ModuleLayout';
 import { Skeleton } from '../components/ui/Skeleton';
 import toast from 'react-hot-toast';
 
+import { useOrders, useOrderStats } from '../hooks/useOrders';
+import { useAudit } from '../hooks/useAudit';
+
 export default function Orders() {
     const [viewMode, setViewMode] = useState('list'); // 'list' | 'kanban'
     const [filterStatus, setFilterStatus] = useState('all');
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTable, setSelectedTable] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 1000);
-        return () => clearTimeout(timer);
-    }, [filterStatus, selectedTable]);
-
-    // Mock data
-    const [orders, setOrders] = useState([
-        {
-            id: '#1234',
-            table: 'Mesa 05',
-            items: 3,
-            total: 'R$ 145,90',
-            status: 'pending',
-            time: '5 min',
-            itemsList: [
-                { name: 'Filé Mignon ao Molho Madeira', quantity: 1 },
-                { name: 'Coca-Cola', quantity: 2 }
-            ]
-        },
-        {
-            id: '#1233',
-            table: 'Mesa 02',
-            items: 1,
-            total: 'R$ 45,00',
-            status: 'preparing',
-            time: '12 min',
-            itemsList: [
-                { name: 'Hambúrguer Artesanal', quantity: 1 }
-            ]
-        },
-        {
-            id: '#1232',
-            table: 'Delivery',
-            items: 5,
-            total: 'R$ 210,50',
-            status: 'ready',
-            time: '25 min',
-            itemsList: [
-                { name: 'Pizza Grande Calabresa', quantity: 1 },
-                { name: 'Guaraná 2L', quantity: 1 },
-                { name: 'Borda Recheada', quantity: 1 }
-            ]
-        },
-        {
-            id: '#1240',
-            table: 'Mesa 10',
-            items: 2,
-            total: 'R$ 89,00',
-            status: 'pending',
-            time: '2 min',
-            itemsList: [
-                { name: 'Risoto de Camarão', quantity: 1 },
-                { name: 'Suco de Laranja', quantity: 1 }
-            ]
-        },
-        {
-            id: '#1241',
-            table: 'Mesa 08',
-            items: 4,
-            total: 'R$ 320,00',
-            status: 'preparing',
-            time: '15 min',
-            itemsList: [
-                { name: 'Picanha na Chapa', quantity: 1 },
-                { name: 'Arroz Piamontese', quantity: 1 },
-                { name: 'Batata Frita', quantity: 2 }
-            ]
-        },
-    ]);
+    // Connect to Data Layer
+    const { orders, isLoading, updateOrderStatus, createMockOrder } = useOrders();
+    const stats = useOrderStats(orders);
+    const { log } = useAudit();
 
     const handleViewOrder = (order) => {
         setSelectedOrder(order);
         setIsModalOpen(true);
+        log('orders.details.open', { orderId: order.id });
     };
 
     const handleUpdateStatus = (orderId, newStatus) => {
-        setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
-        setSelectedOrder(prev => prev && prev.id === orderId ? { ...prev, status: newStatus } : prev);
-
-        const labels = { pending: 'Pendente', preparing: 'Em Preparo', ready: 'Pronto', finished: 'Finalizado' };
-        toast.success(`Pedido ${orderId} movido para ${labels[newStatus]}`);
-
+        updateOrderStatus(orderId, newStatus);
         if (newStatus === 'finished') setIsModalOpen(false);
     };
 
@@ -169,6 +102,14 @@ export default function Orders() {
                             <KanbanIcon size={20} />
                         </button>
                     </div>
+                    {/* Debug Action */}
+                    <button
+                        onClick={createMockOrder}
+                        className="ml-2 text-xs text-gray-400 hover:text-indigo-600 border border-dashed border-gray-300 rounded px-2"
+                        title="Simular pedido entrando (Dev)"
+                    >
+                        + Demo
+                    </button>
                 </div>
 
                 {/* Table Map Block */}
@@ -227,8 +168,8 @@ export default function Orders() {
                                                     <ShoppingBag size={20} />
                                                 </div>
                                                 <div className="flex flex-col">
-                                                    <span className="font-medium text-gray-900">{order.id}</span>
-                                                    <span className="text-sm text-gray-500">{order.table}</span>
+                                                    <span className="font-medium text-gray-900">#{order.id.toString().slice(0, 8)}</span>
+                                                    <span className="text-sm text-gray-500">{order.table_number || 'Sem mesa'}</span>
                                                 </div>
                                             </div>
                                         </td>
@@ -237,8 +178,12 @@ export default function Orders() {
                                                 {getStatusLabel(order.status)}
                                             </span>
                                         </td>
-                                        <td className="py-4 px-6 text-gray-600">{order.items} itens</td>
-                                        <td className="py-4 px-6 font-medium text-gray-900">{order.total}</td>
+                                        <td className="py-4 px-6 text-gray-600">{order.items?.length || 0} itens</td>
+                                        <td className="py-4 px-6 font-medium text-gray-900">
+                                            {typeof order.total_amount === 'number'
+                                                ? `R$ ${order.total_amount.toFixed(2).replace('.', ',')}`
+                                                : order.total_amount}
+                                        </td>
                                         <td className="py-4 px-6 text-right">
                                             <button
                                                 onClick={() => handleViewOrder(order)}
@@ -254,7 +199,11 @@ export default function Orders() {
                     </div>
                 ) : (
                     /* Kanban View */
-                    <OrdersKanban orders={filteredOrders} onViewOrder={handleViewOrder} />
+                    <OrdersKanban
+                        orders={filteredOrders}
+                        onViewOrder={handleViewOrder}
+                        onUpdateStatus={handleUpdateStatus}
+                    />
                 )}
 
                 <OrderDetailsModal
