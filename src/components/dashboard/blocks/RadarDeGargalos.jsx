@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useAudit } from '../../../hooks/useAudit';
 import { Card } from '../../ui/Card';
 import { AlertTriangle, RotateCw, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Badge } from '../../ui/Badge';
@@ -14,6 +15,8 @@ export default function RadarDeGargalos() {
   const [activeDrawer, setActiveDrawer] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+
+  const { log } = useAudit();
 
   // --- MOCK DATA ---
   const [bottlenecks, setBottlenecks] = useState([
@@ -57,6 +60,7 @@ export default function RadarDeGargalos() {
   };
 
   const handleOpenDrawer = (id) => {
+    log('dashboard.radar.open', { bottleneckId: id });
     // Map ID to drawer type (mock logic)
     const mapping = { 1: 'kitchen', 2: 'entrance', 3: 'bar' };
     setActiveDrawer(mapping[id] || 'summary');

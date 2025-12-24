@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { cn, formatCurrency } from '../../../lib/utils';
 import toast from 'react-hot-toast';
+import { useAudit } from '../../../hooks/useAudit';
 
 // --- SUB-COMPONENTS ---
 
@@ -158,6 +159,8 @@ export function ApplySuggestionsModal({ isOpen, onClose, suggestions = [] }) {
   const [itemStatuses, setItemStatuses] = useState({}); // { id: 'pending' | 'applying' | 'success' | 'error' }
   const [activeEvidenceItem, setActiveEvidenceItem] = useState(null); // [NEW] for drawer
 
+  const { log, logMutation } = useAudit();
+
   // Initialize selection when modal opens
   useEffect(() => {
     if (isOpen && processState === 'idle') {
@@ -221,6 +224,7 @@ export function ApplySuggestionsModal({ isOpen, onClose, suggestions = [] }) {
 
     // Set state
     setItemStatuses(prev => ({ ...prev, [id]: 'applying' }));
+    logMutation('dashboard.maestro.suggestions.applySingle', { suggestionId: id });
 
     try {
       // Simulate API delay
@@ -248,6 +252,7 @@ export function ApplySuggestionsModal({ isOpen, onClose, suggestions = [] }) {
       return;
     }
 
+    logMutation('dashboard.maestro.suggestions.applyBatch', { count: pendingIds.length });
     setProcessState('applying');
 
     // Execute batch sequentially mock

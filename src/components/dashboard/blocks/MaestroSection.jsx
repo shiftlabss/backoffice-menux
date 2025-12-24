@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useAudit } from '../../../hooks/useAudit';
+import toast from 'react-hot-toast';
 import { ApplySuggestionsModal } from './ApplySuggestionsModal';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Form';
@@ -22,8 +24,15 @@ import { cn } from '../../../lib/utils';
 
 /* CARD 1: IMPACTO REAL */
 function ImpactoRealCard() {
+  const { log } = useAudit();
+
+  const handleClick = () => {
+    log('dashboard.maestro.open.impact');
+    toast('Relatório de Impacto em breve...', { icon: '🚧' });
+  };
+
   return (
-    <Card className="h-full p-5 flex flex-col justify-between bg-white border-gray-200 shadow-sm relative overflow-hidden group">
+    <Card onClick={handleClick} className="cursor-pointer active:scale-[0.98] transition-all hover:border-gray-300 hover:shadow-md h-full p-5 flex flex-col justify-between bg-white border-gray-200 shadow-sm relative overflow-hidden group">
       <div className="absolute right-0 top-0 w-24 h-24 bg-gradient-to-br from-emerald-50/50 to-transparent rounded-bl-full opacity-60 pointer-events-none" />
 
       {/* Header */}
@@ -82,6 +91,7 @@ function ImpactoRealCard() {
 /* CARD 2: PROJEÇÃO DO DIA */
 function ProjecaoCard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { log } = useAudit(); // Hook per component
 
   // MOCK DATA SUGGESTIONS
   const suggestions = [
@@ -110,6 +120,11 @@ function ProjecaoCard() {
       effort: "1 min"
     }
   ];
+
+  const handleOpenSuggestions = () => {
+    log('dashboard.maestro.suggestions.openBatch');
+    setIsModalOpen(true);
+  };
 
   return (
     <>
@@ -168,7 +183,7 @@ function ProjecaoCard() {
         <div className="flex gap-2 mt-auto">
           <Button
             className="flex-1 h-8 text-xs font-bold bg-gray-900 text-white hover:bg-black transition-all active:scale-95"
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenSuggestions}
           >
             Aplicar Sugestões
           </Button>
@@ -186,8 +201,15 @@ function ProjecaoCard() {
 
 /* CARD 3: DRIVERS DE RECEITA */
 function DriversCard() {
+  const { log } = useAudit();
+
+  const handleClick = () => {
+    log('dashboard.maestro.open.drivers');
+    toast('Análise de Drivers em breve...', { icon: '🚧' });
+  };
+
   return (
-    <Card className="h-full p-5 flex flex-col bg-white border-gray-200 shadow-sm relative overflow-hidden">
+    <Card onClick={handleClick} className="cursor-pointer active:scale-[0.98] transition-all hover:border-gray-300 hover:shadow-md h-full p-5 flex flex-col bg-white border-gray-200 shadow-sm relative overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>

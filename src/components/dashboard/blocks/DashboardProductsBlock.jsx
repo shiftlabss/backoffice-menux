@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAudit } from '../../../hooks/useAudit';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Button';
@@ -15,7 +16,7 @@ import {
     MousePointer2, ShoppingCart, Receipt, MoreVertical, Star, Edit2,
     Image as ImageIcon, Sparkles, HelpCircle, Target, Info, Zap,
     Search, ArrowUpRight, ArrowDownRight, Layout, Percent, DollarSign,
-    Camera, FileText, Move, Tag, Package, BarChart3, Clock, Check, RefreshCcw
+    Camera, FileText, Move, Tag, Package, BarChart3, Clock, Check, RefreshCcw, AlertTriangle
 } from 'lucide-react';
 import { cn, formatCurrency } from '../../../lib/utils';
 import toast from 'react-hot-toast';
@@ -192,7 +193,19 @@ function ProductInfo({ item }) {
 // --- DETAIL DRAWER ---
 
 function ItemDetailDrawer({ item, isOpen, onClose }) {
+    const { log, logMutation } = useAudit();
+
     if (!item) return null;
+
+    const handleViewMenu = () => {
+        log('dashboard.products.detail.view_menu', { itemId: item.id });
+        // Logic to view in menu
+    };
+
+    const handleSave = () => {
+        logMutation('dashboard.products.detail.save', { itemId: item.id });
+        toast.success("Alterações salvas no produto");
+    };
 
     return (
         <Drawer
@@ -202,8 +215,8 @@ function ItemDetailDrawer({ item, isOpen, onClose }) {
             size="lg"
             footer={
                 <div className="flex gap-2 w-full">
-                    <Button variant="outline" className="flex-1">Ver no Cardápio</Button>
-                    <Button className="flex-1 bg-slate-900 text-white hover:bg-black">Salvar Alterações</Button>
+                    <Button variant="outline" className="flex-1" onClick={handleViewMenu}>Ver no Cardápio</Button>
+                    <Button className="flex-1 bg-slate-900 text-white hover:bg-black" onClick={handleSave}>Salvar Alterações</Button>
                 </div>
             }
         >
@@ -336,19 +349,34 @@ export default function DashboardProductsBlock() {
     const [selectedItem, setSelectedItem] = useState(null);
     const navigate = useNavigate();
 
+    const { log } = useAudit();
+
     const products = RICH_PRODUCTS_DATA[period] || RICH_PRODUCTS_DATA['Hoje'];
 
     const handlePeriodChange = (val) => {
         setIsLoading(true);
         setPeriod(val);
+        log('dashboard.products.filter.period', { value: val });
         setTimeout(() => setIsLoading(false), 800);
     };
 
     const handleSortChange = (e) => {
-        setSortBy(e.target.value);
+        const val = e.target.value;
+        setSortBy(val);
         setIsLoading(true);
+        log('dashboard.products.filter.sort', { value: val });
         setTimeout(() => setIsLoading(false), 400);
     };
+
+    const handleOpenDetail = (item) => {
+        log('dashboard.products.open_detail', { itemId: item.id });
+        setSelectedItem(item);
+    }
+
+    const handleSummaryClick = (type) => {
+        log('dashboard.products.open_summary', { type });
+        toast.info(`Abrindo resumo: ${type}`);
+    }
 
     return (
         <TooltipProvider>
@@ -385,7 +413,7 @@ export default function DashboardProductsBlock() {
                     <div className="px-6 py-2 bg-slate-50/50 border-b border-slate-100 flex flex-wrap items-center gap-6 overflow-hidden animate-in slide-in-from-top-2 duration-300">
                         <div
                             className="flex items-center gap-2 cursor-pointer group/sum hover:bg-white px-2 py-1 rounded-md transition-all"
-                            onClick={() => toast.info('Abrindo resumo completo...')}
+                            onClick={() => handleSummaryClick('Participacao')}
                         >
                             <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
                                 <Layout size={12} />
@@ -397,7 +425,7 @@ export default function DashboardProductsBlock() {
 
                         <div className="w-px h-4 bg-slate-200" />
 
-                        <div className="flex items-center gap-2 group/sum cursor-pointer">
+                        <div className="flex items-center gap-2 group/sum cursor-pointer" onClick={() => handleSummaryClick('Media Conversao')}>
                             <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
                                 <Percent size={12} />
                                 Média Conv. Top 5:
@@ -407,7 +435,7 @@ export default function DashboardProductsBlock() {
 
                         <div className="w-px h-4 bg-slate-200" />
 
-                        <div className="flex items-center gap-2 group/sum cursor-pointer">
+                        <div className="flex items-center gap-2 group/sum cursor-pointer" onClick={() => handleSummaryClick('Destaque')}>
                             <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
                                 <TrendingUp size={12} className="text-emerald-500" />
                                 Destaque:
@@ -417,7 +445,7 @@ export default function DashboardProductsBlock() {
 
                         <div className="w-px h-4 bg-slate-200" />
 
-                        <div className="flex items-center gap-2 group/sum cursor-pointer">
+                        <div className="flex items-center gap-2 group/sum cursor-pointer" onClick={() => handleSummaryClick('Atencao')}>
                             <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
                                 <TrendingDown size={12} className="text-red-500" />
                                 Atenção:
@@ -479,7 +507,7 @@ export default function DashboardProductsBlock() {
                                         <tr
                                             key={item.id}
                                             className="group/row hover:bg-slate-50/80 active:bg-slate-100/50 transition-all duration-160 cursor-pointer"
-                                            onClick={() => setSelectedItem(item)}
+                                            onClick={() => handleOpenDetail(item)}
                                         >
                                             <td className="px-6 py-4">
                                                 <ProductInfo item={item} />

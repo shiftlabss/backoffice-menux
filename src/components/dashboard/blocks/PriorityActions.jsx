@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAudit } from '../../../hooks/useAudit';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Form';
 import { Badge } from '../../ui/Badge';
@@ -48,6 +49,8 @@ export default function PriorityActions() {
     const [actions, setActions] = useState(INITIAL_ACTIONS);
     const [seenAll, setSeenAll] = useState(false);
 
+    const { log, logMutation } = useAudit();
+
     // UI State
     const [isMarkSeenModalOpen, setIsMarkSeenModalOpen] = useState(false);
     const [activeDrawer, setActiveDrawer] = useState(null); // { type: 'stock', action: ... }
@@ -55,6 +58,7 @@ export default function PriorityActions() {
     // --- LOGIC ---
 
     const handleActionClick = (action) => {
+        log('dashboard.priority.open', { actionId: action.id, type: action.id });
         // Open appropriate drawer based on ID/Type
         if (action.id === 'reporEstoque') setActiveDrawer({ type: 'stock', action });
         if (action.id === 'ativarCombo') setActiveDrawer({ type: 'combo', action });
@@ -69,18 +73,17 @@ export default function PriorityActions() {
         // Remove Action with Animation Delay (simulated by React state update)
         setActions(prev => prev.filter(a => a.id !== actionId));
 
+        logMutation('dashboard.priority.resolve', { actionId });
+
         // Feedback
         toast.success(`Pendência resolvida!`, { icon: '✅' });
-
-        // Log Audit Mock
-        console.log(`[AUDIT] Action Resolved: ${actionId}`, { user: 'admin', timestamp: new Date() });
     };
 
     const handleMarkAllSeen = () => {
         setSeenAll(true);
         setIsMarkSeenModalOpen(false);
+        logMutation('dashboard.priority.markAllSeen', { count: actions.length });
         toast.success(`${actions.length} pendências marcadas como vistas`);
-        console.log(`[AUDIT] Mark All Seen`, { user: 'admin', count: actions.length });
     };
 
     // --- RENDER HELPERS ---

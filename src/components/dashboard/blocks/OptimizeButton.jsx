@@ -6,10 +6,12 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '../../ui/Tooltip';
 import { Zap, Loader2, Check, Sparkles, ArrowRight } from 'lucide-react';
 import { useRecommendation, useApplyRecommendation } from '../../../hooks/useItemActions';
 import { cn } from '../../../lib/utils';
+import { useAudit } from '../../../hooks/useAudit';
 
 export function OptimizeButton({ itemId, eligibleForOptimization = true, canOptimize = true, onOpenDetail }) {
   const { data, isLoading, fetchRecommendation } = useRecommendation(itemId);
   const { apply, isApplying } = useApplyRecommendation();
+  const { log, logMutation } = useAudit();
 
   const isDisabled = !eligibleForOptimization || !canOptimize;
   const disabledReason = !canOptimize ? "Permissão necessária: Otimizar" : "Item não elegível para otimização";
@@ -17,8 +19,15 @@ export function OptimizeButton({ itemId, eligibleForOptimization = true, canOpti
   const handleApply = async (e) => {
     e.stopPropagation();
     if (data) {
+      logMutation('dashboard.products.optimize.apply', { itemId, recommendationId: data.id });
       await apply(data.id, itemId);
     }
+  };
+
+  const handleOpen = (e) => {
+    e.stopPropagation();
+    log('dashboard.products.optimize.open', { itemId });
+    fetchRecommendation();
   };
 
   const confidenceStyles = {
@@ -55,10 +64,7 @@ export function OptimizeButton({ itemId, eligibleForOptimization = true, canOpti
         <Button
           variant="outlineSuccess"
           size="sm"
-          onClick={(e) => {
-            e.stopPropagation();
-            fetchRecommendation();
-          }}
+          onClick={handleOpen}
           className="h-8 px-3 gap-1.5 transition-all hover:shadow-md"
         >
           <Zap size={14} className="fill-current" />

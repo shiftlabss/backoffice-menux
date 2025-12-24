@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { useAudit } from '../../../hooks/useAudit';
 import { Card } from '../../ui/Card';
 import { DollarSign, ShoppingBag, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Sparkles, Activity } from 'lucide-react';
 import { Skeleton } from '../../ui/Skeleton';
 
 export default function DashboardKPIsBlock() {
-    const [isLoading, setIsLoading] = useState(true);
+    const { log } = useAudit();
+    const [isLoading, setIsLoading] = useState(false);
 
-    useEffect(() => {
-        const timer = setTimeout(() => setIsLoading(false), 1200);
-        return () => clearTimeout(timer);
-    }, []);
+    // Handler genérico para demonstrar a intenção do clique
+    const handleKpiClick = (label, actionId) => {
+        log(actionId, { label });
+        // Aqui abriríamos um Drawer ou navegaríamos. Por enquanto, Toast.
+        // navigate('/analytics/' + actionId.split('.').pop());
+    };
 
     if (isLoading) {
         return (
@@ -30,7 +34,10 @@ export default function DashboardKPIsBlock() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 items-stretch">
 
             {/* CARD 1: TEMPO DE DECISÃO */}
-            <Card className="p-6 flex flex-col justify-between bg-white border-gray-200 hover:border-gray-300 transition-colors">
+            <Card
+                onClick={() => handleKpiClick('Tempo de Decisão', 'dashboard.kpi.open.timeDecision')}
+                className="p-6 flex flex-col justify-between bg-white border-gray-200 hover:border-gray-300 transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
+            >
                 <div className="flex justify-between items-start mb-4">
                     <div className="p-2 bg-gray-50 rounded-lg border border-gray-100">
                         <Clock className="w-5 h-5 text-gray-500" />
@@ -52,7 +59,10 @@ export default function DashboardKPIsBlock() {
             </Card>
 
             {/* CARD 2: PEDIDOS TOTAIS */}
-            <Card className="p-6 flex flex-col justify-between bg-white border-gray-200 hover:border-gray-300 transition-colors">
+            <Card
+                onClick={() => handleKpiClick('Pedidos Totais', 'dashboard.kpi.open.totalOrders')}
+                className="p-6 flex flex-col justify-between bg-white border-gray-200 hover:border-gray-300 transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
+            >
                 <div className="flex justify-between items-start mb-4">
                     <div className="p-2 bg-gray-50 rounded-lg border border-gray-100">
                         <ShoppingBag className="w-5 h-5 text-gray-500" />
@@ -74,7 +84,10 @@ export default function DashboardKPIsBlock() {
             </Card>
 
             {/* CARD 3: TICKET MÉDIO */}
-            <Card className="p-6 flex flex-col justify-between bg-white border-gray-200 hover:border-gray-300 transition-colors">
+            <Card
+                onClick={() => handleKpiClick('Ticket Médio', 'dashboard.kpi.open.avgTicket')}
+                className="p-6 flex flex-col justify-between bg-white border-gray-200 hover:border-gray-300 transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
+            >
                 <div className="flex justify-between items-start mb-4">
                     <div className="p-2 bg-gray-50 rounded-lg border border-gray-100">
                         <TrendingUp className="w-5 h-5 text-gray-500" />
@@ -100,8 +113,11 @@ export default function DashboardKPIsBlock() {
                 </div>
             </Card>
 
-            {/* CARD 4: RECEITA DO DIA (HERO) - MOVED TO LAST */}
-            <Card className="relative overflow-hidden border border-emerald-100 shadow-sm group lg:col-span-1 bg-emerald-50/50">
+            {/* CARD 4: RECEITA DO DIA (HERO) */}
+            <Card
+                onClick={() => handleKpiClick('Receita do Dia', 'dashboard.kpi.open.revenue')}
+                className="relative overflow-hidden border border-emerald-100 shadow-sm group lg:col-span-1 bg-emerald-50/50 transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
+            >
                 <div className="relative p-6 h-full flex flex-col justify-between">
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-2 bg-white rounded-lg border border-emerald-100 shadow-sm">

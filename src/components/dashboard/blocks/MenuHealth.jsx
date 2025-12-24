@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAudit } from '../../../hooks/useAudit';
 import { Card } from '../../ui/Card';
 import { Button } from '../../ui/Form';
 import { Activity, ImageOff, Tag, AlertTriangle, FileText, CheckCircle2 } from 'lucide-react';
@@ -8,9 +9,11 @@ import toast from 'react-hot-toast';
 export default function MenuHealth() {
   const healthScore = 85;
   const navigate = useNavigate();
+  const { log } = useAudit();
 
   const handleResolve = (type) => {
-    navigate('/menu');
+    log('dashboard.health.resolve', { issueType: type });
+    navigate(`/menu?filter=${type}`);
     toast(`Filtrando produtos com problemas: ${type}`, { icon: '🔍' });
   }
 

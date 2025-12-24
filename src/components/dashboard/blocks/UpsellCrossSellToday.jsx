@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAudit } from '../../../hooks/useAudit';
 import { Card } from '../../ui/Card';
 import { TrendingUp, MousePointer2, ArrowRight } from 'lucide-react';
 import { Button } from '../../ui/Form';
@@ -8,11 +9,14 @@ import toast from 'react-hot-toast';
 
 export default function UpsellCrossSellToday() {
   const navigate = useNavigate();
+  const { log } = useAudit();
 
-  const handleNavigate = () => {
-    navigate('/menu/upsell');
-    toast.loading('Carregando módulo Upsell...', { duration: 1000 });
+  const handleNavigate = (ruleName) => {
+    log('dashboard.upsell.open_rule', { rule: ruleName });
+    navigate(`/menu/upsell?rule=${encodeURIComponent(ruleName)}`);
+    toast.loading(`Carregando regra: ${ruleName}`, { duration: 1000 });
   };
+
 
   return (
     <Card className="p-0 overflow-hidden relative border-l-4 border-l-green-500 h-full flex flex-col">
@@ -39,7 +43,7 @@ export default function UpsellCrossSellToday() {
             { name: 'Batata M -> G', conv: '22%', val: 'R$ 120' },
             { name: 'Adic. Bebida', conv: '15%', val: 'R$ 80' }
           ].map((rule, i) => (
-            <div key={i} className="flex justify-between items-center text-sm border-b border-gray-50 pb-2 last:border-0 hover:bg-gray-50 cursor-pointer p-1 rounded transition-colors" onClick={handleNavigate}>
+            <div key={i} className="flex justify-between items-center text-sm border-b border-gray-50 pb-2 last:border-0 hover:bg-gray-50 cursor-pointer p-1 rounded transition-colors" onClick={() => handleNavigate(rule.name)}>
               <span className="font-medium text-gray-700">{rule.name}</span>
               <div className="flex gap-2">
                 <Badge variant="secondary" className="text-xs font-medium h-5 px-1">{rule.conv}</Badge>

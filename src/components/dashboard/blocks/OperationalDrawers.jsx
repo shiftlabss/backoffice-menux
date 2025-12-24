@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAudit } from '../../../hooks/useAudit';
 import { Drawer } from '../../ui/Drawer';
 import { Button } from '../../ui/Form';
 import {
@@ -300,9 +301,12 @@ export function KitchenOverloadDrawer({ isOpen, onClose }) {
   const [showRedistributeModal, setShowRedistributeModal] = useState(false);
   const [showPauseModal, setShowPauseModal] = useState(false);
 
+  const { logMutation } = useAudit();
+
   // Actions
   const handleRedistribute = () => {
     setShowRedistributeModal(false);
+    logMutation('dashboard.radar.kitchen.redistribute', { count: 8, target: 'Station 2' });
     toast.promise(
       new Promise((resolve) => setTimeout(resolve, 1500)),
       {
@@ -315,6 +319,7 @@ export function KitchenOverloadDrawer({ isOpen, onClose }) {
 
   const handlePause = () => {
     setShowPauseModal(false);
+    logMutation('dashboard.radar.kitchen.pause', { duration: '30min', items: ['Ancho', 'Risoto'] });
     toast.success("Pratos críticos pausados por 30min", { icon: '⏸️' });
   };
 
@@ -400,6 +405,13 @@ export function KitchenOverloadDrawer({ isOpen, onClose }) {
 
 // 5. ENTRANCE WAIT
 export function EntranceWaitDrawer({ isOpen, onClose }) {
+  const { logMutation } = useAudit();
+
+  const handleSendSMS = () => {
+    logMutation('dashboard.radar.entrance.sms');
+    toast.success('SMS de estimativa enviado para fila');
+  };
+
   const footer = (
     <Button variant="outline" onClick={onClose}>Fechar</Button>
   );
@@ -419,7 +431,7 @@ export function EntranceWaitDrawer({ isOpen, onClose }) {
       <p className="text-sm text-gray-600 mb-4">
         O tempo estimado subiu para <strong>45min</strong>. Clientes estão sinalizando insatisfação.
       </p>
-      <Button className="w-full mb-2" onClick={() => toast.success('SMS de estimativa enviado para fila')}>
+      <Button className="w-full mb-2" onClick={handleSendSMS}>
         Enviar SMS de Estimativa Atualizada
       </Button>
     </Drawer>
@@ -428,6 +440,18 @@ export function EntranceWaitDrawer({ isOpen, onClose }) {
 
 // 6. BAR ICE BREAK
 export function BarIceBreakDrawer({ isOpen, onClose }) {
+  const { logMutation } = useAudit();
+
+  const handleNotify = () => {
+    logMutation('dashboard.radar.bar.notify');
+    toast.success('Solicitação de gelo enviada ao Estoque');
+  };
+
+  const handlePauseDrinks = () => {
+    logMutation('dashboard.radar.bar.pause');
+    toast('Drinks com gelo pausados', { icon: 'cocktail' });
+  };
+
   const footer = (
     <Button variant="ghost" onClick={onClose}>Fechar</Button>
   );
@@ -449,10 +473,10 @@ export function BarIceBreakDrawer({ isOpen, onClose }) {
           Recomendação do Maestro: Oferecer drinks "Neat" ou Cervejas até reposição.
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <Button variant="outline" onClick={() => toast.success('Solicitação de gelo enviada ao Estoque')}>
+          <Button variant="outline" onClick={handleNotify}>
             Notificar Reposição
           </Button>
-          <Button variant="outline" onClick={() => toast('Drinks com gelo pausados', { icon: 'cocktail' })}>
+          <Button variant="outline" onClick={handlePauseDrinks}>
             Pausar Drinks c/ Gelo
           </Button>
         </div>

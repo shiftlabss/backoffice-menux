@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAudit } from '../../../hooks/useAudit';
 import { Card } from '../../ui/Card';
 import { Clock, AlertCircle } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -12,6 +13,8 @@ const TABLES = Array(20).fill(null).map((_, i) => ({
 
 export default function DashboardDiningBlock() {
     const navigate = useNavigate();
+
+    const { log } = useAudit();
 
     return (
         <Card className="h-full p-4 lg:p-6 bg-white border-gray-200 shadow-sm flex flex-col relative overflow-hidden">
@@ -36,7 +39,10 @@ export default function DashboardDiningBlock() {
                 {TABLES.map((table) => (
                     <div
                         key={table.id}
-                        onClick={() => navigate('/orders')}
+                        onClick={() => {
+                            log('dashboard.tables.open', { tableId: table.id });
+                            navigate(`/orders?table=${table.id}`);
+                        }}
                         className={cn(
                             "w-full aspect-square rounded-xl flex flex-col items-center justify-center relative cursor-pointer transition-all hover:scale-105 border-2",
                             table.status === 'free' && "bg-gray-50 border-gray-100 text-gray-400 hover:border-gray-300",
