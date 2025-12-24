@@ -4,9 +4,8 @@ import { Card } from '../../ui/Card';
 import { DollarSign, ShoppingBag, Clock, TrendingUp, ArrowUpRight, ArrowDownRight, Sparkles, Activity } from 'lucide-react';
 import { Skeleton } from '../../ui/Skeleton';
 
-export default function DashboardKPIsBlock() {
+export default function DashboardKPIsBlock({ isLoading = false }) {
     const { log } = useAudit();
-    const [isLoading, setIsLoading] = useState(false);
 
     // Handler genérico para demonstrar a intenção do clique
     const handleKpiClick = (label, actionId) => {

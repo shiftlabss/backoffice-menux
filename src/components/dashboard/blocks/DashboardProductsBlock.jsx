@@ -341,12 +341,20 @@ function ItemDetailDrawer({ item, isOpen, onClose }) {
 }
 
 // --- MAIN WRAPPER ---
-export default function DashboardProductsBlock() {
-    const [period, setPeriod] = useState('Hoje');
+export default function DashboardProductsBlock({ isLoading: propLoading = false, period: propPeriod = 'Hoje' }) {
+    const [period, setPeriod] = useState(propPeriod);
     const [sortBy, setSortBy] = useState('Receita');
     const [showCompare, setShowCompare] = useState(true);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(propLoading);
     const [selectedItem, setSelectedItem] = useState(null);
+
+    useEffect(() => {
+        setIsLoading(propLoading);
+    }, [propLoading]);
+
+    useEffect(() => {
+        setPeriod(propPeriod);
+    }, [propPeriod]);
     const navigate = useNavigate();
 
     const { log } = useAudit();
@@ -375,7 +383,18 @@ export default function DashboardProductsBlock() {
 
     const handleSummaryClick = (type) => {
         log('dashboard.products.open_summary', { type });
-        toast.info(`Abrindo resumo: ${type}`);
+        if (type === 'Destaque') {
+            const item = products.find(p => p.id === 3); // Coca-Cola Zero
+            if (item) setSelectedItem(item);
+        } else if (type === 'Atencao') {
+            const item = products.find(p => p.id === 5); // Brownie
+            if (item) setSelectedItem(item);
+        } else if (type === 'Media Conversao') {
+            toast.success("A média de conversão do Top 5 está 12% acima da média geral da loja (16.2%).", {
+                icon: '📈',
+                duration: 4000
+            });
+        }
     }
 
     return (
@@ -411,20 +430,6 @@ export default function DashboardProductsBlock() {
                 {/* --- SUMMARY STRIP --- */}
                 {!isLoading && (
                     <div className="px-6 py-2 bg-slate-50/50 border-b border-slate-100 flex flex-wrap items-center gap-6 overflow-hidden animate-in slide-in-from-top-2 duration-300">
-                        <div
-                            className="flex items-center gap-2 cursor-pointer group/sum hover:bg-white px-2 py-1 rounded-md transition-all"
-                            onClick={() => handleSummaryClick('Participacao')}
-                        >
-                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
-                                <Layout size={12} />
-                                Partic. Top 5:
-                            </div>
-                            <span className="text-[11px] font-extrabold text-slate-900">42.8% da Receita</span>
-                            <ArrowUpRight size={10} className="text-emerald-500 opacity-0 group-hover/sum:opacity-100 transition-opacity" />
-                        </div>
-
-                        <div className="w-px h-4 bg-slate-200" />
-
                         <div className="flex items-center gap-2 group/sum cursor-pointer" onClick={() => handleSummaryClick('Media Conversao')}>
                             <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500">
                                 <Percent size={12} />

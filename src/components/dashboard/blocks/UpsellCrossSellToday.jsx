@@ -7,7 +7,9 @@ import { Badge } from '../../ui/Badge';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-export default function UpsellCrossSellToday() {
+import { Skeleton } from '../../ui/Skeleton';
+
+export default function UpsellCrossSellToday({ isLoading = false }) {
   const navigate = useNavigate();
   const { log } = useAudit();
 
@@ -16,6 +18,23 @@ export default function UpsellCrossSellToday() {
     navigate(`/menu/upsell?rule=${encodeURIComponent(ruleName)}`);
     toast.loading(`Carregando regra: ${ruleName}`, { duration: 1000 });
   };
+
+  if (isLoading) {
+    return (
+      <Card className="p-5 h-full flex flex-col gap-4">
+        <Skeleton className="h-6 w-32" />
+        <div className="grid grid-cols-2 gap-4">
+          <Skeleton className="h-16 w-full rounded-xl" />
+          <Skeleton className="h-16 w-full rounded-xl" />
+        </div>
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+          <Skeleton className="h-10 w-full rounded-lg" />
+        </div>
+      </Card>
+    );
+  }
 
 
   return (

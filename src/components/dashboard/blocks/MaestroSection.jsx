@@ -20,16 +20,43 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 
+import { Skeleton } from '../../ui/Skeleton';
+
 // --- SUB-COMPONENTS ---
 
 /* CARD 1: IMPACTO REAL */
-function ImpactoRealCard() {
+function ImpactoRealCard({ isLoading = false }) {
   const { log } = useAudit();
 
   const handleClick = () => {
     log('dashboard.maestro.open.impact');
     toast('Relatório de Impacto em breve...', { icon: '🚧' });
   };
+
+  if (isLoading) {
+    return (
+      <Card className="h-full p-5 flex flex-col justify-between bg-white border-gray-200">
+        <div className="flex gap-3 items-center">
+          <Skeleton className="h-8 w-8 rounded-lg" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-3 w-32" />
+          </div>
+        </div>
+        <div className="space-y-2 mt-4">
+          <Skeleton className="h-10 w-32" />
+          <Skeleton className="h-3 w-40" />
+        </div>
+        <div className="grid grid-cols-2 gap-3 mt-4">
+          <Skeleton className="h-16 w-full rounded-xl" />
+          <Skeleton className="h-16 w-full rounded-xl" />
+        </div>
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <Skeleton className="h-4 w-full" />
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card onClick={handleClick} className="cursor-pointer active:scale-[0.98] transition-all hover:border-gray-300 hover:shadow-md h-full p-5 flex flex-col justify-between bg-white border-gray-200 shadow-sm relative overflow-hidden group">
@@ -89,7 +116,7 @@ function ImpactoRealCard() {
 }
 
 /* CARD 2: PROJEÇÃO DO DIA */
-function ProjecaoCard() {
+function ProjecaoCard({ isLoading = false }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { log } = useAudit(); // Hook per component
 
@@ -125,6 +152,32 @@ function ProjecaoCard() {
     log('dashboard.maestro.suggestions.openBatch');
     setIsModalOpen(true);
   };
+
+  if (isLoading) {
+    return (
+      <Card className="h-full p-5 flex flex-col justify-between bg-white border-gray-200">
+        <div className="flex justify-between items-start mb-4">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-3 w-40" />
+          </div>
+          <Skeleton className="h-5 w-16" />
+        </div>
+        <div className="flex items-end justify-between mb-4">
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-8 w-24" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-3 w-20" />
+            <Skeleton className="h-6 w-28" />
+          </div>
+        </div>
+        <Skeleton className="h-24 w-full rounded-xl" />
+        <Skeleton className="h-10 w-full rounded-lg mt-4" />
+      </Card>
+    );
+  }
 
   return (
     <>
@@ -200,13 +253,42 @@ function ProjecaoCard() {
 }
 
 /* CARD 3: DRIVERS DE RECEITA */
-function DriversCard() {
+function DriversCard({ isLoading = false }) {
   const { log } = useAudit();
 
   const handleClick = () => {
     log('dashboard.maestro.open.drivers');
     toast('Análise de Drivers em breve...', { icon: '🚧' });
   };
+
+  if (isLoading) {
+    return (
+      <Card className="h-full p-5 flex flex-col bg-white border-gray-200">
+        <div className="flex items-center justify-between mb-4">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-3 w-40" />
+          </div>
+          <Skeleton className="h-8 w-8 rounded-lg" />
+        </div>
+        <div className="flex-1 space-y-6">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="flex gap-3">
+              <Skeleton className="h-8 w-8 rounded-lg" />
+              <div className="flex-1 space-y-2">
+                <div className="flex justify-between">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-4 w-12" />
+                </div>
+                <Skeleton className="h-2 w-full" />
+                <Skeleton className="h-3 w-32" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card onClick={handleClick} className="cursor-pointer active:scale-[0.98] transition-all hover:border-gray-300 hover:shadow-md h-full p-5 flex flex-col bg-white border-gray-200 shadow-sm relative overflow-hidden">
@@ -286,7 +368,7 @@ function DriversCard() {
 }
 
 // --- MAIN WRAPPER ---
-export default function MaestroSection() {
+export default function MaestroSection({ isLoading = false }) {
   return (
     <section>
       <div className="flex items-center gap-2 mb-4 px-1">
@@ -297,17 +379,17 @@ export default function MaestroSection() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
         {/* Card 1: Impacto Real (Always first) */}
         <div className="lg:col-span-1 h-[340px]">
-          <ImpactoRealCard />
+          <ImpactoRealCard isLoading={isLoading} />
         </div>
 
         {/* Card 2: Projeção (Second slot) */}
         <div className="lg:col-span-1 h-[340px]">
-          <ProjecaoCard />
+          <ProjecaoCard isLoading={isLoading} />
         </div>
 
         {/* Card 3: Drivers (Spans 2 cols on tablet to fill row, normal on desktop) */}
         <div className="md:col-span-2 lg:col-span-1 h-[340px]">
-          <DriversCard />
+          <DriversCard isLoading={isLoading} />
         </div>
       </div>
     </section>

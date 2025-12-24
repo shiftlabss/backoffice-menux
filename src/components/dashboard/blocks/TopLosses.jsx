@@ -6,7 +6,9 @@ import { Button } from '../../ui/Form';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-export default function TopLosses() {
+import { Skeleton } from '../../ui/Skeleton';
+
+export default function TopLosses({ isLoading = false }) {
   const navigate = useNavigate();
   const { log } = useAudit();
 
@@ -14,6 +16,31 @@ export default function TopLosses() {
     log('dashboard.losses.open.item', { type, item });
     navigate(`/analytics?view=losses&type=${type}&item=${item}`);
     toast(`Analisando perdas: ${item}`, { icon: '📉' });
+  }
+
+  if (isLoading) {
+    return (
+      <Card className="p-0 overflow-hidden border-gray-200">
+        <div className="p-5 border-b border-gray-100 flex justify-between items-center">
+          <div>
+            <Skeleton className="h-5 w-32 mb-2" />
+            <Skeleton className="h-3 w-48" />
+          </div>
+        </div>
+        <div className="flex flex-col divide-y divide-gray-100">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="p-4 space-y-4">
+              <Skeleton className="h-3 w-24 mb-3" />
+              <div className="space-y-3">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    );
   }
 
   return (

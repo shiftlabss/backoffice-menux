@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { cn } from '../../../lib/utils';
 import toast from 'react-hot-toast';
 
-// New Components
+import { Skeleton } from '../../ui/Skeleton';
 import { OperationCard } from './OperationCard';
 import { MarkAllSeenModal } from './MarkAllSeenModal';
 import { StockDrawer, ComboDrawer, SlaDrawer, GoalDrawer } from './OperationDrawers';
@@ -44,7 +44,7 @@ const INITIAL_ACTIONS = [
     }
 ];
 
-export default function PriorityActions() {
+export default function PriorityActions({ isLoading = false }) {
     const navigate = useNavigate();
     const [actions, setActions] = useState(INITIAL_ACTIONS);
     const [seenAll, setSeenAll] = useState(false);
@@ -106,6 +106,28 @@ export default function PriorityActions() {
             default: return null;
         }
     };
+
+    if (isLoading) {
+        return (
+            <Card className="h-full flex flex-col bg-white border-gray-200 shadow-sm overflow-hidden" >
+                <div className="p-5 border-b border-gray-100">
+                    <Skeleton className="h-5 w-32 mb-2" />
+                    <Skeleton className="h-3 w-48" />
+                </div>
+                <div className="flex-1 p-4 space-y-3">
+                    {[1, 2, 3, 4].map(i => (
+                        <div key={i} className="p-4 bg-gray-50 rounded-xl border border-gray-100 flex gap-4">
+                            <Skeleton className="w-10 h-10 rounded-lg" />
+                            <div className="flex-1 space-y-2">
+                                <Skeleton className="h-4 w-[60%]" />
+                                <Skeleton className="h-3 w-[40%]" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </Card>
+        );
+    }
 
     if (actions.length === 0) {
         return (

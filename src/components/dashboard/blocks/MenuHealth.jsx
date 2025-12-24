@@ -6,7 +6,9 @@ import { Activity, ImageOff, Tag, AlertTriangle, FileText, CheckCircle2 } from '
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
-export default function MenuHealth() {
+import { Skeleton } from '../../ui/Skeleton';
+
+export default function MenuHealth({ isLoading = false }) {
   const healthScore = 85;
   const navigate = useNavigate();
   const { log } = useAudit();
@@ -15,6 +17,25 @@ export default function MenuHealth() {
     log('dashboard.health.resolve', { issueType: type });
     navigate(`/menu?filter=${type}`);
     toast(`Filtrando produtos com problemas: ${type}`, { icon: '🔍' });
+  }
+
+  if (isLoading) {
+    return (
+      <Card className="p-5 h-full flex flex-col gap-4">
+        <div className="flex justify-between items-start">
+          <div>
+            <Skeleton className="h-5 w-32 mb-2" />
+            <Skeleton className="h-3 w-40" />
+          </div>
+          <Skeleton className="h-10 w-10 rounded-full" />
+        </div>
+        <div className="space-y-3 flex-1">
+          <Skeleton className="h-12 w-full rounded-lg" />
+          <Skeleton className="h-12 w-full rounded-lg" />
+          <Skeleton className="h-12 w-full rounded-lg" />
+        </div>
+      </Card>
+    );
   }
 
   return (

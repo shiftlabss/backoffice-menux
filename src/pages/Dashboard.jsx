@@ -89,7 +89,7 @@ export default function Dashboard() {
                 </section>
 
                 {/* --- SEÇÃO 3: MAESTRO & RESULTADOS (Intelligence Layer) --- */}
-                <MaestroSection />
+                <MaestroSection isLoading={isLoading} />
 
                 {/* --- SEÇÃO 4: OPERAÇÃO AGORA (Critical Layout) --- */}
                 <section>
@@ -136,13 +136,13 @@ export default function Dashboard() {
                     {/* Secondary Metrics Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-10 gap-6">
                         <div className="md:col-span-1 xl:col-span-4">
-                            <UpsellCrossSellToday />
+                            <UpsellCrossSellToday isLoading={isLoading} />
                         </div>
                         <div className="md:col-span-1 xl:col-span-3 h-full">
-                            <TopLosses />
+                            <TopLosses isLoading={isLoading} />
                         </div>
                         <div className="md:col-span-1 xl:col-span-3">
-                            <MenuHealth />
+                            <MenuHealth isLoading={isLoading} />
                         </div>
 
                     </div>
