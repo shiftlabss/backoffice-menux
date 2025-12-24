@@ -125,14 +125,15 @@ export default function Dashboard() {
 
 
                     {/* Secondary Metrics Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
-                        <div className="md:col-span-1 xl:col-span-2">
+                    {/* Secondary Metrics Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-10 gap-6">
+                        <div className="md:col-span-1 xl:col-span-4">
                             <UpsellCrossSellToday />
                         </div>
-                        <div className="md:col-span-1 xl:col-span-2 h-full">
+                        <div className="md:col-span-1 xl:col-span-3 h-full">
                             <TopLosses />
                         </div>
-                        <div className="md:col-span-1 xl:col-span-1">
+                        <div className="md:col-span-1 xl:col-span-3">
                             <MenuHealth />
                         </div>
 

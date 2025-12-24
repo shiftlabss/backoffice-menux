@@ -50,16 +50,7 @@ export default function UpsellCrossSellToday() {
         </div>
       </div>
 
-      <div className="bg-gray-50 p-3 border-t border-gray-100 mt-auto">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full text-xs text-green-700 hover:text-green-800 hover:bg-green-50 justify-between"
-          onClick={handleNavigate}
-        >
-          Ver módulo Upsell <ArrowRight size={14} />
-        </Button>
-      </div>
+
     </Card>
   );
 }
