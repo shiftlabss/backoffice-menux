@@ -139,10 +139,7 @@ export default function RadarDeGargalos() {
                   )}
                 </div>
 
-                <Button variant="link" className="w-full text-xs text-gray-500 hover:text-gray-900 justify-between px-2 mt-auto h-auto py-2 group">
-                  Ver histórico de gargalos
-                  <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                </Button>
+
               </div>
 
             </div>

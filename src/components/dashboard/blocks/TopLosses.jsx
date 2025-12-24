@@ -45,7 +45,7 @@ export default function TopLosses() {
               <span className="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">15 views</span>
             </li>
           </ul>
-          <Button variant="ghost" size="sm" className="w-full mt-3 text-xs h-7 text-gray-400 hover:text-gray-900" onClick={() => handleDetail('Geral')}>Ver detalhes</Button>
+
         </div>
 
         {/* Coluna 2: Removidos do Carrinho */}
