@@ -7,7 +7,7 @@ import { useMenux } from '../../context/MenuxContext';
 import { useAuth } from '../../context/AuthContext';
 import NotificationsPopover from './NotificationsPopover';
 
-export default function ModuleLayout({ title, subtitle, items, children, actions }) {
+export default function ModuleLayout({ title, subtitle, items, children, actions, useWindowScroll = false }) {
     const location = useLocation();
     const navigate = useNavigate();
     const { toggleSidebar, role, toggleRole } = useMenux();
@@ -44,7 +44,10 @@ export default function ModuleLayout({ title, subtitle, items, children, actions
     };
 
     return (
-        <div className="flex-1 flex flex-col h-full overflow-hidden bg-background relative">
+        <div className={cn(
+            "flex-1 flex flex-col bg-background relative",
+            useWindowScroll ? "min-h-screen" : "h-full overflow-hidden"
+        )}>
 
             {/* Simple Toast Notification */}
             {toast && (
@@ -131,7 +134,10 @@ export default function ModuleLayout({ title, subtitle, items, children, actions
             </header>
 
             {/* Content Body */}
-            <div className="flex-1 flex flex-col lg:flex-row px-4 lg:px-8 pb-8 gap-4 lg:gap-8 min-h-0 overflow-hidden">
+            <div className={cn(
+                "flex-1 flex flex-col lg:flex-row px-4 lg:px-8 pb-8 gap-4 lg:gap-8",
+                useWindowScroll ? "" : "min-h-0 overflow-hidden"
+            )}>
                 {/* Mobile Navigation (Horizontal Scroll) */}
                 {items && items.length > 0 && (
                     <div className="lg:hidden shrink-0 w-full overflow-x-auto pb-2 flex gap-2 no-scrollbar">
@@ -216,8 +222,9 @@ export default function ModuleLayout({ title, subtitle, items, children, actions
 
                 {/* Main View Area */}
                 <main className={cn(
-                    "flex-1 bg-white rounded-[20px] shadow-sm shadow-black/5 overflow-y-auto p-4 lg:p-10 border",
-                    !items && "ml-0" // If no sidebar, content is full width
+                    "flex-1 bg-white rounded-[20px] shadow-sm shadow-black/5 p-4 lg:p-10 border",
+                    !items && "ml-0", // If no sidebar, content is full width
+                    useWindowScroll ? "" : "overflow-y-auto"
                 )}>
                     {children}
                 </main>

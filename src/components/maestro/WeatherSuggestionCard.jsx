@@ -45,7 +45,7 @@ export function WeatherSuggestionCard({
   const ConfIcon = confInfo.icon;
 
   return (
-    <Card className="flex flex-col h-full border-l-4 border-l-purple-500 hover:shadow-md transition-shadow group">
+    <Card className="flex flex-col border-l-4 border-l-purple-500 hover:shadow-md transition-shadow group">
 
       {/* Header: Timing & Confidence */}
       <CardHeader className="pb-3 pt-4 px-4 flex flex-row items-center justify-between space-y-0">

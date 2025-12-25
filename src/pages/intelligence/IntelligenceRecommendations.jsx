@@ -223,13 +223,13 @@ export default function IntelligenceRecommendations() {
           />
         </div>
 
-        <div className="lg:col-span-2 flex flex-col h-full">
+        <div className="lg:col-span-2 flex flex-col">
           <div className="flex items-center gap-2 mb-4">
             <Sparkles size={18} className="text-purple-600" />
             <h3 className="font-bold text-slate-800">Sugestões baseadas no Clima</h3>
           </div>
           {weatherInsights ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {weatherInsights.insights.slice(0, 2).map((insight, idx) => {
                 const isSecond = idx === 1;
                 return (

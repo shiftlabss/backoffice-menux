@@ -18,6 +18,7 @@ export default function IntelligenceLayout() {
       title={currentItem.label}
       subtitle={currentItem.subtitle}
       items={null} // No sidebar
+      useWindowScroll={true}
       actions={
         <div className="flex bg-gray-100/50 p-1 rounded-lg border border-gray-200/50">
           {['Hoje', 'Ontem', '7 dias', '30 dias'].map((label, index) => {
