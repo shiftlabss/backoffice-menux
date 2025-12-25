@@ -42,6 +42,8 @@ import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
 
 
 
+// --- REF: Added ProductImpactDrawer ---
+import { ProductImpactDrawer } from '../../components/intelligence/ProductImpactDrawer';
 // --- REFACTOR: Moved Logic to Hook and Fixed Imports ---
 import { useNavigate } from 'react-router-dom';
 import { useIntelligenceImpact } from '../../hooks/useIntelligenceImpact';
@@ -204,6 +206,10 @@ const IntelligenceImpact = () => {
   const [trendMetric, setTrendMetric] = useState('revenue');
   const [rankingTab, setRankingTab] = useState('products');
 
+  /* --- STATE FOR DRAWER --- */
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   const [filters, setFilters] = useState({
     period: '7d', // Default to 7d for better data vis
     shift: 'all',
@@ -224,8 +230,9 @@ const IntelligenceImpact = () => {
 
 
   const handleProductDetails = (product) => {
-    log('intelligence.impact.product.details', { productId: product.produto_id });
-    navigate(`/menu/products?highlight=${product.produto_id}`); // Block 3: Real navigation to verified route
+    log('intelligence.impact.product.details.open', { productId: product.produto_id });
+    setSelectedProduct(product);
+    setIsDrawerOpen(true);
   };
 
 
@@ -554,6 +561,14 @@ const IntelligenceImpact = () => {
 
 
       </div >
+
+      {/* PRODUCT DETAILS DRAWER */}
+      <ProductImpactDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        product={selectedProduct}
+        filters={filters}
+      />
     </div >
   );
 
