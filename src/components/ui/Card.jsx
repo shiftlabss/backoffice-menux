@@ -22,6 +22,10 @@ export function CardContent({ className, children, ...props }) {
     return <div className={cn("p-6", className)} {...props}>{children}</div>;
 }
 
+export function CardFooter({ className, children, ...props }) {
+    return <div className={cn("px-6 py-4 flex items-center bg-gray-50/50 border-t border-muted", className)} {...props}>{children}</div>;
+}
+
 export function CardDescription({ className, children, ...props }) {
     return <p className={cn("text-sm text-muted-foreground", className)} {...props}>{children}</p>;
 }

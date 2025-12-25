@@ -23,8 +23,8 @@ export default function DashboardKPIsBlock({ isLoading = false }) {
 
     if (isLoading) {
         return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 items-stretch">
-                {[1, 2, 3, 4, 5].map(i => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 items-stretch">
+                {[1, 2, 3, 4].map(i => (
                     <Card key={i} className="p-6 h-[180px] bg-white border-gray-200">
                         <Skeleton className="h-10 w-10 mb-4" />
                         <Skeleton className="h-6 w-24 mb-2" />
@@ -38,7 +38,7 @@ export default function DashboardKPIsBlock({ isLoading = false }) {
 
     return (
         <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-6 items-stretch">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 items-stretch">
 
                 {/* CARD 1: TEMPO DE DECISÃO */}
                 <Card
@@ -120,44 +120,7 @@ export default function DashboardKPIsBlock({ isLoading = false }) {
                     </div>
                 </Card>
 
-                {/* CARD 4: ITENS ADICIONAIS (NOVO) */}
-                <Card
-                    onClick={() => handleKpiClick('Itens Adicionais', 'dashboard.kpi.open.additionalItems')}
-                    className="p-6 flex flex-col justify-between bg-white border-gray-200 hover:border-gray-300 transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
-                >
-                    <div className="flex justify-between items-start mb-4">
-                        <div className="p-2 bg-gray-50 rounded-lg border border-gray-100">
-                            <Utensils className="w-5 h-5 text-gray-500" />
-                        </div>
-                        <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">
-                            <ArrowUpRight className="w-3 h-3" /> +6.1%
-                        </span>
-                    </div>
 
-                    <div className="flex-1 flex flex-col justify-center mb-2">
-                        <div className="flex items-center gap-1 mb-1">
-                            <span className="text-xs font-medium text-gray-500">Itens Adicionais</span>
-                            <Tooltip>
-                                <TooltipTrigger>
-                                    <Info className="w-3 h-3 text-gray-300 hover:text-gray-500" />
-                                </TooltipTrigger>
-                                <TooltipContent side="bottom" className="max-w-[200px]">
-                                    Média de itens extras (bebidas, entradas, sobremesas) por pedido.
-                                </TooltipContent>
-                            </Tooltip>
-                        </div>
-                        <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                            0.42 <span className="text-sm font-medium text-gray-400">/ped</span>
-                        </h3>
-                    </div>
-
-                    <div className="mt-auto pt-3 border-t border-gray-100 flex items-center gap-2">
-                        <PlusCircle className="w-3 h-3 text-gray-400" />
-                        <span className="text-[10px] text-gray-500">
-                            Upsell: 18% <span className="text-gray-300">|</span> Combo: 9%
-                        </span>
-                    </div>
-                </Card>
 
                 {/* CARD 5: RECEITA DO DIA (HERO) */}
                 <Card
@@ -209,10 +172,7 @@ export default function DashboardKPIsBlock({ isLoading = false }) {
 
             </div>
 
-            <AdditionalItemsDrawer
-                isOpen={selectedKpi === 'additional'}
-                onClose={() => setSelectedKpi(null)}
-            />
+
         </>
     );
 }

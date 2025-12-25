@@ -5,6 +5,7 @@ import { Badge } from '../../components/ui/Badge';
 import { Drawer } from '../../components/ui/Drawer';
 import { WeatherCard } from '../../components/maestro/WeatherCard';
 import { MaestroWeatherInsights } from '../../components/maestro/MaestroWeatherInsights';
+import { WeatherSuggestionCard } from '../../components/maestro/WeatherSuggestionCard';
 import { intelligenceService } from '../../services/dataService';
 import { weatherService } from '../../services/weatherService';
 import { toast } from 'react-hot-toast';
@@ -258,17 +259,26 @@ export default function IntelligenceRecommendations() {
           {weatherInsights ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
               {weatherInsights.insights.slice(0, 2).map((insight, idx) => (
-                <Card key={idx} className="p-4 border-l-4 border-l-purple-500 hover:shadow-md transition-shadow h-full flex flex-col justify-between">
-                  <div className="flex justify-between items-start mb-2">
-                    <Badge variant="secondary" className="bg-purple-50 text-purple-700 text-[10px]">Agora</Badge>
-                    <span className="text-[10px] text-slate-400 font-medium">Confiança Alta</span>
-                  </div>
-                  <h4 className="font-bold text-slate-800 text-sm mb-1">{insight.title}</h4>
-                  <p className="text-xs text-slate-500 mb-3">Aumenta conversão em dias como hoje.</p>
-                  <Button size="sm" className="w-full bg-slate-900 text-white hover:bg-slate-800 h-8 text-xs">
-                    Aplicar Sugestão
-                  </Button>
-                </Card>
+                <WeatherSuggestionCard
+                  key={idx}
+                  suggestion={{
+                    id: idx,
+                    timing: 'Agora',
+                    confidence: 'high',
+                    title: insight.title,
+                    insight: "Tempo quente (+30°C) reduz vendas de pratos quentes em 12% e aumenta bebidas geladas em 18%.",
+                    actions: [
+                      "Destacar categoria 'Bebidas'",
+                      "Sugerir 'Sucos Naturais' no checkout",
+                      "Ocultar 'Sopas' da home"
+                    ],
+                    impact: "Impacto estimado: +R$ 280 a +R$ 420 hoje",
+                    history: { sessions: 1240, days: 14 }
+                  }}
+                  onApply={(s) => handleApply(999 + idx)} // Mock ID
+                  onViewEvidence={() => setDrawerOpen('evidence')}
+                  onEdit={() => toast("Abrindo wizard de edição (Mock)", { icon: '✏️' })}
+                />
               ))}
             </div>
           ) : (

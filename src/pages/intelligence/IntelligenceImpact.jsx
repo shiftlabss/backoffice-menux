@@ -6,7 +6,7 @@ import {
   MousePointer,
   Eye,
   ArrowRight,
-  Download,
+
   Filter,
   ArrowUpRight,
   ArrowDownRight,
@@ -40,7 +40,7 @@ import { cn } from '../../lib/utils';
 import ModuleLayout from '../../components/layout/ModuleLayout';
 import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
 
-import { MaestroHeader } from '../../components/maestro/MaestroHeader';
+
 
 // --- REFACTOR: Moved Logic to Hook and Fixed Imports ---
 import { useNavigate } from 'react-router-dom';
@@ -228,37 +228,7 @@ const IntelligenceImpact = () => {
     navigate(`/menu/products?highlight=${product.produto_id}`); // Block 3: Real navigation to verified route
   };
 
-  const handleExport = () => {
-    log('intelligence.impact.export.csv', { filters }); // Block 9: Log export
 
-    if (!data?.table) return;
-
-    const headers = ['ID', 'Produto', 'Categoria', 'Views', 'Adicoes', 'Pedidos', 'Conv. Maestro', 'Conv. Organica', 'Lift', 'Receita'];
-    const csvContent = [
-      headers.join(','),
-      ...data.table.map(row => [
-        row.produto_id,
-        `"${row.name}"`,
-        row.category,
-        row.views,
-        row.adicoes,
-        row.pedidos,
-        row.conv_maestro,
-        row.conv_organica,
-        row.lift,
-        row.receita_atribuida
-      ].join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', 'maestro_impacto_vendas.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const content = isLoading ? (
     <div className="space-y-6">
