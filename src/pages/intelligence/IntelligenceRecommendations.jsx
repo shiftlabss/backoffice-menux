@@ -341,7 +341,7 @@ export default function IntelligenceRecommendations() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {recommendationsData.map((rec) => (
-              <div key={rec.id} className="p-4 bg-white rounded-lg border border-slate-200 hover:border-purple-300 hover:shadow-md transition-all cursor-pointer group flex flex-col h-full">
+              <div key={rec.id} className="p-4 bg-white rounded-lg border border-slate-200 flex flex-col h-full">
                 <div className="flex items-start justify-between mb-3">
                   <Badge variant="outline" className={cn(
                     "text-xs font-semibold px-2 py-0.5",
@@ -355,7 +355,7 @@ export default function IntelligenceRecommendations() {
                     <CheckCircle2 size={14} className="text-slate-300" />
                   </div>
                 </div>
-                <h4 className="text-sm font-bold text-slate-800 mb-2 leading-tight group-hover:text-purple-700 transition-colors">
+                <h4 className="text-sm font-bold text-slate-800 mb-2 leading-tight transition-colors">
                   {rec.title}
                 </h4>
                 <p className="text-xs text-slate-500 mb-4 line-clamp-3">
