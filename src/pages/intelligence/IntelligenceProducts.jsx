@@ -24,6 +24,7 @@ import {
   XCircle,
   CheckCircle2
 } from 'lucide-react';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '../../lib/utils';
 import { MOCK_PRODUCTS, MOCK_KPIS } from '../../services/mockIntelligence';
 
@@ -322,14 +323,20 @@ export default function IntelligenceProducts() {
             <div>
               <h4 className="font-bold text-slate-900 mb-3">Oportunidades Relacionadas</h4>
               <div className="space-y-2">
-                <div className="p-3 border rounded-lg hover:bg-slate-50 flex justify-between items-center cursor-pointer">
+                <div
+                  className="p-3 border rounded-lg hover:bg-slate-50 flex justify-between items-center cursor-pointer active:bg-slate-100 transition-colors"
+                  onClick={() => toast.success("Sugestão de Upsell configurada!")}
+                >
                   <div className="flex items-center gap-3">
                     <TrendingUp size={16} className="text-blue-500" />
                     <span className="text-sm font-medium text-slate-700">Sugerir como Upsell de Bebida</span>
                   </div>
                   <Badge variant="outline" className="text-[10px]">Pendente</Badge>
                 </div>
-                <div className="p-3 border rounded-lg hover:bg-slate-50 flex justify-between items-center cursor-pointer">
+                <div
+                  className="p-3 border rounded-lg hover:bg-slate-50 flex justify-between items-center cursor-pointer active:bg-slate-100 transition-colors"
+                  onClick={() => toast.success("Combo criado e enviado para aprovação!")}
+                >
                   <div className="flex items-center gap-3">
                     <Layers size={16} className="text-purple-500" />
                     <span className="text-sm font-medium text-slate-700">Criar Combo com Batata</span>
@@ -341,8 +348,58 @@ export default function IntelligenceProducts() {
 
             <div>
               <h4 className="font-bold text-slate-900 mb-3">Histórico de Performance</h4>
-              <div className="h-32 bg-slate-50 rounded-lg border border-dashed flex items-center justify-center text-slate-400 text-xs">
-                Gráfico de evolução de vendas e conversão
+              <div className="h-48 w-full mt-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={[
+                      { date: 'Seg', sales: 120, conv: 12 },
+                      { date: 'Ter', sales: 135, conv: 14 },
+                      { date: 'Qua', sales: 110, conv: 11 },
+                      { date: 'Qui', sales: 195, conv: 18 },
+                      { date: 'Sex', sales: 240, conv: 22 },
+                      { date: 'Sáb', sales: 300, conv: 25 },
+                      { date: 'Dom', sales: 280, conv: 24 },
+                    ]}
+                    margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis
+                      dataKey="date"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 10, fill: '#94a3b8' }}
+                      dy={5}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fontSize: 10, fill: '#94a3b8' }}
+                    />
+                    <Tooltip
+                      contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                      labelStyle={{ fontSize: '11px', color: '#64748B', marginBottom: '4px' }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="sales"
+                      stackId="1"
+                      stroke="#8b5cf6"
+                      fill="#8b5cf6"
+                      fillOpacity={0.1}
+                      name="Vendas"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="conv"
+                      stackId="2"
+                      stroke="#10b981"
+                      fill="#10b981"
+                      fillOpacity={0.1}
+                      name="Conversão"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </div>
 
