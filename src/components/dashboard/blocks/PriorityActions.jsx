@@ -93,9 +93,7 @@ export default function PriorityActions({ isLoading = false }) {
 
         const props = {
             isOpen: true,
-            onClose: () => setActiveDrawer(null),
-            onConfirm: () => handleResolveAction(activeDrawer.action.id),
-            action: activeDrawer.action
+            onClose: () => setActiveDrawer(null)
         };
 
         switch (activeDrawer.type) {

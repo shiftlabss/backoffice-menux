@@ -1,90 +1,226 @@
 import React from 'react';
 import { Drawer } from '../../ui/Drawer';
-import { Button } from '../../ui/Form';
 import { Badge } from '../../ui/Badge';
+import { Button } from '../../ui/Form';
+import {
+  AlertTriangle,
+  Package,
+  TrendingUp,
+  Clock,
+  Target,
+  ArrowRight,
+  Calendar,
+  Database,
+  Info
+} from 'lucide-react';
+import { cn } from '../../../lib/utils';
 
-export function StockDrawer({ isOpen, onClose, onConfirm, action }) {
+// --- SHARED COMPONENTS ---
+
+const AnalyticalBlock = ({ title, children, className }) => (
+  <div className={cn("bg-slate-50 border border-slate-100 rounded-lg p-4 space-y-2", className)}>
+    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wider">{title}</h4>
+    {children}
+  </div>
+);
+
+const MetricRow = ({ label, value, subtext, alert }) => (
+  <div className="flex justify-between items-start">
+    <div>
+      <span className="text-sm font-medium text-slate-700 block">{label}</span>
+      {subtext && <span className="text-xs text-slate-400 block mt-0.5">{subtext}</span>}
+    </div>
+    <div className="text-right">
+      <span className={cn("text-base font-bold block", alert ? "text-red-600" : "text-slate-900")}>{value}</span>
+    </div>
+  </div>
+);
+
+const ContextFooter = ({ lastUpdate, source }) => (
+  <div className="flex justify-between items-center text-[10px] text-slate-400 border-t border-slate-100 pt-3 mt-2">
+    <span>Atualizado: {lastUpdate}</span>
+    <span>Fonte: {source}</span>
+  </div>
+);
+
+// --- DRAWERS ---
+
+export function StockDrawer({ isOpen, onClose }) {
   return (
-    <Drawer isOpen={isOpen} onClose={onClose} title="Repor Estoque: Coca-Cola" size="md">
-      <div className="space-y-6 pt-4">
-        <div className="p-4 bg-red-50 rounded-lg border border-red-100 flex gap-4 items-center">
-          <div className="text-3xl font-bold text-red-600">3un</div>
-          <div>
-            <div className="font-bold text-red-900">Estoque Crítico</div>
-            <div className="text-xs text-red-700">Previsão de ruptura em 20 min</div>
+    <Drawer
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Análise de Ruptura: Coca-Cola"
+      subtitle="Prioridade Alta • Há 15min"
+      size="md"
+      footer={<Button variant="outline" onClick={onClose} className="w-full">Fechar Análise</Button>}
+    >
+      <div className="space-y-4 pt-2">
+        {/* Bloco 1: Situação Atual */}
+        <AnalyticalBlock title="Situação Atual" className="bg-red-50 border-red-100">
+          <MetricRow label="Estoque Físico" value="3 un" alert />
+          <div className="h-px bg-red-200/50 my-2" />
+          <MetricRow label="Consumo Médio (Hora)" value="12 un" />
+          <MetricRow label="Previsão de Ruptura" value="20 min" alert subtext="Baseado no ritmo atual" />
+        </AnalyticalBlock>
+
+        {/* Bloco 2: Impacto Estimado */}
+        <AnalyticalBlock title="Impacto Estimado">
+          <MetricRow label="Pedidos em Risco" value="~22 pedidos" subtext="Próxima 1 hora" />
+          <div className="h-px bg-slate-200 my-2" />
+          <MetricRow label="Receita Potencial Perdida" value="R$ 180,00" alert />
+        </AnalyticalBlock>
+
+        {/* Bloco 3: Contexto Operacional */}
+        <AnalyticalBlock title="Contexto Operacional">
+          <div className="flex gap-2 items-start text-sm text-slate-600 mb-2">
+            <Package size={16} className="mt-0.5 text-slate-400" />
+            <span>Próxima entrega do fornecedor agendada apenas para <strong>Amanhã 08:00</strong>.</span>
           </div>
-        </div>
-        <div className="space-y-2">
-          <h4 className="font-bold text-slate-900">Ações Recomendadas</h4>
-          <Button className="w-full justify-start" variant="outline" onClick={onConfirm}>
-            Notificar Bar (Prioridade Alta)
-          </Button>
-          <Button className="w-full justify-start" variant="outline" onClick={onConfirm}>
-            Criar Ordem de Compra Expressa
-          </Button>
-        </div>
-      </div>
-    </Drawer>
-  );
-}
-
-export function ComboDrawer({ isOpen, onClose, onConfirm, action }) {
-  return (
-    <Drawer isOpen={isOpen} onClose={onClose} title="Ativar Combo 'Happy Hour'" size="md">
-      <div className="space-y-6 pt-4">
-        <div className="p-4 bg-amber-50 rounded-lg border border-amber-100 flex gap-4 items-center">
-          <div className="text-3xl font-bold text-amber-600">+R$ 800</div>
-          <div>
-            <div className="font-bold text-amber-900">Potencial de Ganho</div>
-            <div className="text-xs text-amber-700">Com base no fluxo atual de clientes</div>
+          <div className="flex gap-2 items-start text-sm text-slate-600">
+            <ArrowRight size={16} className="mt-0.5 text-slate-400" />
+            <span>Alternativa disponível: <strong>Pepsi (Estoque: 45un)</strong>.</span>
           </div>
+        </AnalyticalBlock>
+
+        {/* Bloco 4: Observação do Sistema */}
+        <div className="flex gap-2 p-3 bg-blue-50 text-blue-800 rounded-lg text-xs leading-relaxed items-start">
+          <Info size={14} className="mt-0.5 shrink-0" />
+          Historicamente, a ruptura deste item reduz o ticket médio em 15% devido à perda de combos.
         </div>
-        <div className="space-y-2">
-          <p className="text-sm text-slate-600">Este combo inclui 2 Chopps + 1 Porção de Fritas com 15% off.</p>
-          <Button className="w-full bg-slate-900 text-white hover:bg-black" onClick={onConfirm}>
-            Ativar Agora
-          </Button>
-        </div>
+
+        <ContextFooter lastUpdate="Agora mesmo" source="KDS + Estoque" />
       </div>
     </Drawer>
   );
 }
 
-export function SlaDrawer({ isOpen, onClose, onConfirm, action }) {
+export function ComboDrawer({ isOpen, onClose }) {
   return (
-    <Drawer isOpen={isOpen} onClose={onClose} title="Ajustar Tempo de Preparo" size="md">
-      <div className="space-y-6 pt-4">
-        <p className="text-sm text-slate-600">
-          A cozinha está operando com média de <strong>25 min</strong> por prato, acima do SLA de 15 min.
-        </p>
-        <div className="space-y-2">
-          <Button className="w-full" variant="outline" onClick={onConfirm}>
-            Ajustar SLA para 25min (Temporário)
-          </Button>
-          <Button className="w-full" variant="outline" onClick={onConfirm}>
-            Solicitar Reforço de Equipe
-          </Button>
+    <Drawer
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Análise de Oportunidade: Happy Hour"
+      subtitle="Prioridade Média • Há 2h"
+      size="md"
+      footer={<Button variant="outline" onClick={onClose} className="w-full">Fechar Análise</Button>}
+    >
+      <div className="space-y-4 pt-2">
+        <AnalyticalBlock title="Métricas de Ocupação" className="bg-amber-50 border-amber-100">
+          <MetricRow label="Ocupação Atual" value="42%" subtext="Meta para o horário: 65%" />
+          <div className="h-px bg-amber-200/50 my-2" />
+          <MetricRow label="Ticket Médio Atual" value="R$ 45,00" />
+        </AnalyticalBlock>
+
+        <AnalyticalBlock title="Projeção de Impacto">
+          <MetricRow label="Potencial de Mesas" value="+40 mesas" subtext="Estimativa proxs. 2h" />
+          <MetricRow label="Uplift de Receita" value="+ R$ 800,00" className="text-emerald-600" />
+        </AnalyticalBlock>
+
+        <AnalyticalBlock title="Capacidade Operacional">
+          <div className="grid grid-cols-2 gap-2 text-center text-xs">
+            <div className="p-2 bg-white rounded border border-slate-200">
+              <span className="block text-slate-400 mb-1">Cozinha</span>
+              <span className="font-bold text-emerald-600">30% Ociosa</span>
+            </div>
+            <div className="p-2 bg-white rounded border border-slate-200">
+              <span className="block text-slate-400 mb-1">Bar</span>
+              <span className="font-bold text-emerald-600">20% Ocioso</span>
+            </div>
+          </div>
+        </AnalyticalBlock>
+
+        <div className="flex gap-2 p-3 bg-blue-50 text-blue-800 rounded-lg text-xs leading-relaxed items-start">
+          <Info size={14} className="mt-0.5 shrink-0" />
+          Terças-feiras com ativação de Happy Hour apresentam retenção de clientes 20% maior após as 20h.
         </div>
+
+        <ContextFooter lastUpdate="Tempo Real" source="Gestão de Salão" />
       </div>
     </Drawer>
   );
 }
 
-export function GoalDrawer({ isOpen, onClose, onConfirm, action }) {
+export function SlaDrawer({ isOpen, onClose }) {
   return (
-    <Drawer isOpen={isOpen} onClose={onClose} title="Revisar Meta do Jantar" size="md">
-      <div className="space-y-6 pt-4">
-        <p className="text-sm text-slate-600">
-          A meta atual de <strong>R$ 15k</strong> está longe de ser atingida (Proj: R$ 10k).
-        </p>
-        <div className="space-y-2">
-          <Button className="w-full" variant="outline" onClick={onConfirm}>
-            Reduzir Meta para R$ 12k
-          </Button>
-          <Button className="w-full" variant="outline" onClick={onConfirm}>
-            Manter e Criar Incentivo
-          </Button>
+    <Drawer
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Análise de Desvio de SLA: Cozinha"
+      subtitle="Prioridade Alta • Há 5min"
+      size="md"
+      footer={<Button variant="outline" onClick={onClose} className="w-full">Fechar Análise</Button>}
+    >
+      <div className="space-y-4 pt-2">
+        <AnalyticalBlock title="Performance Atual" className="bg-red-50 border-red-100">
+          <MetricRow label="Tempo Médio de Preparo" value="25 min" alert subtext="Meta SLA: 15 min" />
+          <div className="h-px bg-red-200/50 my-2" />
+          <MetricRow label="Pedidos em Atraso" value="8 mesas" subtext="Atraso > 10 min" />
+        </AnalyticalBlock>
+
+        <AnalyticalBlock title="Impacto na Experiência">
+          <MetricRow label="Risco de NPS" value="-15 pts" alert subtext="Projeção baseada em atrasos" />
+          <MetricRow label="Cancelamentos Potenciais" value="Baixo risco" subtext="Clientes informados" />
+        </AnalyticalBlock>
+
+        <AnalyticalBlock title="Diagnóstico de Causa">
+          <div className="flex gap-2 items-start text-sm text-slate-600 mb-2">
+            <AlertTriangle size={16} className="mt-0.5 text-red-400" />
+            <span>Estação de <strong>Grelhados</strong> sobrecarregada (18 pedidos na fila).</span>
+          </div>
+          <div className="flex gap-2 items-start text-sm text-slate-600">
+            <AlertTriangle size={16} className="mt-0.5 text-red-400" />
+            <span>Redução de equipe: <strong>2 cozinheiros ausentes</strong> hoje.</span>
+          </div>
+        </AnalyticalBlock>
+
+        <div className="flex gap-2 p-3 bg-blue-50 text-blue-800 rounded-lg text-xs leading-relaxed items-start">
+          <Info size={14} className="mt-0.5 shrink-0" />
+          Ajustes temporários de SLA no sistema de delivery podem evitar avaliações negativas externas.
         </div>
+
+        <ContextFooter lastUpdate="Agora mesmo" source="KDS Analysis" />
+      </div>
+    </Drawer>
+  );
+}
+
+export function GoalDrawer({ isOpen, onClose }) {
+  return (
+    <Drawer
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Análise de Meta: Jantar"
+      subtitle="Prioridade Média • Há 1h"
+      size="md"
+      footer={<Button variant="outline" onClick={onClose} className="w-full">Fechar Análise</Button>}
+    >
+      <div className="space-y-4 pt-2">
+        <AnalyticalBlock title="Status da Meta" className="bg-slate-50 border-slate-200">
+          <MetricRow label="Faturamento Realizado" value="R$ 3.200" />
+          <div className="h-px bg-slate-200 my-2" />
+          <MetricRow label="Meta do Turno" value="R$ 15.000" />
+          <MetricRow label="Pace (Projeção)" value="R$ 10.000" alert subtext="Gap de R$ 5k previsto" />
+        </AnalyticalBlock>
+
+        <AnalyticalBlock title="Impacto Financeiro">
+          <MetricRow label="Gap para Meta" value="- R$ 5.000" alert className="text-red-600" />
+          <MetricRow label="Impacto Bônus Equipe" value="Em risco" subtext="Gatilho de 90% não atingido" />
+        </AnalyticalBlock>
+
+        <AnalyticalBlock title="Fatores Externos">
+          <div className="flex gap-2 items-start text-sm text-slate-600 mb-2">
+            <Calendar size={16} className="mt-0.5 text-slate-400" />
+            <span>Fatores climáticos: <strong>Chuva forte</strong> na região reduziu fluxo espontâneo em 40%.</span>
+          </div>
+        </AnalyticalBlock>
+
+        <div className="flex gap-2 p-3 bg-blue-50 text-blue-800 rounded-lg text-xs leading-relaxed items-start">
+          <Info size={14} className="mt-0.5 shrink-0" />
+          O canal de Delivery mantém-se estável. Incentivos de venda sugestiva no salão podem mitigar até 20% do gap.
+        </div>
+
+        <ContextFooter lastUpdate="Últimos 5 min" source="Sales Dashboard" />
       </div>
     </Drawer>
   );
