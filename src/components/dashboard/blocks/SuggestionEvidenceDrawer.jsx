@@ -69,7 +69,7 @@ const getMockEvidence = (suggestionId) => {
   });
 };
 
-export function SuggestionEvidenceDrawer({ isOpen, onClose, suggestion }) {
+export function SuggestionEvidenceDrawer({ isOpen, onClose, suggestion, onApply, onEdit }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
@@ -81,7 +81,9 @@ export function SuggestionEvidenceDrawer({ isOpen, onClose, suggestion }) {
       setLoading(true);
       setError(null);
 
-      log('maestro.acceptance.evidence.open', { itemId: suggestion.id });
+      // Log only if not already logged by parent (parent logs click, this logs view load)
+      // or we can stick to one. User asked for specific ID.
+      // log('opportunity.evidence.open', { itemId: suggestion.id }); 
 
       getMockEvidence(suggestion.id)
         .then(data => {
@@ -264,6 +266,22 @@ export function SuggestionEvidenceDrawer({ isOpen, onClose, suggestion }) {
               </div>
             </div>
 
+            {/* CTAs */}
+            <div className="pt-4 flex gap-3 border-t border-slate-100 mt-6">
+              <Button
+                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-200"
+                onClick={() => { onApply?.(suggestion); onClose(); }}
+              >
+                Aplicar esta oportunidade
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1 border-slate-200 text-slate-600 hover:bg-slate-50"
+                onClick={() => { onEdit?.(suggestion); }}
+              >
+                Editar antes
+              </Button>
+            </div>
           </>
         )}
 

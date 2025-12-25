@@ -23,7 +23,7 @@ const dropAnimation = {
   }),
 };
 
-export function KanbanBoard({ data }) {
+export function KanbanBoard({ data, onAction }) {
   const [columns, setColumns] = useState(data);
   const [activeId, setActiveId] = useState(null);
 
@@ -147,6 +147,7 @@ export function KanbanBoard({ data }) {
           color="text-red-600"
           count={columns.high.length}
           className="h-full"
+          onAction={onAction}
         />
         <KanbanColumn
           id="medium"
@@ -155,6 +156,7 @@ export function KanbanBoard({ data }) {
           color="text-amber-600"
           count={columns.medium.length}
           className="h-full"
+          onAction={onAction}
         />
         <KanbanColumn
           id="low"
@@ -163,6 +165,7 @@ export function KanbanBoard({ data }) {
           color="text-blue-600"
           count={columns.low.length}
           className="h-full"
+          onAction={onAction}
         />
       </div>
 

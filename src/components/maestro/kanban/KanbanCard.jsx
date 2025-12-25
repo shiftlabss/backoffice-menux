@@ -18,7 +18,7 @@ import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../../ui/DropdownMenu';
 
-export function KanbanCard({ card, index }) {
+export function KanbanCard({ card, index, onAction }) {
   const {
     attributes,
     listeners,
@@ -45,35 +45,53 @@ export function KanbanCard({ card, index }) {
     );
   }
 
+  const isApplied = card.status === 'applied';
+  const isUnderReview = card.status === 'under_review';
+
   return (
     <div ref={setNodeRef} style={style} {...attributes} {...listeners} className="touch-none">
-      <Card className="group hover:border-purple-300 hover:shadow-md transition-all bg-white overflow-hidden">
+      <Card className={cn(
+        "group hover:border-purple-300 hover:shadow-md transition-all bg-white overflow-hidden",
+        (isApplied || isUnderReview) && "opacity-80 bg-slate-50"
+      )}>
         {/* Header */}
         <div className="p-4 pb-2">
           <div className="flex justify-between items-start mb-2">
-            <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
-              {card.type === 'upsell' && <TrendingUp size={16} />}
-              {card.type === 'cross-sell' && <Sparkles size={16} />}
-              {card.type === 'combo' && <Zap size={16} />}
-              {card.type === 'promo' && <Target size={16} />}
+            <div className={cn(
+              "p-2 rounded-lg",
+              isApplied ? "bg-emerald-50 text-emerald-600" :
+                isUnderReview ? "bg-amber-50 text-amber-600" :
+                  "bg-purple-50 text-purple-600"
+            )}>
+              {isApplied ? <CheckCircle2 size={16} /> :
+                isUnderReview ? <Clock size={16} /> :
+                  (
+                    <>
+                      {card.type === 'upsell' && <TrendingUp size={16} />}
+                      {card.type === 'cross-sell' && <Sparkles size={16} />}
+                      {card.type === 'combo' && <Zap size={16} />}
+                      {card.type === 'promo' && <Target size={16} />}
+                    </>
+                  )
+              }
             </div>
-            {card.requires_approval && (
-              <Badge variant="outline" className="text-[10px] border-amber-200 bg-amber-50 text-amber-700">
-                Requer Aprovação
-              </Badge>
-            )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="text-slate-400 hover:text-slate-600 p-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity">
-                  <MoreHorizontal size={16} />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Ignorar por 7 dias</DropdownMenuItem>
-                <DropdownMenuItem>Copiar link</DropdownMenuItem>
-                <DropdownMenuItem>Ver histórico</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="flex gap-2">
+              {(card.requires_approval || isUnderReview) && (
+                <Badge variant="outline" className={cn(
+                  "text-[10px]",
+                  isUnderReview
+                    ? "border-amber-200 bg-amber-50 text-amber-700"
+                    : "border-slate-200 bg-slate-50 text-slate-500"
+                )}>
+                  {isUnderReview ? "Em Aprovação" : "Requer Aprovação"}
+                </Badge>
+              )}
+              {isApplied && (
+                <Badge variant="outline" className="text-[10px] border-emerald-200 bg-emerald-50 text-emerald-700">
+                  Aplicada
+                </Badge>
+              )}
+            </div>
           </div>
 
           <h4 className="font-bold text-slate-900 text-sm leading-tight mb-2">
@@ -127,11 +145,24 @@ export function KanbanCard({ card, index }) {
             {card.execution_time} min
           </div>
           <div className="flex items-center gap-2">
-            <button className="text-[10px] font-medium text-purple-600 hover:text-purple-800 px-2 py-1 rounded hover:bg-purple-50 transition-colors">
+            <button
+              onClick={(e) => { e.stopPropagation(); onAction?.('evidence', card); }}
+              className="text-[10px] font-medium text-purple-600 hover:text-purple-800 px-2 py-1 rounded hover:bg-purple-50 transition-colors"
+            >
               Evidência
             </button>
-            <Button size="sm" className="h-7 text-xs bg-slate-900 hover:bg-slate-800 text-white px-3 shadow-sm">
-              Aplicar
+            <Button
+              size="sm"
+              onClick={(e) => { e.stopPropagation(); onAction?.('apply', card); }}
+              disabled={isApplied || isUnderReview}
+              className={cn(
+                "h-7 text-xs px-3 shadow-sm transition-all",
+                isApplied ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" :
+                  isUnderReview ? "bg-amber-100 text-amber-700 hover:bg-amber-200" :
+                    "bg-slate-900 hover:bg-slate-800 text-white"
+              )}
+            >
+              {isApplied ? "Aplicada" : isUnderReview ? "Aguardando" : "Aplicar"}
             </Button>
           </div>
         </div>

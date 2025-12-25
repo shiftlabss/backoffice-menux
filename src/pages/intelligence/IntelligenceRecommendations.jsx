@@ -6,6 +6,7 @@ import { Drawer } from '../../components/ui/Drawer';
 import { WeatherCard } from '../../components/maestro/WeatherCard';
 import { MaestroWeatherInsights } from '../../components/maestro/MaestroWeatherInsights';
 import { WeatherSuggestionCard } from '../../components/maestro/WeatherSuggestionCard';
+import { SuggestionEvidenceDrawer } from '../../components/dashboard/blocks/SuggestionEvidenceDrawer';
 import { intelligenceService } from '../../services/dataService';
 import { weatherService } from '../../services/weatherService';
 import { toast } from 'react-hot-toast';
@@ -31,6 +32,7 @@ import { cn } from '../../lib/utils';
 import { MOCK_INSIGHT, MOCK_FORECAST, MOCK_KANBAN_DATA } from '../../services/mockIntelligence'; // Fallback mocks
 import { KanbanBoard } from '../../components/maestro/kanban/KanbanBoard';
 import { ConfirmModal, useConfirmModal } from '../../components/ui/ConfirmModal';
+import { useAudit } from '../../hooks/useAudit';
 
 const recommendationsData = [
   {
@@ -173,6 +175,57 @@ export default function IntelligenceRecommendations() {
     groupedRecs.high = recommendations.slice(0, 3);
     groupedRecs.medium = recommendations.slice(3);
   }
+
+  const { log } = useAudit();
+  const [kanbanData, setKanbanData] = useState(MOCK_KANBAN_DATA);
+
+  const handleKanbanAction = async (action, card) => {
+    if (action === 'evidence') {
+      setSelectedRec(card);
+      setDrawerOpen('evidence');
+      log('opportunity.evidence.open', { opportunityId: card.id, title: card.title });
+    } else if (action === 'apply') {
+      const requiresApproval = card.requires_approval;
+
+      const confirmed = await confirm({
+        title: requiresApproval ? "Solicitar Aprovação" : "Confirmar Aplicação",
+        message: requiresApproval
+          ? `Esta ação requer aprovação. Deseja enviar s solicitação para "${card.title}"?`
+          : `Deseja aplicar imediatamente "${card.title}"? O impacto estimado é de ${card.impact_day_est}.`,
+        variant: requiresApproval ? "warning" : "success",
+        confirmText: requiresApproval ? "Enviar Solicitação" : "Aplicar Agora",
+        cancelText: "Cancelar"
+      });
+
+      if (confirmed) {
+        // Update local state to reflect change
+        setKanbanData(prev => {
+          const newData = { ...prev };
+          // Find which column the card is in
+          Object.keys(newData).forEach(key => {
+            newData[key] = newData[key].map(c => {
+              if (c.id === card.id) {
+                return {
+                  ...c,
+                  status: requiresApproval ? 'under_review' : 'applied'
+                };
+              }
+              return c;
+            });
+          });
+          return newData;
+        });
+
+        if (requiresApproval) {
+          toast.success("Solicitação enviada para aprovação!");
+          log('opportunity.apply.requested', { opportunityId: card.id, title: card.title });
+        } else {
+          toast.success("Oportunidade aplicada com sucesso!");
+          log('opportunity.apply.confirmed', { opportunityId: card.id, title: card.title });
+        }
+      }
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -323,71 +376,26 @@ export default function IntelligenceRecommendations() {
           </div>
         </div>
 
-        <KanbanBoard data={MOCK_KANBAN_DATA} />
+        <KanbanBoard data={kanbanData} onAction={handleKanbanAction} />
       </div>
 
 
 
       {/* --- Drawers --- */}
 
-      {/* Evidence Drawer */}
-      <Drawer
+      <SuggestionEvidenceDrawer
         isOpen={drawerOpen === 'evidence'}
         onClose={() => { setDrawerOpen(null); setSelectedRec(null); }}
-        title="Evidência da Sugestão"
-        size="md" // changed from lg to md for cleaner look
-      >
-        <div className="space-y-6">
-          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
-            <h4 className="font-bold text-slate-800 text-lg mb-1">{selectedRec?.title || "Análise de Contexto"}</h4>
-            <p className="text-sm text-slate-600">{selectedRec?.context || "Análise detalhada do cenário atual comparado com a média histórica."}</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 border rounded-lg">
-              <p className="text-xs text-slate-500 uppercase font-semibold">Impacto Estimado</p>
-              <p className="text-xl font-bold text-emerald-600 mt-1">{selectedRec?.impact_estimate || "+ R$ 450,00"}</p>
-            </div>
-            <div className="p-4 border rounded-lg">
-              <p className="text-xs text-slate-500 uppercase font-semibold">Confiança</p>
-              <p className="text-xl font-bold text-blue-600 mt-1">Alta (92%)</p>
-            </div>
-          </div>
-
-          <div>
-            <h5 className="font-bold text-slate-800 mb-3 flex items-center gap-2">
-              <BarChart3 size={18} className="text-purple-600" /> Comparativo Histórico
-            </h5>
-            {/* Mock Mini Chart */}
-            <div className="h-40 bg-slate-50 rounded-lg flex items-end justify-between p-4 px-8 border border-slate-100">
-              <div className="w-8 bg-slate-300 h-[40%] rounded-t mx-auto relative group">
-                <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-slate-500 opacity-0 group-hover:opacity-100">Sem IA</span>
-              </div>
-              <div className="w-8 bg-purple-500 h-[75%] rounded-t mx-auto relative group">
-                <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-bold text-purple-600 opacity-0 group-hover:opacity-100">Com IA</span>
-              </div>
-            </div>
-            <div className="flex justify-between px-8 mt-2 text-xs text-slate-500 font-medium text-center">
-              <span className="w-8 mx-auto">Média</span>
-              <span className="w-8 mx-auto">Hoje</span>
-            </div>
-          </div>
-
-          <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
-            <p className="text-xs font-bold text-amber-800 uppercase mb-1">Por que aplicar agora?</p>
-            <p className="text-sm text-amber-900/80">O pico de movimento começa em 30 minutos. Aplicar agora maximiza a exposição.</p>
-          </div>
-
-          <div className="pt-4 flex gap-3">
-            <Button className="flex-1 bg-purple-600 hover:bg-purple-700 text-white" onClick={() => { toast.success("Aplicado!"); setDrawerOpen(null); }}>
-              Aplicar Agora
-            </Button>
-            <Button variant="outline" className="flex-1" onClick={() => setDrawerOpen(null)}>
-              Fechar
-            </Button>
-          </div>
-        </div>
-      </Drawer>
+        suggestion={selectedRec}
+        onApply={(rec) => {
+          // If rec comes from drawer, it might be the same as selectedRec
+          // Trigger the central apply logic
+          handleKanbanAction('apply', rec);
+        }}
+        onEdit={(rec) => {
+          toast("Abrindo editor... (Mock)", { icon: "✏️" });
+        }}
+      />
 
       {/* Forecast Drawer */}
       <Drawer

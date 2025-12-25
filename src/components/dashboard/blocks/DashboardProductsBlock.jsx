@@ -240,12 +240,7 @@ function ItemDetailDrawer({ item, isOpen, onClose }) {
             onClose={onClose}
             title="Detalhes do Item"
             size="lg"
-            footer={
-                <div className="flex gap-2 w-full">
-                    <Button variant="outline" className="flex-1" onClick={handleViewMenu}>Ver no Cardápio</Button>
-                    <Button className="flex-1 bg-slate-900 text-white hover:bg-black" onClick={handleSave}>Salvar Alterações</Button>
-                </div>
-            }
+
         >
             <div className="space-y-8 animate-in fade-in duration-300">
                 {/* Header Resumo */}

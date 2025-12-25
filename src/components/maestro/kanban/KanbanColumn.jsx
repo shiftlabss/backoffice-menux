@@ -7,7 +7,7 @@ import { Button } from '../../ui/Button';
 import { cn } from '../../../lib/utils';
 import { Badge } from '../../ui/Badge';
 
-export function KanbanColumn({ id, title, cards, color, count }) {
+export function KanbanColumn({ id, title, cards, color, count, onAction }) {
   const { setNodeRef } = useDroppable({ id });
   const cardIds = useMemo(() => cards.map((c) => c.id), [cards]);
 
@@ -35,7 +35,7 @@ export function KanbanColumn({ id, title, cards, color, count }) {
           <div className="space-y-3 pb-4">
             {cards.length > 0 ? (
               cards.map((card, index) => (
-                <KanbanCard key={card.id} card={card} index={index} />
+                <KanbanCard key={card.id} card={card} index={index} onAction={onAction} />
               ))
             ) : (
               <div className="h-32 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center text-slate-400 gap-2">

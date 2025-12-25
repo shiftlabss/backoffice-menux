@@ -191,22 +191,7 @@ export function MaestroAcceptanceDrawer({ isOpen, onClose, item }) {
         </div>
 
         {/* 4. ACTIONS */}
-        <div className="bg-gray-50 rounded-xl p-6 border border-gray-100 flex items-center justify-between mt-4">
-          <div>
-            <h4 className="text-sm font-bold text-gray-900">Entenda os motivos da aceitação</h4>
-            <p className="text-xs text-gray-500 mt-1 max-w-xs">
-              Veja em detalhes os eventos e gatilhos que geraram estas conversões.
-            </p>
-          </div>
-          <div className="flex gap-3">
-            <Button variant="outline" className="bg-white hover:bg-slate-50" size="sm" onClick={() => {
-              setShowEvidence(true);
-              log('dashboard.maestro.evidence.open', { itemId: item.id });
-            }}>
-              Ver Evidências completas
-            </Button>
-          </div>
-        </div>
+
 
       </div>
 
