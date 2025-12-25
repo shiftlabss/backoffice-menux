@@ -1,14 +1,10 @@
 import React from 'react';
 import {
-  ThermometerSun,
-  CloudRain,
   Clock,
   AlertTriangle,
   CheckCircle2,
   TrendingUp,
-  Info,
-  ArrowRight,
-  MoreHorizontal
+  Info
 } from 'lucide-react';
 import { Card, CardContent, CardFooter, CardHeader } from '../ui/Card';
 import { Button } from '../ui/Button';
@@ -129,26 +125,7 @@ export function WeatherSuggestionCard({
           Aplicar agora
         </Button>
 
-        <div className="flex gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onViewEvidence(suggestion)}
-            className="text-slate-500 hover:text-purple-600 px-2"
-            title="Ver evidência"
-          >
-            <Info size={16} />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEdit(suggestion)}
-            className="text-slate-500 hover:text-purple-600 px-2"
-            title="Editar antes de aplicar"
-          >
-            <MoreHorizontal size={16} />
-          </Button>
-        </div>
+
       </CardFooter>
     </Card>
   );
