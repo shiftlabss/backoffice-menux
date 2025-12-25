@@ -39,97 +39,18 @@ import { Skeleton } from '../../components/ui/Skeleton';
 import { cn } from '../../lib/utils';
 import ModuleLayout from '../../components/layout/ModuleLayout';
 import { intelligenceSidebarItems } from '../../constants/intelligenceSidebar';
-import { ImpactFilters } from '../../components/maestro/ImpactFilters';
+
 import { MaestroHeader } from '../../components/maestro/MaestroHeader';
 
-// --- Local Mock Data Generator ---
+// --- REFACTOR: Moved Logic to Hook and Fixed Imports ---
+import { useNavigate } from 'react-router-dom';
+import { useIntelligenceImpact } from '../../hooks/useIntelligenceImpact';
+import { useAudit } from '../../hooks/useAudit';
 
-const generateTrendData = () => {
-  const days = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-  return days.map(day => ({
-    name: day,
-    total: Math.floor(Math.random() * 5000) + 8000,
-    attributed: Math.floor(Math.random() * 2000) + 3000,
-    organic: Math.floor(Math.random() * 3000) + 5000,
-    conversionMaestro: (Math.random() * 5 + 15).toFixed(1),
-    conversionOrganic: (Math.random() * 5 + 8).toFixed(1),
-    ticketMaestro: (Math.random() * 10 + 45).toFixed(2),
-    ticketOrganic: (Math.random() * 10 + 35).toFixed(2),
-  }));
-};
+// Removed generatedTrendData and mock constants
+// They are now handled inside the hook for consistency.
 
-const funnelData = [
-  { stage: 'Sugestões Exibidas', value: 15420, conversion: '100%', dropoff: '-' },
-  { stage: 'Interações (Cliques)', value: 8420, conversion: '54%', dropoff: '46%' },
-  { stage: 'Itens Adicionados', value: 6150, conversion: '73% (do anterior)', dropoff: '27%' },
-  { stage: 'Pedidos Finalizados', value: 4125, conversion: '67% (do anterior)', dropoff: '33%' },
-  { stage: 'Receita Atribuída', value: 'R$ 28.450', conversion: '-', dropoff: '-' },
-];
 
-const revenueDrivers = [
-  {
-    id: 'upsell',
-    label: 'Upsell (Upgrade/Tamanho)',
-    value: 'R$ 14.230',
-    growth: '+12%',
-    desc: 'Melhoria de oferta no item principal',
-    color: 'text-emerald-600',
-    borderColor: 'border-emerald-200',
-    details: 'Top: Batata Grande (+R$ 4.2k)'
-  },
-  {
-    id: 'cross-sell',
-    label: 'Cross-sell (Complementos)',
-    value: 'R$ 8.540',
-    growth: '+8%',
-    desc: 'Bebidas e sobremesas adicionais',
-    color: 'text-blue-600',
-    borderColor: 'border-blue-200',
-    details: 'Top: Coca-Cola Lata (+R$ 2.1k)'
-  },
-  {
-    id: 'timing',
-    label: 'Timing (Ociosidade)',
-    value: 'R$ 5.120',
-    growth: '+25%',
-    desc: 'Ofertas em momentos ociosos',
-    color: 'text-amber-600',
-    borderColor: 'border-amber-200',
-    details: 'Top: Petit Gateau (+R$ 1.8k)'
-  },
-  {
-    id: 'repositioning',
-    label: 'Reposicionamento (Cardápio)',
-    value: 'R$ 3.250',
-    growth: '+5%',
-    desc: 'Otimização visual de itens',
-    color: 'text-purple-600',
-    borderColor: 'border-purple-200',
-    details: 'Top: Destaque Promoção Almoço'
-  },
-];
-
-const productsData = [
-  { id: 1, name: 'Hambúrguer Clássico', category: 'Lanches', views: 1240, clicks: 850, cart: 600, orders: 450, conv_maestro: '36%', conv_organic: '28%', lift: '+15%', revenue: 'R$ 12.400' },
-  { id: 2, name: 'Refrigerante Lata', category: 'Bebidas', views: 3500, clicks: 1200, cart: 1100, orders: 950, conv_maestro: '27%', conv_organic: '25%', lift: '+8%', revenue: 'R$ 5.500' },
-  { id: 3, name: 'Batata Frita', category: 'Acompanhamentos', views: 2100, clicks: 900, cart: 850, orders: 700, conv_maestro: '33%', conv_organic: '27%', lift: '+22%', revenue: 'R$ 4.250' },
-  { id: 4, name: 'Petit Gateau', category: 'Sobremesas', views: 800, clicks: 300, cart: 250, orders: 200, conv_maestro: '25%', conv_organic: '18%', lift: '+35%', revenue: 'R$ 3.100' },
-  { id: 5, name: 'Suco Natural', category: 'Bebidas', views: 950, clicks: 400, cart: 350, orders: 300, conv_maestro: '31%', conv_organic: '29%', lift: '+5%', revenue: 'R$ 2.800' },
-];
-
-const rulesData = [
-  { id: 1, name: 'Oferta Batata Grande', type: 'Upsell', shown: 4500, clicks: 1200, accepted: 850, revenue: 'R$ 4.250', conversion: '18%' },
-  { id: 2, name: 'Sobremesa Jantar', type: 'Timing', shown: 2100, clicks: 500, accepted: 320, revenue: 'R$ 3.100', conversion: '15%' },
-  { id: 3, name: 'Bebida c/ Lanche', type: 'Cross-sell', shown: 5600, clicks: 1800, accepted: 1400, revenue: 'R$ 7.000', conversion: '25%' },
-];
-
-const shiftsData = [
-  { id: 'jantar', name: 'Jantar', revenue: 'R$ 18.400', lift_conv: '+4.2%', lift_ticket: '+R$ 15.00', opportunity: 'Alta' },
-  { id: 'almoco', name: 'Almoço', revenue: 'R$ 8.200', lift_conv: '+2.1%', lift_ticket: '+R$ 5.50', opportunity: 'Média' },
-  { id: 'madrugada', name: 'Madrugada', revenue: 'R$ 1.850', lift_conv: '+5.5%', lift_ticket: '+R$ 8.00', opportunity: 'Alta' },
-];
-
-// recommendationsData moved to IntelligenceRecommendations.jsx
 
 const InfoTooltip = ({ text }) => (
   <div className="group relative ml-1 inline-flex cursor-help">
@@ -239,8 +160,9 @@ const TrendChart = ({ data, metric, setMetric }) => {
   );
 };
 
-const KPICard = ({ title, value, subtext, trend, trendValue, icon: Icon, info }) => (
-  <Card className="shadow-sm hover:shadow-md transition-shadow">
+const KPICard = ({ title, value, subtext, trend, trendValue, icon: Icon, info, warning }) => (
+  // Removed hover:shadow-md to comply with Audit: "Affordance honesta" (Blocks 4)
+  <Card className="shadow-sm transition-shadow border-slate-200">
     <CardContent className="p-5">
       <div className="flex justify-between items-start mb-2">
         <p className="text-sm font-medium text-slate-500 flex items-center">
@@ -266,47 +188,65 @@ const KPICard = ({ title, value, subtext, trend, trendValue, icon: Icon, info })
           </span>
         )}
       </div>
+      {warning && (
+        <div className="mt-2 pt-2 border-t border-slate-100 text-[10px] text-amber-600 flex items-center">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1"></span>
+          {warning}
+        </div>
+      )}
     </CardContent>
   </Card>
 );
 
 const IntelligenceImpact = () => {
-  const [data, setData] = useState(generateTrendData());
+  const navigate = useNavigate();
+  const { log } = useAudit();
   const [trendMetric, setTrendMetric] = useState('revenue');
-  const [isLoading, setIsLoading] = useState(false);
   const [rankingTab, setRankingTab] = useState('products');
 
   const [filters, setFilters] = useState({
-    period: 'today',
+    period: '7d', // Default to 7d for better data vis
     shift: 'all',
     channel: 'all',
     segment: 'all',
     compare: true
   });
 
+  // Use the new Hook (Block 1)
+  const { data, isLoading, isError } = useIntelligenceImpact(filters);
+
+  // Handlers
   const handleFilterChange = (newFilters) => {
-    setFilters(newFilters);
-    // In a real app, you would trigger a refetch here
-    setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 500); // Simulate loading
+    setFilters(prev => ({ ...prev, ...newFilters }));
+    log('intelligence.impact.filter.change', newFilters);
+  };
+
+
+
+  const handleProductDetails = (product) => {
+    log('intelligence.impact.product.details', { productId: product.produto_id });
+    navigate(`/menu/products?highlight=${product.produto_id}`); // Block 3: Real navigation to verified route
   };
 
   const handleExport = () => {
-    const headers = ['ID', 'Produto', 'Categoria', 'Views', 'Cliques', 'Adicoes', 'Pedidos', 'Conv. Maestro', 'Conv. Organica', 'Lift', 'Receita'];
+    log('intelligence.impact.export.csv', { filters }); // Block 9: Log export
+
+    if (!data?.table) return;
+
+    const headers = ['ID', 'Produto', 'Categoria', 'Views', 'Adicoes', 'Pedidos', 'Conv. Maestro', 'Conv. Organica', 'Lift', 'Receita'];
     const csvContent = [
       headers.join(','),
-      ...productsData.map(row => [
-        row.id,
+      ...data.table.map(row => [
+        row.produto_id,
         `"${row.name}"`,
         row.category,
         row.views,
-        row.clicks,
-        row.cart,
-        row.orders,
+        row.adicoes,
+        row.pedidos,
         row.conv_maestro,
-        row.conv_organic,
+        row.conv_organica,
         row.lift,
-        row.revenue
+        row.receita_atribuida
       ].join(','))
     ].join('\n');
 
@@ -342,12 +282,11 @@ const IntelligenceImpact = () => {
 
 
 
-
       {/* KPI Section */}
       <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6 gap-4">
         <KPICard
           title="Receita Atribuída"
-          value="R$ 28.450"
+          value={`R$ ${data?.kpis.receita_atribuida.toLocaleString('pt-BR')}`}
           subtext="Vendas influenciadas"
           trend="up"
           trendValue="12.5%"
@@ -356,16 +295,17 @@ const IntelligenceImpact = () => {
         />
         <KPICard
           title="Receita Incremental"
-          value="R$ 8.900"
+          value={`R$ ${data?.kpis.receita_incremental.toLocaleString('pt-BR')}`}
           subtext="Estimativa IA"
           trend="up"
           trendValue="15%"
           icon={Lightbulb}
           info="Receita que não teria acontecido sem as sugestões, baseada em grupos de controle."
+          warning={data?.meta.confidenceLevel < 0.8 ? "Baixa confiança estatística" : null} // Block 5: Confidence warning
         />
         <KPICard
           title="Pedidos Influenciados"
-          value="1.240"
+          value={data?.kpis.pedidos_influenciados}
           subtext="28% do total"
           trend="up"
           trendValue="8.2%"
@@ -374,7 +314,7 @@ const IntelligenceImpact = () => {
         />
         <KPICard
           title="Lift Conversão"
-          value="+3.2%"
+          value={data?.kpis.lift_conversao}
           subtext="vs. Orgânico"
           trend="up"
           trendValue="1.1%"
@@ -383,7 +323,7 @@ const IntelligenceImpact = () => {
         />
         <KPICard
           title="Lift Ticket Médio"
-          value="+R$ 12,40"
+          value={data?.kpis.lift_ticket}
           subtext="vs. Sem Maestro"
           trend="up"
           trendValue="R$ 8,50"
@@ -392,7 +332,7 @@ const IntelligenceImpact = () => {
         />
         <KPICard
           title="Confiança Atribuição"
-          value="94%"
+          value={data?.kpis.confianca_atribuicao}
           subtext="Alta Precisão"
           icon={CheckCircle}
           info="Nível de certeza estatística do modelo de atribuição atual."
@@ -404,7 +344,7 @@ const IntelligenceImpact = () => {
 
         {/* Section 3: Time Evolution (Chart) */}
         <div>
-          <TrendChart data={data} metric={trendMetric} setMetric={setTrendMetric} />
+          {data?.trend && <TrendChart data={data.trend} metric={trendMetric} setMetric={setTrendMetric} />}
         </div>
 
         {/* Section 4: Maestro Funnel */}
@@ -417,9 +357,10 @@ const IntelligenceImpact = () => {
             <div className="relative">
               {/* Funnel Steps */}
               <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                {funnelData.map((step, index) => (
-                  <div key={index} className="relative flex flex-col items-center text-center p-4 bg-slate-50 rounded-lg border border-slate-100 group hover:border-purple-200 transition-all">
-                    {index < funnelData.length - 1 && (
+                {data?.funnel.map((step, index) => (
+                  <div key={index} className="relative flex flex-col items-center text-center p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-slate-200 transition-all">
+                    {/* Removed group hover:border-purple-200 to imply non-clickability (Block 4) */}
+                    {index < (data?.funnel?.length || 0) - 1 && (
                       <div className="hidden md:block absolute top-[50%] -right-3 w-6 h-0.5 bg-slate-200 z-10" />
                     )}
                     <div className={cn(
@@ -451,24 +392,7 @@ const IntelligenceImpact = () => {
                 ))}
               </div>
 
-              {/* Automatic Insight / Bottleneck */}
-              <div className="mt-6 bg-amber-50 border border-amber-100 rounded-lg p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-amber-100 rounded-full text-amber-700 mt-0.5">
-                    <ArrowDownRight size={18} />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-amber-900 text-sm">Gargalo Detectado: Interação em Sugestões</h4>
-                    <p className="text-sm text-amber-800/80">
-                      Apenas 54% das sugestões exibidas recebem clique. O benchmark é 65%.
-                      Estima-se perda de <strong className="font-medium">R$ 320/dia</strong> nesta etapa.
-                    </p>
-                  </div>
-                </div>
-                <Button size="sm" variant="outline" className="text-amber-700 border-amber-300 hover:bg-amber-100 whitespace-nowrap">
-                  Ver oportunidades para corrigir
-                </Button>
-              </div>
+
             </div>
           </CardContent>
         </Card>
@@ -480,8 +404,9 @@ const IntelligenceImpact = () => {
             <h3 className="text-lg font-bold text-slate-800">Drivers de Receita</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {revenueDrivers.map((driver) => (
-              <Card key={driver.id} className={cn("border-t-4 shadow-sm hover:shadow-md transition-all", driver.borderColor)}>
+            {data?.drivers.map((driver) => (
+              <Card key={driver.id} className={cn("border-t-4 shadow-sm border-slate-200", driver.borderColor)}>
+                {/* Removed hover:shadow-md (Block 4) */}
                 <CardContent className="p-5">
                   <div className="flex justify-between items-start mb-3">
                     <span className={cn("text-xs font-bold uppercase tracking-wider", driver.color)}>
@@ -559,8 +484,8 @@ const IntelligenceImpact = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {productsData.map((product) => (
-                    <TableRow key={product.id} className="group">
+                  {data?.table.map((product) => (
+                    <TableRow key={product.produto_id} className="group">
                       <TableCell>
                         <div>
                           <p className="font-medium text-slate-900">{product.name}</p>
@@ -568,17 +493,25 @@ const IntelligenceImpact = () => {
                         </div>
                       </TableCell>
                       <TableCell className="text-right text-slate-600">{product.views}</TableCell>
-                      <TableCell className="text-right text-slate-600">{product.cart}</TableCell>
+                      <TableCell className="text-right text-slate-600">{product.adicoes}</TableCell>
                       <TableCell className="text-right">
                         <span className="font-medium text-slate-700">{product.conv_maestro}</span>
-                        <span className="block text-[10px] text-slate-400">Org: {product.conv_organic}</span>
+                        <span className="block text-[10px] text-slate-400">Org: {product.conv_organica}</span>
                       </TableCell>
                       <TableCell className="text-right">
                         <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-100">{product.lift}</Badge>
                       </TableCell>
-                      <TableCell className="text-right font-medium text-slate-900">{product.revenue}</TableCell>
+                      <TableCell className="text-right font-medium text-slate-900">R$ {product.receita_atribuida}</TableCell>
                       <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" className="text-purple-600 hover:text-purple-700 hover:bg-purple-50">Detalhes</Button>
+                        {/* Block 3: Detail Button Fixed */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleProductDetails(product)}
+                          className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                        >
+                          Detalhes
+                        </Button>
                       </TableCell>
                     </TableRow>
                   ))}
