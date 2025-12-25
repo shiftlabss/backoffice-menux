@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { cn } from '../../../lib/utils';
 import { RadarPriorityItem } from './RadarPriorityItem';
 import { RadarNextItem } from './RadarNextItem';
-import { KitchenOverloadDrawer, EntranceWaitDrawer, BarIceBreakDrawer, BottleneckSummaryDrawer } from './OperationalDrawers';
+import { KitchenOverloadDrawer, SlowDecisionDrawer, BarIceBreakDrawer, BottleneckSummaryDrawer } from './OperationalDrawers';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../ui/Tooltip';
 
 export default function RadarDeGargalos({ isLoading = false }) {
@@ -31,12 +31,12 @@ export default function RadarDeGargalos({ isLoading = false }) {
     },
     {
       id: 2,
-      type: 'entrance',
-      title: 'Espera na entrada',
-      evidence: 'Fila de 12 pessoas acumulada',
+      type: 'decision_slow',
+      title: 'Decisão lenta no cardápio',
+      evidence: '9 mesas > 10 min sem pedido',
       priority: 'attention',
-      timeActive: '5 min',
-      impact: { primary: '12 Pessoas', secondary: 'Sala cheia' }
+      timeActive: '14 min',
+      impact: { primary: '9 Mesas', secondary: '~12min média' }
     },
     {
       id: 3,
@@ -62,7 +62,7 @@ export default function RadarDeGargalos({ isLoading = false }) {
   const handleOpenDrawer = (id) => {
     log('dashboard.radar.open', { bottleneckId: id });
     // Map ID to drawer type (mock logic)
-    const mapping = { 1: 'kitchen', 2: 'entrance', 3: 'bar' };
+    const mapping = { 1: 'kitchen', 2: 'decision_slow', 3: 'bar' };
     setActiveDrawer(mapping[id] || 'summary');
   };
 
@@ -169,7 +169,7 @@ export default function RadarDeGargalos({ isLoading = false }) {
 
       {/* DRAWERS (Reused from operational system) */}
       <KitchenOverloadDrawer isOpen={activeDrawer === 'kitchen'} onClose={() => setActiveDrawer(null)} />
-      <EntranceWaitDrawer isOpen={activeDrawer === 'entrance'} onClose={() => setActiveDrawer(null)} />
+      <SlowDecisionDrawer isOpen={activeDrawer === 'decision_slow'} onClose={() => setActiveDrawer(null)} />
       <BarIceBreakDrawer isOpen={activeDrawer === 'bar'} onClose={() => setActiveDrawer(null)} />
       <BottleneckSummaryDrawer isOpen={activeDrawer === 'summary'} onClose={() => setActiveDrawer(null)} />
     </>

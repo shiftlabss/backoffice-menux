@@ -403,37 +403,102 @@ export function KitchenOverloadDrawer({ isOpen, onClose }) {
   );
 }
 
-// 5. ENTRANCE WAIT
-export function EntranceWaitDrawer({ isOpen, onClose }) {
+// 5. SLOW DECISION (DECISÃO LENTA)
+export function SlowDecisionDrawer({ isOpen, onClose }) {
   const { logMutation } = useAudit();
 
-  const handleSendSMS = () => {
-    logMutation('dashboard.radar.entrance.sms');
-    toast.success('SMS de estimativa enviado para fila');
+  const handleApproached = () => {
+    logMutation('dashboard.bottleneck.decision_slow.resolve', { action: 'manual_approach' });
+    toast.success('Mesas marcadas como abordadas!');
+  };
+
+  const handleApplySuggestion = () => {
+    logMutation('dashboard.bottleneck.decision_slow.resolve', { action: 'apply_suggestion' });
+    toast.success('Sugestão de "Entradas Rápidas" enviada para tablets das mesas.', { icon: '💡' });
+  };
+
+  const handleSnooze = () => {
+    logMutation('dashboard.bottleneck.decision_slow.snooze');
+    toast('Alerta silenciado por 20 min.', { icon: 'zzz' });
   };
 
   const footer = (
-    <Button variant="outline" onClick={onClose}>Fechar</Button>
+    <div className="flex flex-col gap-2 w-full sm:flex-row sm:justify-end">
+      <Button variant="ghost" onClick={handleSnooze}>Silenciar (20m)</Button>
+      <Button variant="outline" onClick={handleApproached}>Marcar como Abordado</Button>
+      <Button
+        className="bg-emerald-600 hover:bg-emerald-700 text-white"
+        onClick={handleApplySuggestion}
+      >
+        Aplicar Sugestão
+      </Button>
+    </div>
   );
 
   return (
     <Drawer
       isOpen={isOpen}
       onClose={onClose}
-      title="Espera na Entrada"
+      title="Decisão Lenta no Cardápio"
       footer={footer}
     >
-      <div className="flex items-center gap-2 mb-4 text-gray-500">
-        <Users className="w-5 h-5" />
-        <span className="text-sm">Fila de 12 pessoas acumulada no balcão.</span>
+      <div className="flex items-center gap-2 mb-4 text-orange-600">
+        <Clock className="w-5 h-5" />
+        <span className="text-sm font-semibold">9 mesas sem pedir há &gt; 10 min</span>
       </div>
 
-      <p className="text-sm text-gray-600 mb-4">
-        O tempo estimado subiu para <strong>45min</strong>. Clientes estão sinalizando insatisfação.
-      </p>
-      <Button className="w-full mb-2" onClick={handleSendSMS}>
-        Enviar SMS de Estimativa Atualizada
-      </Button>
+      <div className="space-y-5">
+
+        {/* IMPACT LIST */}
+        <div className="border border-orange-100 rounded-lg overflow-hidden">
+          <div className="bg-orange-50 px-3 py-2 text-xs font-bold text-orange-800 uppercase tracking-wide">
+            Mesas Impactadas
+          </div>
+          {[
+            { mesa: '05', tempo: '14 min', status: 'Crítico' },
+            { mesa: '12', tempo: '12 min', status: 'Atenção' },
+            { mesa: '08', tempo: '11 min', status: 'Atenção' },
+          ].map((item, idx) => (
+            <div key={idx} className="flex items-center justify-between p-3 border-b border-gray-100 last:border-0 bg-white">
+              <div className="flex items-center gap-3">
+                <div className="bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs text-gray-700">
+                  {item.mesa}
+                </div>
+                <div>
+                  <span className="text-sm font-medium text-gray-900 block">Mesa {item.mesa}</span>
+                  <span className="text-xs text-gray-500">Sem pedido há {item.tempo}</span>
+                </div>
+              </div>
+              <Badge variant={item.status === 'Crítico' ? 'destructive' : 'outline'} className={item.status === 'Crítico' ? '' : 'text-orange-600 border-orange-200 bg-orange-50'}>
+                {item.status}
+              </Badge>
+            </div>
+          ))}
+          <div className="p-2 text-center text-xs text-gray-400 bg-gray-50">
+            + 6 outras mesas entre 8-10 min
+          </div>
+        </div>
+
+        {/* MAESTRO SUGGESTION */}
+        <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-2 opacity-10">
+            <Utensils size={64} />
+          </div>
+          <h4 className="flex items-center gap-2 text-emerald-800 font-bold text-sm mb-2">
+            <Activity size={16} /> Sugestão do Maestro
+          </h4>
+          <p className="text-sm text-emerald-900 mb-3">
+            Destravar pedidos oferecendo <strong>"Mix de Entradas"</strong> com 10% OFF nos tablets destas mesas.
+          </p>
+          <div className="bg-white/60 p-3 rounded-lg border border-emerald-100/50">
+            <p className="text-xs font-bold text-emerald-700 uppercase mb-1">Sugestão de Abordagem:</p>
+            <p className="text-sm italic text-emerald-800">
+              "Olá! Enquanto escolhem os pratos principais, que tal nossa tábua de entradas que sai super rápido?"
+            </p>
+          </div>
+        </div>
+
+      </div>
     </Drawer>
   );
 }
