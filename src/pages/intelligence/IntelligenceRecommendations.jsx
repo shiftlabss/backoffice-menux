@@ -116,6 +116,10 @@ export default function IntelligenceRecommendations() {
     }
   };
 
+  const handleLocationChange = (city) => {
+    fetchWeather(city.latitude, city.longitude, city.name);
+  };
+
   const handleFilterChange = (key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
@@ -212,43 +216,11 @@ export default function IntelligenceRecommendations() {
       {/* Bloco 2: Clima hoje e impacto */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 h-full flex flex-col">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="font-bold text-slate-800 flex items-center gap-2">
-                  <ThermometerSun size={18} className="text-orange-500" /> Clima Hoje
-                </h3>
-                <p className="text-xs text-slate-500 mt-1">São Paulo, SP</p>
-              </div>
-              <Button variant="ghost" size="sm" onClick={() => setDrawerOpen('forecast')} className="text-purple-600 text-xs hover:bg-purple-50">
-                Ver próximas horas
-              </Button>
-            </div>
-
-            {weatherLoading ? (
-              <div className="flex-1 flex items-center justify-center animate-pulse bg-slate-100 rounded-lg h-32" />
-            ) : weatherData ? (
-              <div className="flex-1 flex flex-col justify-center">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="p-3 bg-blue-50 rounded-full">
-                    <CloudRain size={32} className="text-blue-500" />
-                  </div>
-                  <div>
-                    <span className="text-3xl font-bold text-slate-900">{Math.round(weatherData.current.temp)}°C</span>
-                    <p className="text-sm text-slate-600 capitalize">{weatherData.current.condition}</p>
-                  </div>
-                </div>
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                  <p className="text-xs font-medium text-slate-700 mb-1">Impacto no consumo:</p>
-                  <p className="text-sm text-slate-600 leading-snug">
-                    Dia chuvoso tende a aumentar pedidos de delivery (+20%) e reduzir movimento no salão.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="text-sm text-slate-500">Dados indisponíveis</div>
-            )}
-          </div>
+          <WeatherCard
+            weatherData={weatherData}
+            loading={weatherLoading}
+            onLocationChange={handleLocationChange}
+          />
         </div>
 
         <div className="lg:col-span-2 flex flex-col h-full">
