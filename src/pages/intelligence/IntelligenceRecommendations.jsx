@@ -230,28 +230,39 @@ export default function IntelligenceRecommendations() {
           </div>
           {weatherInsights ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full">
-              {weatherInsights.insights.slice(0, 2).map((insight, idx) => (
-                <WeatherSuggestionCard
-                  key={idx}
-                  suggestion={{
-                    id: idx,
-                    timing: 'Agora',
-                    confidence: 'high',
-                    title: insight.title,
-                    insight: "Tempo quente (+30°C) reduz vendas de pratos quentes em 12% e aumenta bebidas geladas em 18%.",
-                    actions: [
-                      "Destacar categoria 'Bebidas'",
-                      "Sugerir 'Sucos Naturais' no checkout",
-                      "Ocultar 'Sopas' da home"
-                    ],
-                    impact: "Impacto estimado: +R$ 280 a +R$ 420 hoje",
-                    history: { sessions: 1240, days: 14 }
-                  }}
-                  onApply={(s) => handleApply(999 + idx)} // Mock ID
-                  onViewEvidence={() => setDrawerOpen('evidence')}
-                  onEdit={() => toast("Abrindo wizard de edição (Mock)", { icon: '✏️' })}
-                />
-              ))}
+              {weatherInsights.insights.slice(0, 2).map((insight, idx) => {
+                const isSecond = idx === 1;
+                return (
+                  <WeatherSuggestionCard
+                    key={idx}
+                    suggestion={{
+                      id: idx,
+                      timing: isSecond ? 'Próxima Hora' : 'Agora',
+                      confidence: isSecond ? 'medium' : 'high',
+                      title: insight.title,
+                      insight: isSecond
+                        ? "Aumento de 25% na probabilidade de chuva para o próximo turno (Jantar)."
+                        : "Tempo quente (+30°C) reduz vendas de pratos quentes em 12% e aumenta bebidas geladas em 18%.",
+                      actions: isSecond ? [
+                        "Ativar 'Promoção Dia de Chuva' no Delivery",
+                        "Reforçar equipe de entregadores",
+                        "Sugerir 'Vinhos Tintos' no checkout"
+                      ] : [
+                        "Destacar categoria 'Bebidas'",
+                        "Sugerir 'Sucos Naturais' no checkout",
+                        "Ocultar 'Sopas' da home"
+                      ],
+                      impact: isSecond
+                        ? "Impacto estimado: +R$ 150 a +R$ 300 hoje"
+                        : "Impacto estimado: +R$ 280 a +R$ 420 hoje",
+                      history: isSecond ? { sessions: 980, days: 10 } : { sessions: 1240, days: 14 }
+                    }}
+                    onApply={(s) => handleApply(999 + idx)} // Mock ID
+                    onViewEvidence={() => setDrawerOpen('evidence')}
+                    onEdit={() => toast("Abrindo wizard de edição (Mock)", { icon: '✏️' })}
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="h-32 bg-slate-50 rounded-xl border border-dashed flex items-center justify-center text-slate-400">
