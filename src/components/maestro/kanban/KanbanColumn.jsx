@@ -26,12 +26,7 @@ export function KanbanColumn({ id, title, cards, color, count }) {
             {cards.length}
           </Badge>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] text-slate-400 font-medium">WIP 5</span>
-          <button className="text-slate-300 hover:text-slate-500">
-            <MoreHorizontal size={14} />
-          </button>
-        </div>
+
       </div>
 
       {/* Cards Stack */}

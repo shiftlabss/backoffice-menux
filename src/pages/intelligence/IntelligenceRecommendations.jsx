@@ -284,9 +284,7 @@ export default function IntelligenceRecommendations() {
               <h3 className="text-lg font-semibold text-slate-800">Oportunidades Identificadas</h3>
               <p className="text-sm text-slate-500">Ações recomendadas para maximizar seu faturamento agora</p>
             </div>
-            <Button variant="outline" className="hidden md:flex gap-2">
-              <Download size={16} /> Exportar Relatório
-            </Button>
+
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {recommendationsData.map((rec) => (
@@ -449,17 +447,16 @@ export default function IntelligenceRecommendations() {
 
 // Helper Components
 
-const ContextCard = ({ title, value, subtext, icon: Icon, color, onClick }) => (
+const ContextCard = ({ title, value, subtext, icon: Icon, color }) => (
   <div
-    onClick={onClick}
-    className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-purple-200 transition-all cursor-pointer group"
+    className="bg-white rounded-xl p-5 border border-slate-200 shadow-sm"
   >
     <div className="flex justify-between items-start mb-2">
       <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider">{title}</h3>
-      <Icon size={16} className={cn("opacity-40 group-hover:opacity-100 transition-opacity", color)} />
+      <Icon size={16} className={cn("opacity-40", color)} />
     </div>
     <div className="text-2xl font-bold text-slate-900 mb-1">{value}</div>
-    <p className="text-xs text-slate-400 group-hover:text-slate-600 transition-colors">{subtext}</p>
+    <p className="text-xs text-slate-400">{subtext}</p>
   </div>
 );
 

@@ -100,7 +100,7 @@ export function WeatherCard({ weatherData, loading, onLocationChange }) {
 
   return (
     <>
-      <Card className="flex flex-col justify-between bg-white border border-slate-200 shadow-sm relative overflow-hidden">
+      <Card className="flex flex-col justify-between bg-white border border-slate-200 shadow-sm relative overflow-hidden h-full">
 
         <div className="p-4 flex-1 flex flex-col">
           {/* Header: Compact B2B Line */}
