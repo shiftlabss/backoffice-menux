@@ -377,14 +377,14 @@ export default function MaestroSection({ isLoading = false }) {
           <ImpactoRealCard isLoading={isLoading} />
         </div>
 
-        {/* Card 2: Projeção (Second slot) */}
+        {/* Card 2: Drivers (Now second) */}
         <div className="lg:col-span-1 h-[340px]">
-          <ProjecaoCard isLoading={isLoading} />
+          <DriversCard isLoading={isLoading} />
         </div>
 
-        {/* Card 3: Drivers (Spans 2 cols on tablet to fill row, normal on desktop) */}
+        {/* Card 3: Projeção (Now third) */}
         <div className="md:col-span-2 lg:col-span-1 h-[340px]">
-          <DriversCard isLoading={isLoading} />
+          <ProjecaoCard isLoading={isLoading} />
         </div>
       </div>
     </section>
