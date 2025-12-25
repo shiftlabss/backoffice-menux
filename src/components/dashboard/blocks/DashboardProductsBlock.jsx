@@ -222,6 +222,7 @@ function ProductInfo({ item }) {
 function ItemDetailDrawer({ item, isOpen, onClose }) {
     const { log, logMutation } = useAudit();
 
+
     if (!item) return null;
 
     const handleViewMenu = () => {
@@ -351,7 +352,7 @@ function ItemDetailDrawer({ item, isOpen, onClose }) {
                                             </div>
                                         </div>
                                     </div>
-                                    <Button size="sm" className="h-8 bg-slate-900 text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">Aplicar</Button>
+
                                 </div>
                             </div>
                         ))}
