@@ -110,6 +110,43 @@ export default function Menu() {
     // Initial Load
     useEffect(() => { loadAllItems(); }, []);
 
+    // Handle Deep Linking from Dashboard
+    useEffect(() => {
+        if (location.state?.highlightProductId && categories.length > 0) {
+            const productId = location.state.highlightProductId;
+
+            // Find the product in the nested structure
+            let foundProduct = null;
+            for (const cat of categories) {
+                if (cat.subcategories) {
+                    for (const sub of cat.subcategories) {
+                        if (sub.items) {
+                            const item = sub.items.find(i => i.id === productId);
+                            if (item) {
+                                foundProduct = item;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (foundProduct) break;
+            }
+
+            if (foundProduct) {
+                setProductToEdit(foundProduct);
+                setIsProductModalOpen(true);
+                // Optional: Clear state to avoid reopening on refresh, 
+                // but keeping it might be better if user closes and wants to reopen by reloading? 
+                // Usually better to clear or ignore if already open.
+                // navigate(location.pathname, { replace: true, state: {} }); 
+            } else {
+                // Determine if we are still loading or if it genuinely doesn't exist
+                // If categories are populated but product not found, maybe toast error?
+                // For now, silent fail or maybe a toast
+            }
+        }
+    }, [location.state, categories]);
+
     // Loaders
     const loadAllItems = async () => {
         try {

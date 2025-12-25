@@ -23,6 +23,7 @@ import toast from 'react-hot-toast';
 import { OptimizeButton } from './OptimizeButton';
 import { ItemOverflowMenu } from './ItemOverflowMenu';
 import { MaestroAcceptanceDrawer } from './MaestroAcceptanceDrawer';
+import { ClickableMetricCell } from '../ui/ClickableMetricCell';
 
 // --- MOCK DATA ENRICHED ---
 const RICH_PRODUCTS_DATA = {
@@ -225,7 +226,7 @@ function ItemDetailDrawer({ item, isOpen, onClose }) {
 
     const handleViewMenu = () => {
         log('dashboard.products.detail.view_menu', { itemId: item.id });
-        // Logic to view in menu
+        navigate('/menu/products', { state: { highlightProductId: item.id } });
     };
 
     const handleSave = () => {
@@ -560,70 +561,91 @@ export default function DashboardProductsBlock({ isLoading: propLoading = false,
                                             </td>
 
                                             {/* COLUNA ACEITAÇÃO MAESTRO */}
-                                            <td className="px-4 py-4" onClick={(e) => { e.stopPropagation(); setMaestroItem(item); log('dashboard.topSales.maestroAcceptance.open', { itemId: item.id }); }}>
-                                                {item.maestro.acceptance ? (
-                                                    <div className="flex flex-col group/maestro hover:scale-[1.02] transition-transform origin-left w-fit p-1 -ml-1 rounded-lg cursor-pointer">
+                                            <td className="p-0">
+                                                <ClickableMetricCell
+                                                    onClick={(e) => { e.stopPropagation(); setMaestroItem(item); log('dashboard.topSales.maestroAcceptance.open', { itemId: item.id }); }}
+                                                    tooltip="Ver detalhes de aceitação"
+                                                >
+                                                    {item.maestro.acceptance ? (
+                                                        <div className="flex flex-col">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-base font-extrabold text-slate-900">{item.maestro.acceptance.rate}%</span>
+                                                                {showCompare && (
+                                                                    <span className={cn(
+                                                                        "text-[9px] font-bold",
+                                                                        item.maestro.acceptance.trend === 'up' ? "text-emerald-500" : "text-gray-400"
+                                                                    )}>
+                                                                        {item.maestro.acceptance.trend === 'up' ? '▲' : '▼'} {Math.abs(item.maestro.acceptance.delta)}%
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex flex-col gap-0.5">
+                                                                <span className="text-[10px] font-medium text-slate-400 tracking-tight">
+                                                                    Base: <span className="font-bold">{item.maestro.acceptance.base} sug.</span>
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-col">
+                                                            <span className="text-sm font-bold text-slate-300">—</span>
+                                                            <span className="text-[9px] text-slate-400">Sem sugestões</span>
+                                                        </div>
+                                                    )}
+                                                </ClickableMetricCell>
+                                            </td>
+
+                                            <td className="p-0">
+                                                <ClickableMetricCell
+                                                    tooltip="Ver análise de conversão"
+                                                    // Note: We might want a specific handler here if "Conversão" opens something different than the main drawer
+                                                    // But previous code didn't have a specific onClick for this column (it just bubbled to row click or wasn't specifically clickable distinct from row?)
+                                                    // Wait, the prompt says "Conversão -> funil e breakdown".
+                                                    // The previous code had NO specific onClick on this TD, so it bubbled to `tr.onClick` which opens `handleOpenDetail(item)`.
+                                                    // So, hitting this cell opens the main drawer which HAS the funnel.
+                                                    // SO we keep that behavior but now explicit.
+                                                    onClick={(e) => { e.stopPropagation(); handleOpenDetail(item); }}
+                                                >
+                                                    <div className="flex flex-col">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-base font-extrabold text-slate-900">{item.maestro.acceptance.rate}%</span>
+                                                            <span className="text-base font-extrabold text-slate-900">{item.conversion.current}%</span>
+                                                            {showCompare && (
+                                                                <Badge variant="outline" className={cn(
+                                                                    "text-[9px] px-1.5 py-0 border-0 font-bold",
+                                                                    item.conversion.trend === 'up' ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
+                                                                )}>
+                                                                    {item.conversion.trend === 'up' ? '▲' : '▼'} {item.conversion.delta}%
+                                                                </Badge>
+                                                            )}
+                                                        </div>
+                                                        <span className="text-[10px] font-medium text-slate-400 tracking-tight">
+                                                            Base: <span className="font-bold">{item.conversion.base} sessões</span>
+                                                        </span>
+                                                    </div>
+                                                </ClickableMetricCell>
+                                            </td>
+
+                                            <td className="p-0 text-right md:text-left">
+                                                <ClickableMetricCell
+                                                    tooltip="Ver composição da receita"
+                                                    onClick={(e) => { e.stopPropagation(); handleOpenDetail(item); }}
+                                                >
+                                                    <div className="flex flex-col">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-base font-extrabold text-slate-900">{formatCurrency(item.revenue.current)}</span>
                                                             {showCompare && (
                                                                 <span className={cn(
-                                                                    "text-[9px] font-bold",
-                                                                    item.maestro.acceptance.trend === 'up' ? "text-emerald-500" : "text-gray-400"
+                                                                    "text-[10px] font-bold",
+                                                                    item.revenue.trend.startsWith('+') ? "text-emerald-500" : "text-red-500"
                                                                 )}>
-                                                                    {item.maestro.acceptance.trend === 'up' ? '▲' : '▼'} {Math.abs(item.maestro.acceptance.delta)}%
+                                                                    {item.revenue.trend}
                                                                 </span>
                                                             )}
                                                         </div>
-                                                        <div className="flex flex-col gap-0.5">
-                                                            <span className="text-[10px] font-medium text-slate-400 tracking-tight">
-                                                                Base: <span className="font-bold">{item.maestro.acceptance.base} sug.</span>
-                                                            </span>
-                                                        </div>
+                                                        <span className="text-[10px] font-medium text-slate-400 tracking-tight">
+                                                            Ticket Médio: <span className="font-bold">{formatCurrency(item.revenue.ticket)}</span>
+                                                        </span>
                                                     </div>
-                                                ) : (
-                                                    <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-slate-300">—</span>
-                                                        <span className="text-[9px] text-slate-400">Sem sugestões</span>
-                                                    </div>
-                                                )}
-                                            </td>
-
-                                            <td className="px-4 py-4">
-                                                <div className="flex flex-col">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-base font-extrabold text-slate-900">{item.conversion.current}%</span>
-                                                        {showCompare && (
-                                                            <Badge variant="outline" className={cn(
-                                                                "text-[9px] px-1.5 py-0 border-0 font-bold",
-                                                                item.conversion.trend === 'up' ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
-                                                            )}>
-                                                                {item.conversion.trend === 'up' ? '▲' : '▼'} {item.conversion.delta}%
-                                                            </Badge>
-                                                        )}
-                                                    </div>
-                                                    <span className="text-[10px] font-medium text-slate-400 tracking-tight">
-                                                        Base: <span className="font-bold">{item.conversion.base} sessões</span>
-                                                    </span>
-                                                </div>
-                                            </td>
-
-                                            <td className="px-4 py-4 text-right md:text-left">
-                                                <div className="flex flex-col">
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-base font-extrabold text-slate-900">{formatCurrency(item.revenue.current)}</span>
-                                                        {showCompare && (
-                                                            <span className={cn(
-                                                                "text-[10px] font-bold",
-                                                                item.revenue.trend.startsWith('+') ? "text-emerald-500" : "text-red-500"
-                                                            )}>
-                                                                {item.revenue.trend}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                    <span className="text-[10px] font-medium text-slate-400 tracking-tight">
-                                                        Ticket Médio: <span className="font-bold">{formatCurrency(item.revenue.ticket)}</span>
-                                                    </span>
-                                                </div>
+                                                </ClickableMetricCell>
                                             </td>
                                         </tr>
                                     ))

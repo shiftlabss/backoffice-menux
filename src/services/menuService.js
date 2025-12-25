@@ -18,6 +18,7 @@ export const menuService = {
                         },
                         {
                             id: 12, name: 'Quentes', items: [
+                                { id: 504, name: 'Batata Frita Rústica', price: 32.00, description: 'Batatas rústicas crocantes com alecrim.', is_active: true }, // MATCHING DASHBOARD ID 504
                                 { id: 103, name: 'Bruschetta Pomodoro', price: 28.00, description: 'Pão italiano, tomate picado, alho e azeite.', is_active: true }
                             ]
                         }
@@ -27,9 +28,9 @@ export const menuService = {
                     id: 2, name: 'Pratos Principais', sort_order: 2,
                     subcategories: [
                         {
-                            id: 21, name: 'Carnes', items: [
-                                { id: 201, name: 'Filé Mignon ao Poivre', price: 89.00, description: 'Filé alto com molho de pimenta verde e batatas rústicas.', is_active: true },
-                                { id: 202, name: 'Picanha Grelhada', price: 110.00, description: 'Acompanha arroz biro-biro e farofa de ovos.', is_active: true }
+                            id: 21, name: 'Burgers & Combos', items: [
+                                { id: 501, name: 'Burger Clássico', price: 35.00, description: 'Burger artesanal, queijo cheddar, alface e tomate.', is_active: true }, // MATCHING DASHBOARD ID 501
+                                { id: 502, name: 'Combo Família G', price: 89.90, description: '4 Burgers, 4 Batatas, 1 Refri 2L', is_active: true } // MATCHING DASHBOARD ID 502
                             ]
                         },
                         {
@@ -46,8 +47,18 @@ export const menuService = {
                         { id: 31, name: 'Vinhos', items: [] },
                         {
                             id: 32, name: 'Não Alcoólicos', items: [
-                                { id: 301, name: 'Água Mineral', price: 6.00, is_active: true },
-                                { id: 302, name: 'Refrigerante Lata', price: 8.00, is_active: true }
+                                { id: 503, name: 'Coca-Cola Zero 350ml', price: 8.00, is_active: true }, // MATCHING DASHBOARD ID 503
+                                { id: 301, name: 'Água Mineral', price: 6.00, is_active: true }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    id: 4, name: 'Sobremesas', sort_order: 4,
+                    subcategories: [
+                        {
+                            id: 41, name: 'Doces', items: [
+                                { id: 505, name: 'Brownie de Chocolate com Sorvete', price: 30.00, description: 'Brownie quente com sorvete de creme.', is_active: true } // MATCHING DASHBOARD ID 505
                             ]
                         }
                     ]
