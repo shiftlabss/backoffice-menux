@@ -7,16 +7,20 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 import { Skeleton } from '../../ui/Skeleton';
+import { ResolveMenuHealthModal } from './ResolveMenuHealthModal';
 
 export default function MenuHealth({ isLoading = false }) {
   const healthScore = 85;
   const navigate = useNavigate();
   const { log } = useAudit();
 
+  /* --- MODAL STATE --- */
+  const [isResolveModalOpen, setIsResolveModalOpen] = React.useState(false);
+
+  // Updated handler to open modal instead of navigating
   const handleResolve = (type) => {
     log('dashboard.health.resolve', { issueType: type });
-    navigate(`/menu?filter=${type}`);
-    toast(`Filtrando produtos com problemas: ${type}`, { icon: '🔍' });
+    setIsResolveModalOpen(true);
   }
 
   if (isLoading) {
@@ -93,6 +97,12 @@ export default function MenuHealth({ isLoading = false }) {
       >
         Resolver Pendências
       </Button>
+
+      {/* MODAL */}
+      <ResolveMenuHealthModal
+        isOpen={isResolveModalOpen}
+        onClose={() => setIsResolveModalOpen(false)}
+      />
     </Card>
   );
 }

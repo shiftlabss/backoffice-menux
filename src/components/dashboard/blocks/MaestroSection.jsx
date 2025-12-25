@@ -26,12 +26,7 @@ import { Skeleton } from '../../ui/Skeleton';
 
 /* CARD 1: IMPACTO REAL */
 function ImpactoRealCard({ isLoading = false }) {
-  const { log } = useAudit();
 
-  const handleClick = () => {
-    log('dashboard.maestro.open.impact');
-    toast('Relatório de Impacto em breve...', { icon: '🚧' });
-  };
 
   if (isLoading) {
     return (
@@ -59,7 +54,7 @@ function ImpactoRealCard({ isLoading = false }) {
   }
 
   return (
-    <Card onClick={handleClick} className="cursor-pointer active:scale-[0.98] transition-all hover:border-gray-300 hover:shadow-md h-full p-5 flex flex-col justify-between bg-white border-gray-200 shadow-sm relative overflow-hidden group">
+    <Card className="h-full p-5 flex flex-col justify-between bg-white border-gray-200 shadow-sm relative overflow-hidden">
       <div className="absolute right-0 top-0 w-24 h-24 bg-gradient-to-br from-emerald-50/50 to-transparent rounded-bl-full opacity-60 pointer-events-none" />
 
       {/* Header */}
