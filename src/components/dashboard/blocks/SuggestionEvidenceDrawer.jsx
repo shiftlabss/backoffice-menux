@@ -269,17 +269,10 @@ export function SuggestionEvidenceDrawer({ isOpen, onClose, suggestion, onApply,
             {/* CTAs */}
             <div className="pt-4 flex gap-3 border-t border-slate-100 mt-6">
               <Button
-                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-200"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-200"
                 onClick={() => { onApply?.(suggestion); onClose(); }}
               >
                 Aplicar esta oportunidade
-              </Button>
-              <Button
-                variant="outline"
-                className="flex-1 border-slate-200 text-slate-600 hover:bg-slate-50"
-                onClick={() => { onEdit?.(suggestion); }}
-              >
-                Editar antes
               </Button>
             </div>
           </>
