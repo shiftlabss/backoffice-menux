@@ -233,7 +233,7 @@ function ProjecaoCard({ isLoading = false }) {
             className="flex-1 h-8 text-xs font-bold bg-gray-900 text-white hover:bg-black transition-all active:scale-95"
             onClick={handleOpenSuggestions}
           >
-            Aplicar Sugestões
+            Ver Sugestões
           </Button>
         </div>
       </Card>
@@ -286,7 +286,7 @@ function DriversCard({ isLoading = false }) {
   }
 
   return (
-    <Card onClick={handleClick} className="cursor-pointer active:scale-[0.98] transition-all hover:border-gray-300 hover:shadow-md h-full p-5 flex flex-col bg-white border-gray-200 shadow-sm relative overflow-hidden">
+    <Card className="h-full p-5 flex flex-col bg-white border-gray-200 shadow-sm relative overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>

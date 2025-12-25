@@ -42,8 +42,7 @@ export default function DashboardKPIsBlock({ isLoading = false }) {
 
                 {/* CARD 1: TEMPO DE DECISÃO */}
                 <Card
-                    onClick={() => handleKpiClick('Tempo de Decisão', 'dashboard.kpi.open.timeDecision')}
-                    className="p-6 flex flex-col justify-between bg-white border-gray-200 hover:border-gray-300 transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
+                    className="p-6 flex flex-col justify-between bg-white border-gray-200 transition-all"
                 >
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-2 bg-gray-50 rounded-lg border border-gray-100">
@@ -67,8 +66,7 @@ export default function DashboardKPIsBlock({ isLoading = false }) {
 
                 {/* CARD 2: PEDIDOS TOTAIS */}
                 <Card
-                    onClick={() => handleKpiClick('Pedidos Totais', 'dashboard.kpi.open.totalOrders')}
-                    className="p-6 flex flex-col justify-between bg-white border-gray-200 hover:border-gray-300 transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
+                    className="p-6 flex flex-col justify-between bg-white border-gray-200 transition-all"
                 >
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-2 bg-gray-50 rounded-lg border border-gray-100">
@@ -92,8 +90,7 @@ export default function DashboardKPIsBlock({ isLoading = false }) {
 
                 {/* CARD 3: TICKET MÉDIO */}
                 <Card
-                    onClick={() => handleKpiClick('Ticket Médio', 'dashboard.kpi.open.avgTicket')}
-                    className="p-6 flex flex-col justify-between bg-white border-gray-200 hover:border-gray-300 transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
+                    className="p-6 flex flex-col justify-between bg-white border-gray-200 transition-all"
                 >
                     <div className="flex justify-between items-start mb-4">
                         <div className="p-2 bg-gray-50 rounded-lg border border-gray-100">
@@ -124,8 +121,7 @@ export default function DashboardKPIsBlock({ isLoading = false }) {
 
                 {/* CARD 5: RECEITA DO DIA (HERO) */}
                 <Card
-                    onClick={() => handleKpiClick('Receita do Dia', 'dashboard.kpi.open.revenue')}
-                    className="relative overflow-hidden border border-emerald-100 shadow-sm group lg:col-span-1 bg-emerald-50/50 transition-all hover:shadow-md cursor-pointer active:scale-[0.98]"
+                    className="relative overflow-hidden border border-emerald-100 shadow-sm group lg:col-span-1 bg-emerald-50/50 transition-all"
                 >
                     <div className="relative p-6 h-full flex flex-col justify-between">
                         <div className="flex justify-between items-start mb-4">

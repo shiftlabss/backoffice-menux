@@ -118,13 +118,21 @@ export function SuggestionEvidenceDrawer({ isOpen, onClose, suggestion, onApply,
       subtitle={`Auditoria detalhada de sugestões para ${suggestion?.name}`}
       size="lg"
       footer={
-        <div className="flex w-full justify-between items-center">
-          <div className="text-xs text-slate-400">
+        <div className="flex w-full justify-between items-center gap-4">
+          <div className="text-xs text-slate-400 shrink-0">
             ID da Análise: <span className="font-mono">{String(suggestion?.id || '').substring(0, 8) || '---'}</span>
           </div>
-          <Button variant="outline" onClick={onClose}>
-            Fechar
-          </Button>
+          <div className="flex gap-2 flex-1 justify-end">
+            <Button
+              className="bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-200"
+              onClick={() => { onApply?.(suggestion); onClose(); }}
+            >
+              Aplicar
+            </Button>
+            <Button variant="outline" onClick={onClose}>
+              Fechar
+            </Button>
+          </div>
         </div>
       }
     >
@@ -266,15 +274,7 @@ export function SuggestionEvidenceDrawer({ isOpen, onClose, suggestion, onApply,
               </div>
             </div>
 
-            {/* CTAs */}
-            <div className="pt-4 flex gap-3 border-t border-slate-100 mt-6">
-              <Button
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white shadow-md shadow-purple-200"
-                onClick={() => { onApply?.(suggestion); onClose(); }}
-              >
-                Aplicar esta oportunidade
-              </Button>
-            </div>
+
           </>
         )}
 
