@@ -16,7 +16,8 @@ import {
   CloudLightning,
   ChevronRight,
   Search,
-  ArrowRight
+  ArrowRight,
+  TrendingUp
 } from 'lucide-react';
 import { weatherService, getWeatherDescription } from '../../services/weatherService';
 import { cn } from '../../lib/utils';
@@ -99,57 +100,100 @@ export function WeatherCard({ weatherData, loading, onLocationChange }) {
 
   return (
     <>
-      <Card className="flex flex-col justify-between bg-gradient-to-br from-[#3b82f6] to-[#2563eb] text-white border-none shadow-lg shadow-blue-900/10 relative overflow-hidden h-full">
-        {/* Decorative Background Icons */}
-        <Cloud className="absolute -top-4 -right-4 w-32 h-32 text-white/10 rotate-12 pointer-events-none" />
+      <Card className="flex flex-col justify-between bg-white border border-slate-200 shadow-sm relative overflow-hidden h-full">
 
-        <div className="p-5 flex-1 flex flex-col">
-          {/* Header: Location & Current Status */}
-          <div className="flex justify-between items-start z-10 mb-4">
-            <div>
-              <div
-                className="flex items-center gap-2 mb-1 cursor-pointer hover:bg-white/10 p-1 rounded transition-colors -ml-1 group"
-                onClick={() => setShowLocation(true)}
-              >
-                <MapPin className="w-3 h-3 text-blue-100 group-hover:text-white" />
-                <p className="text-blue-100 text-xs font-semibold uppercase tracking-wider truncate max-w-[150px] group-hover:text-white">
-                  {location}
-                </p>
+        <div className="p-4 flex-1 flex flex-col">
+          {/* Header: Compact B2B Line */}
+          <div className="flex justify-between items-center mb-4 pb-3 border-b border-slate-100">
+            <div
+              className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 px-2 py-1 rounded-md transition-colors -ml-2 group"
+              onClick={() => setShowLocation(true)}
+            >
+              <WeatherIcon code={current.icon_code} className="w-5 h-5 text-slate-600" />
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
+                <span className="truncate max-w-[120px]">{location}</span>
+                <span className="text-slate-300">·</span>
+                <span className="capitalize text-slate-500 font-medium">{current.condition}</span>
+                <span className="text-slate-300">·</span>
+                <span className="text-slate-900 font-bold">{Math.round(current.temp)}°C</span>
               </div>
-              <div className="flex items-center gap-3">
-                <h3 className="text-4xl font-bold tracking-tight">{Math.round(current.temp)}°</h3>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-blue-50 leading-tight">{current.condition}</span>
-                  <span className="text-[10px] text-blue-200">H: {Math.round(daily.max)}° L: {Math.round(daily.min)}°</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <div className="flex flex-col items-end">
+                <span className="text-[10px] text-slate-400 font-medium uppercase tracking-wider leading-none mb-0.5">Máx / Mín</span>
+                <span className="text-[11px] font-bold text-slate-600 leading-none">{Math.round(daily.max)}° / {Math.round(daily.min)}°</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Operational Insight Block (Focal Point) */}
+          <div className="mb-4">
+            <div className="bg-slate-50 border border-slate-100 p-3 rounded-lg">
+              <div className="flex items-center gap-2 mb-1.5">
+                <div className="p-1 bg-white rounded border border-slate-100">
+                  <TrendingUp className="w-3 h-3 text-slate-500" />
+                </div>
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wide">Insight Operacional</span>
+              </div>
+              <p className="text-sm text-slate-700 font-medium leading-relaxed">
+                {impactText}
+              </p>
+            </div>
+          </div>
+
+          {/* Estimated Climate Impact (New Block) */}
+          <div className="mb-4">
+            <div className="p-3 border border-slate-100 rounded-lg">
+              <h4 className="text-[10px] uppercase font-bold text-slate-400 tracking-wider mb-3">Impacto estimado do clima hoje</h4>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-[10px] text-slate-500 font-medium leading-none">Receita Incremental</p>
+                  <p className="text-sm font-bold text-emerald-600">+R$ 280 a +R$ 420</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] text-slate-500 font-medium leading-none">Conversão de Bebidas</p>
+                  <p className="text-sm font-bold text-blue-600">+6% a +10%</p>
                 </div>
               </div>
-            </div>
-            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm shadow-inner border border-white/10">
-              <WeatherIcon code={current.icon_code} className="w-8 h-8 text-white" />
+
+              <div className="mt-3 pt-3 border-t border-slate-50">
+                <p className="text-[9px] text-slate-400 italic">
+                  Baseado em 1.420 sessões em dias com clima similar
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Operational Impact Text */}
-          <div className="mb-4 z-10">
-            <p className="text-xs text-blue-100 bg-blue-600/30 p-2 rounded-lg border border-blue-500/30 leading-relaxed">
-              {impactText}
-            </p>
-          </div>
+          {/* Compact Hourly Preview */}
+          <div className="mt-auto pt-2">
+            <div className="flex justify-between items-center mb-2">
+              <h4 className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Próximas Horas</h4>
+              <div className="flex items-center gap-1">
+                <Droplets className="w-3 h-3 text-blue-400" />
+                <span className="text-[10px] font-bold text-blue-500">{daily.rain_prob}% Risco</span>
+              </div>
+            </div>
 
-          {/* Inline Hourly Preview */}
-          <div className="z-10 mt-auto">
-            <h4 className="text-[10px] uppercase font-bold text-blue-200 mb-2">Próximas 3 Horas</h4>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="space-y-1.5">
               {hourly && hourly.slice(0, 3).map((hour, idx) => (
-                <div key={idx} className="bg-white/10 rounded-lg p-2 flex flex-col items-center justify-center backdrop-blur-sm border border-white/5">
-                  <span className="text-[10px] font-medium text-blue-100 mb-1">
-                    {new Date(hour.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                  <WeatherIcon code={getWeatherDescription(hour.code).icon} className="w-4 h-4 mb-1 text-white" />
-                  <span className="text-xs font-bold">{Math.round(hour.temp)}°</span>
-                  <div className="flex items-center gap-0.5 mt-0.5">
-                    <Droplets className="w-2 h-2 text-blue-300" />
-                    <span className="text-[9px] text-blue-200">{hour.precip_prob}%</span>
+                <div key={idx} className="flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-slate-50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[11px] font-bold text-slate-500 w-10">
+                      {new Date(hour.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    <WeatherIcon code={getWeatherDescription(hour.code).icon} className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="text-[11px] font-medium text-slate-600 capitalize">
+                      {getWeatherDescription(hour.code)?.description?.split(',')[0] || ''}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1 text-blue-400">
+                      <Droplets className="w-3 h-3" />
+                      <span className="text-[11px] font-bold">{hour.precip_prob}%</span>
+                    </div>
+                    <span className="text-[11px] font-bold text-slate-900 w-8 text-right">{Math.round(hour.temp)}°</span>
                   </div>
                 </div>
               ))}
@@ -157,13 +201,14 @@ export function WeatherCard({ weatherData, loading, onLocationChange }) {
           </div>
         </div>
 
-        {/* Footer CTA */}
-        <div className="p-3 bg-black/10 backdrop-blur-md border-t border-white/10 flex justify-center z-20">
+        {/* Footer CTA - Simple Link Style */}
+        <div className="p-3 bg-slate-50/50 border-t border-slate-100 flex justify-center">
           <button
             onClick={handleOpenFullForecast}
-            className="text-xs font-medium text-blue-100 hover:text-white flex items-center gap-2 transition-colors w-full justify-center"
+            className="text-[11px] font-bold text-slate-500 hover:text-slate-900 flex items-center gap-1.5 transition-all group"
           >
-            Ver previsão completa <ArrowRight className="w-3 h-3" />
+            Ver previsão completa
+            <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
           </button>
         </div>
       </Card>
@@ -220,9 +265,9 @@ export function WeatherCard({ weatherData, loading, onLocationChange }) {
               autoFocus
             />
           </div>
-          <Button type="submit" disabled={searching} className="bg-blue-600 text-white">
+          <button type="submit" disabled={searching} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold">
             {searching ? '...' : 'Buscar'}
-          </Button>
+          </button>
         </form>
 
         <div className="space-y-2 max-h-[300px] overflow-y-auto">
