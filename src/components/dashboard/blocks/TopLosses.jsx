@@ -1,22 +1,10 @@
 import React from 'react';
-import { useAudit } from '../../../hooks/useAudit';
 import { Card } from '../../ui/Card';
 import { TrendingDown, EyeOff, ShoppingCart, Ban } from 'lucide-react';
-import { Button } from '../../ui/Form';
-import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
 
 import { Skeleton } from '../../ui/Skeleton';
 
 export default function TopLosses({ isLoading = false }) {
-  const navigate = useNavigate();
-  const { log } = useAudit();
-
-  const handleDetail = (type, item) => {
-    log('dashboard.losses.open.item', { type, item });
-    navigate(`/analytics?view=losses&type=${type}&item=${item}`);
-    toast(`Analisando perdas: ${item}`, { icon: '📉' });
-  }
 
   if (isLoading) {
     return (
@@ -62,16 +50,16 @@ export default function TopLosses({ isLoading = false }) {
             <EyeOff size={14} /> Vistos s/ Pedido
           </h4>
           <ul className="space-y-3">
-            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Vistos sem Pedido', 'Picanha Nobre')}>
-              <span className="text-sm text-gray-700 font-semibold group-hover:text-red-600 transition-colors">Picanha Nobre</span>
+            <li className="flex justify-between items-center">
+              <span className="text-sm text-gray-700 font-semibold">Picanha Nobre</span>
               <span className="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">42 views</span>
             </li>
-            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Vistos sem Pedido', 'Vinho Malbec')}>
-              <span className="text-sm text-gray-700 font-semibold group-hover:text-red-600 transition-colors">Vinho Malbec</span>
+            <li className="flex justify-between items-center">
+              <span className="text-sm text-gray-700 font-semibold">Vinho Malbec</span>
               <span className="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">28 views</span>
             </li>
-            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Vistos sem Pedido', 'Petit Gateau')}>
-              <span className="text-sm text-gray-700 font-semibold group-hover:text-red-600 transition-colors">Petit Gateau</span>
+            <li className="flex justify-between items-center">
+              <span className="text-sm text-gray-700 font-semibold">Petit Gateau</span>
               <span className="text-xs bg-red-50 text-red-600 px-1.5 py-0.5 rounded font-bold">15 views</span>
             </li>
           </ul>
@@ -83,12 +71,12 @@ export default function TopLosses({ isLoading = false }) {
             <ShoppingCart size={14} /> Abandono Carrinho
           </h4>
           <ul className="space-y-3">
-            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Abandono', 'Combo Família')}>
-              <span className="text-sm text-gray-700 font-semibold group-hover:text-red-600 transition-colors">Combo Família</span>
+            <li className="flex justify-between items-center">
+              <span className="text-sm text-gray-700 font-semibold">Combo Família</span>
               <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-bold">8x</span>
             </li>
-            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Abandono', 'Suco Natural')}>
-              <span className="text-sm text-gray-700 font-semibold group-hover:text-red-600 transition-colors">Suco Natural</span>
+            <li className="flex justify-between items-center">
+              <span className="text-sm text-gray-700 font-semibold">Suco Natural</span>
               <span className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-bold">5x</span>
             </li>
           </ul>
@@ -100,12 +88,12 @@ export default function TopLosses({ isLoading = false }) {
             <Ban size={14} /> Queda Conversão (24h)
           </h4>
           <ul className="space-y-3">
-            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Queda Conversão', 'Gin Tônica')}>
-              <span className="text-sm text-gray-700 font-semibold group-hover:text-red-600 transition-colors">Gin Tônica</span>
+            <li className="flex justify-between items-center">
+              <span className="text-sm text-gray-700 font-semibold">Gin Tônica</span>
               <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold">-15%</span>
             </li>
-            <li className="flex justify-between items-center group cursor-pointer" onClick={() => handleDetail('Queda Conversão', 'Entrada Fria')}>
-              <span className="text-sm text-gray-700 font-semibold group-hover:text-red-600 transition-colors">Entrada Fria</span>
+            <li className="flex justify-between items-center">
+              <span className="text-sm text-gray-700 font-semibold">Entrada Fria</span>
               <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded font-bold">-8%</span>
             </li>
           </ul>
