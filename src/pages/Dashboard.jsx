@@ -11,7 +11,8 @@ import { Button } from "../components/ui/Form";
 import PriorityActions from '../components/dashboard/blocks/PriorityActions';
 // import ServiceStatus from '../components/dashboard/blocks/ServiceStatus'; // Removed as per request
 // import CriticalBottlenecks from '../components/dashboard/blocks/CriticalBottlenecks'; // Replaced by Radar
-import RadarDeGargalos from '../components/dashboard/blocks/RadarDeGargalos';
+// import CriticalBottlenecks from '../components/dashboard/blocks/CriticalBottlenecks'; // Replaced by Radar
+import OperationalTrendBlock from '../components/dashboard/blocks/OperationalTrendBlock';
 import DashboardDiningBlock from '../components/dashboard/blocks/DashboardDiningBlock';
 
 // 2. Intelligence & Results
@@ -105,9 +106,10 @@ export default function Dashboard() {
                         </div>
 
                         {/* 2.2 Status & Gargalos - 4 cols */}
+                        {/* 2.2 Status & Gargalos - 4 cols */}
                         <div className="md:col-span-1 xl:col-span-4 flex flex-col gap-4 h-full min-h-[420px]">
-                            <div className="flex-1">
-                                <RadarDeGargalos isLoading={isLoading} />
+                            <div className="flex-1 h-full">
+                                <OperationalTrendBlock isLoading={isLoading} />
                             </div>
                         </div>
 
