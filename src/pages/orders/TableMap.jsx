@@ -11,6 +11,10 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
     const [tables, setTables] = useState([]);
 
     // Intelligence State
+    // Custom Status State (Mocking backend persistence)
+    const [customTableStatuses, setCustomTableStatuses] = useState({});
+
+    // Intelligence State
     const [intelligenceEnabled, setIntelligenceEnabled] = useState(true);
     const [suggestions, setSuggestions] = useState({}); // tableId -> []
     const [ignoredSuggestions, setIgnoredSuggestions] = useState({}); // tableId -> timestamp
@@ -23,7 +27,7 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
         const minutes = parseInt(timeStr.replace(' min', '')) || 0;
 
         // 1. Check for drinks
-        const hasDrink = orderItems.some(i => i.name.toLowerCase().includes('coca') || i.name.toLowerCase().includes('suco') || i.name.toLowerCase().includes('vinho') || i.name.toLowerCase().includes('guaraná'));
+        const hasDrink = orderItems.some(i => i.name.toLowerCase().includes('coca') || i.name.toLowerCase().includes('suco') || i.name.toLowerCase().includes('vinho') || i.name.toLowerCase().includes('guaraná') || i.name.toLowerCase().includes('água'));
 
         // Rule: Offer drink if none ordered and time > 5 min
         if (!hasDrink && minutes > 5) {
@@ -85,10 +89,8 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
         // Calculate status for each table based on orders AND generate suggestions
         const newTables = Array.from({ length: TABLE_COUNT }, (_, i) => {
             const tableNum = i + 1;
-            const tableName = `Mesa ${tableNum}`; // Standardizing table name format "Mesa 1", "Mesa 10" to match simple ints or we need to align with DB
+            const tableName = `Mesa ${tableNum}`;
 
-            // Find active orders for this table
-            // Match "Mesa X" or just "X" if DB stores number
             const tableOrders = orders.filter(o =>
                 (o.table_number && o.table_number.toString() === tableName) ||
                 (typeof o.table_number === 'number' && o.table_number === tableNum)
@@ -100,7 +102,7 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
             }, 0);
 
             // Determine status
-            let status = 'free'; // free, occupied, risk
+            let status = 'free';
             let time = null;
             let currentSuggestions = [];
 
@@ -121,6 +123,11 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                 }
             }
 
+            // OVERRIDE status with custom status if exists (e.g. 'closing')
+            if (customTableStatuses[tableName]) {
+                status = customTableStatuses[tableName];
+            }
+
             return {
                 id: tableName,
                 number: tableNum,
@@ -130,30 +137,32 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                 orderCount: tableOrders.length,
                 totalValue,
                 suggestions: currentSuggestions,
-                // Helper to get highest priority
                 highestPriority: currentSuggestions.reduce((highest, curr) => {
                     if (curr.priority === 'high') return 'high';
                     if (curr.priority === 'medium' && highest !== 'high') return 'medium';
                     if (curr.priority === 'low' && highest !== 'high' && highest !== 'medium') return 'low';
                     return highest;
                 }, null),
-                orders: tableOrders // Pass raw orders for the details panel
+                orders: tableOrders
             };
         });
 
         setTables(newTables);
-    }, [orders, intelligenceEnabled, ignoredSuggestions]);
-
-    // Responsive behavior removed to keep it collapsed by default
+    }, [orders, intelligenceEnabled, ignoredSuggestions, customTableStatuses]); // Added customTableStatuses dependency
 
     const handleTableClick = (tableId) => {
         if (autoFilter) {
             onTableSelect(tableId === selectedTable ? null : tableId);
         } else {
-            // If auto-filter is off, maybe just select for intelligence?
-            // For now adhering to requirement that selecting table shows intelligence
             onTableSelect(tableId === selectedTable ? null : tableId);
         }
+    };
+
+    const handleUpdateTableStatus = (tableId, newStatus) => {
+        setCustomTableStatuses(prev => ({
+            ...prev,
+            [tableId]: newStatus
+        }));
     };
 
     const handleSuggestionAction = (tableId, suggestion) => {
@@ -243,12 +252,13 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                 styles += " border-blue-100 hover:border-blue-300 hover:shadow-md";
             } else if (status === 'risk') {
                 styles += " border-red-100 bg-red-50/10 hover:border-red-300 hover:shadow-md";
+            } else if (status === 'closing') {
+                styles += " border-amber-200 bg-amber-50 hover:border-amber-400 hover:shadow-md";
             }
 
             // Priority Override (Glow & Border)
-            if (priority) {
+            if (priority && status !== 'closing') { // Don't show priority glow if closing
                 const pStyles = getPriorityStyles(priority);
-                // Priority border takes precedence if present, specially for high/medium
                 styles = cn(styles, pStyles.border, pStyles.glow, pStyles.hover, "hover:scale-[1.02]");
             }
         }
@@ -268,7 +278,6 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                         <div
                             className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between bg-white border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors gap-4 overflow-x-auto"
                             onClick={(e) => {
-                                // Don't toggle if clicking interactive elements
                                 if (e.target.closest('button') || e.target.closest('.interactive')) return;
                                 setIsExpanded(!isExpanded);
                             }}
@@ -288,6 +297,7 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                     <StatusChip label="Livre" color="gray" />
                                     <StatusChip label="Ocupada" color="blue" />
                                     <StatusChip label="Em risco" color="red" />
+                                    <StatusChip label="Encerrando" color="amber" />
                                 </div>
                             </div>
 
@@ -322,7 +332,10 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                                     <div className="relative">
                                                         <span className={cn(
                                                             "inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold transition-all",
-                                                            pStyles ? pStyles.balloon : (table.status === 'free' ? 'text-gray-400 bg-gray-100' : 'text-gray-900 bg-gray-100')
+                                                            pStyles && table.status !== 'closing' ? pStyles.balloon :
+                                                                (table.status === 'free' ? 'text-gray-400 bg-gray-100' :
+                                                                    table.status === 'closing' ? 'text-amber-800 bg-amber-100' :
+                                                                        'text-gray-900 bg-gray-100')
                                                         )}>
                                                             {table.number}
                                                         </span>
@@ -332,7 +345,7 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                                     </div>
 
                                                     {/* Priority Badge */}
-                                                    {priority ? (
+                                                    {priority && table.status !== 'closing' ? (
                                                         <span className={cn(
                                                             "flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border",
                                                             pStyles.badge
@@ -340,10 +353,14 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                                             {getPriorityIcon(priority)}
                                                             {pStyles.label}
                                                         </span>
-                                                    ) : table.status === 'occupied' && (
+                                                    ) : table.status === 'occupied' ? (
                                                         <div className="flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
                                                             <Clock size={10} />
                                                             <span>{table.time}</span>
+                                                        </div>
+                                                    ) : table.status === 'closing' && (
+                                                        <div className="flex items-center gap-1.5 text-xs text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md font-bold uppercase">
+                                                            <span>Encerrando</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -357,7 +374,7 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                                     ) : (
                                                         <div className="flex flex-col gap-1.5">
                                                             {/* If has priority, explain why briefly or show count */}
-                                                            {priority ? (
+                                                            {priority && table.status !== 'closing' ? (
                                                                 <div className="flex flex-col">
                                                                     <div className="flex justify-between items-end">
                                                                         <div className="flex flex-col">
@@ -420,7 +437,10 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
 
             {/* Table Details Panel (Bottom - Full Width) */}
             {selectedTable && isExpanded && intelligenceEnabled && (
-                <TableDetailsPanel table={tables.find(t => t.id === selectedTable)} />
+                <TableDetailsPanel
+                    table={tables.find(t => t.id === selectedTable)}
+                    onUpdateTableStatus={handleUpdateTableStatus}
+                />
             )}
         </div>
     );
