@@ -59,9 +59,14 @@ export default function TableDetailsPanel({ table }) {
 
   return (
     <div className="mt-6 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
-      <div className="p-4 bg-gray-50 border-b border-gray-100 flex items-center gap-2">
-        <div className="p-1 bg-white rounded shadow-sm text-gray-500"><Utensils size={14} /></div>
-        <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Detalhes Operacionais - {table.name}</h4>
+      <div className="p-4 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="p-1 bg-white rounded shadow-sm text-gray-500"><Utensils size={14} /></div>
+          <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wider">Detalhes Operacionais - {table.name}</h4>
+        </div>
+        <div className="text-sm font-bold text-gray-900 bg-white px-3 py-1.5 rounded-lg border border-gray-200 shadow-sm">
+          Total: R$ {table.totalValue?.toFixed(2)}
+        </div>
       </div>
 
       <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-8">
