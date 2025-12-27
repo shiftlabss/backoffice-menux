@@ -98,22 +98,7 @@ export default function TableDetailsPanel({ table, onUpdateTableStatus, onMarkAs
   };
 
   const handleAttemptRelease = () => {
-    // Check for pending items
-    const pending = [];
-    orders.forEach(o => {
-      // Assuming 'pending', 'preparing', 'ready' are active statuses that block release. 
-      // 'delivered' and 'cancelled' are safe.
-      if (['pending', 'preparing', 'ready'].includes(o.status)) {
-        pending.push({ id: o.id, items: o.items, status: o.status });
-      }
-    });
-
-    if (pending.length > 0) {
-      setBlockedItems(pending);
-      setIsBlockerModalOpen(true);
-    } else {
-      setIsReleaseModalOpen(true);
-    }
+    setIsReleaseModalOpen(true);
   };
 
   const handleRelease = async () => {
@@ -207,11 +192,11 @@ export default function TableDetailsPanel({ table, onUpdateTableStatus, onMarkAs
             {isClosing && (
               <>
                 <button
-                  onClick={() => setIsMarkClosedModalOpen(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm active:scale-95"
+                  onClick={handleAttemptRelease}
+                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm active:scale-95"
                 >
-                  <Lock size={14} />
-                  Marcar como Encerrada
+                  <CheckCircle size={14} />
+                  Liberar Mesa
                 </button>
                 <button
                   onClick={() => setIsReopenModalOpen(true)}
@@ -242,10 +227,10 @@ export default function TableDetailsPanel({ table, onUpdateTableStatus, onMarkAs
               </>
             )}
 
-            {!isClosing && !isClosed && (
+            {!isClosing && !isClosed && orders.length > 0 && (
               <button
                 onClick={() => setIsCloseModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm active:scale-95"
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm active:scale-95"
               >
                 <CheckCircle size={14} />
                 Fechar a conta
