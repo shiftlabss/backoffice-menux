@@ -193,8 +193,8 @@ export default function ProductDetailDrawer({ isOpen, onClose, product }) {
             </div>
           </Card>
 
-          {/* 4. Funil e Gatilhos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* 4. Funil e Gatilhos (Stacked) */}
+          <div className="grid grid-cols-1 gap-6">
 
             {/* Funnel */}
             <Card className="p-5 border-slate-200 shadow-sm bg-white">
@@ -252,8 +252,8 @@ export default function ProductDetailDrawer({ isOpen, onClose, product }) {
             </Card>
           </div>
 
-          {/* 5. Segments */}
-          <div className="grid grid-cols-2 gap-6">
+          {/* 5. Segments (Stacked) */}
+          <div className="grid grid-cols-1 gap-6">
             <SegmentTable
               title="Por Canal"
               headers={['Canal', 'Aceit.', 'Rec.']}
