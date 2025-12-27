@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
-import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '../../components/ui/Table';
+
 import { Drawer } from '../../components/ui/Drawer';
 import { Select } from '../../components/ui/Select';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../../components/ui/Tooltip';
@@ -35,6 +35,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip as RechartsToolti
 import { cn } from '../../lib/utils';
 import { MOCK_KPIS } from '../../services/mockIntelligence';
 import ProductDetailDrawer from '../../components/intelligence/ProductDetailDrawer';
+import { ProductRowCard } from '../../components/intelligence/ProductRowCard';
 
 export default function IntelligenceProducts() {
   const [products, setProducts] = useState([]);
@@ -49,6 +50,7 @@ export default function IntelligenceProducts() {
   // Drawer State
   const [activeDrawer, setActiveDrawer] = useState(null); // 'product-detail' | 'new-combo' | 'evidence'
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [expandedProductId, setExpandedProductId] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -183,7 +185,7 @@ export default function IntelligenceProducts() {
           </div>
         </div>
 
-        {/* 3. Product Performance Table */}
+        {/* 3. Product Performance List (Redesign: Card Rows) */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
@@ -192,134 +194,28 @@ export default function IntelligenceProducts() {
             </h2>
           </div>
 
-          <Card className="border-border overflow-hidden bg-white shadow-sm">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader className="bg-slate-50/50">
-                  <TableRow className="border-b border-slate-100 hover:bg-transparent">
-                    <TableHead className="w-[30%]">Produto</TableHead>
-                    <TableHead className="w-[25%]">Influência do Maestro</TableHead>
-                    <TableHead className="w-[15%]">Próximo Passo</TableHead>
-                    <TableHead className="text-right w-[20%]">Receita Atribuída</TableHead>
-                    <TableHead className="w-[10%] text-center">Ação</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    Array.from({ length: 5 }).map((_, i) => (
-                      <TableRow key={i}>
-                        <TableCell><div className="h-4 w-32 bg-slate-100 rounded animate-pulse" /></TableCell>
-                        <TableCell><div className="h-4 w-20 bg-slate-100 rounded animate-pulse" /></TableCell>
-                        <TableCell><div className="h-4 w-20 bg-slate-100 rounded animate-pulse" /></TableCell>
-                        <TableCell><div className="h-4 w-20 bg-slate-100 rounded animate-pulse ml-auto" /></TableCell>
-                        <TableCell><div className="h-8 w-8 bg-slate-100 rounded animate-pulse mx-auto" /></TableCell>
-                      </TableRow>
-                    ))
-                  ) : filteredProducts.length === 0 ? (
-                    <TableRow><TableCell colSpan={5} className="h-40 text-center text-slate-500">Nenhum produto encontrado com os filtros atuais.</TableCell></TableRow>
-                  ) : (
-                    filteredProducts.map((p) => (
-                      <TableRow
-                        key={p.id}
-                        className="border-b border-slate-50 hover:bg-slate-50/80 transition-colors cursor-pointer group"
-                        onClick={() => { setSelectedProduct(p); setActiveDrawer('product-detail'); }}
-                      >
-                        {/* Product Column */}
-                        <TableCell className="align-top py-4">
-                          <div className="space-y-1">
-                            <div className="font-bold text-slate-900 text-sm">{p.name}</div>
-                            <div className="text-xs text-slate-500">{p.category}</div>
-                            {p.recommendations_count > 0 && (
-                              <div className="flex items-center gap-2 mt-2">
-                                <Badge variant="secondary" className="bg-purple-50 text-purple-700 border-purple-100 text-[10px] font-medium px-2 py-0.5">
-                                  {p.recommendations_count} oportunidades · {p.dominant_opportunity}
-                                </Badge>
-                                <button
-                                  className="text-[10px] text-slate-400 hover:text-purple-600 underline decoration-slate-300 hover:decoration-purple-300 transition-colors"
-                                  onClick={(e) => { e.stopPropagation(); toast('Filtrando oportunidades...'); }}
-                                >
-                                  Ver oportunidades
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        </TableCell>
-
-                        {/* Influence Column (Merged) */}
-                        <TableCell className="align-top py-4">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2 text-xs">
-                              <span className="font-bold text-emerald-600">IA: {p.conv_maestro}%</span>
-                              <span className="text-slate-300">|</span>
-                              <span className="text-slate-500">Org: {p.conv_organic}%</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Badge className="bg-blue-50 text-blue-700 border-blue-100 text-[10px] font-bold px-1.5 py-0">
-                                Lift {p.lift}
-                              </Badge>
-                            </div>
-                            <div className="text-[10px] text-slate-400 mt-1">
-                              Base: {p.base_sessions} sessões
-                            </div>
-                          </div>
-                        </TableCell>
-
-                        {/* Next Step Column */}
-                        <TableCell className="align-top py-4">
-                          <div className="flex items-center gap-1.5 text-xs font-medium text-slate-700 bg-slate-50 px-2 py-1 rounded border border-slate-100 w-fit">
-                            <Sparkles size={12} className="text-purple-500" />
-                            {p.next_step}
-                          </div>
-                        </TableCell>
-
-                        {/* Revenue Column */}
-                        <TableCell className="text-right align-top py-4">
-                          <div>
-                            <div className="font-bold text-slate-900">
-                              R$ {p.revenue_total?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
-                            </div>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <div className="text-[10px] text-slate-500 flex justify-end items-center gap-1 cursor-help">
-                                  R$ {p.revenue_incremental?.toLocaleString('pt-BR', { maximumFractionDigits: 0 })} incremental
-                                  <Info size={10} className="text-slate-300" />
-                                </div>
-                              </TooltipTrigger>
-                              <TooltipContent side="left">
-                                <p className="max-w-[180px] text-xs">Receita gerada exclusivamente por cliques em sugestões do Maestro.</p>
-                              </TooltipContent>
-                            </Tooltip>
-                            <div className="text-[9px] text-slate-400 mt-0.5">
-                              Base: 142 sugestões
-                            </div>
-                          </div>
-                        </TableCell>
-
-                        {/* Action Column */}
-                        <TableCell className="text-center align-middle">
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-full"
-                                onClick={(e) => { e.stopPropagation(); setSelectedProduct(p); setActiveDrawer('product-detail'); }}
-                              >
-                                <Eye size={18} />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Ver análise do produto</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </Card>
+          <div className="space-y-3">
+            {loading ? (
+              // Loading Skeleton
+              Array.from({ length: 5 }).map((_, i) => (
+                <Card key={i} className="h-24 w-full bg-slate-50 border-slate-100 animate-pulse" />
+              ))
+            ) : filteredProducts.length === 0 ? (
+              <div className="p-8 text-center text-slate-500 bg-slate-50 border border-slate-100 rounded-lg border-dashed">
+                Nenhum produto encontrado.
+              </div>
+            ) : (
+              filteredProducts.map((p) => (
+                <ProductRowCard
+                  key={p.id}
+                  product={p}
+                  isExpanded={expandedProductId === p.id}
+                  onToggleExpand={() => setExpandedProductId(expandedProductId === p.id ? null : p.id)}
+                  onAnalyze={() => { setSelectedProduct(p); setActiveDrawer('product-detail'); }}
+                />
+              ))
+            )}
+          </div>
         </div>
 
         {/* 4. Combos Layout (Active vs Suggested) */}
