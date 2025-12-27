@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, LayoutGrid, Clock, Users, AlertTriangle, Filter
 import toast from 'react-hot-toast';
 import IntelligencePanel from './IntelligencePanel';
 import TableDetailsPanel from './TableDetailsPanel';
+import { useAudit } from '../../hooks/useAudit';
 import { cn } from '../../lib/utils';
 
 export default function TableMap({ orders, onTableSelect, selectedTable }) {
@@ -91,10 +92,15 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
             const tableNum = i + 1;
             const tableName = `Mesa ${tableNum}`;
 
-            const tableOrders = orders.filter(o =>
+            let tableOrders = orders.filter(o =>
                 (o.table_number && o.table_number.toString() === tableName) ||
                 (typeof o.table_number === 'number' && o.table_number === tableNum)
             );
+
+            // OVERRIDE CHECK FIRST: If custom status is 'free', act as if there are no orders
+            if (customTableStatuses[tableName] === 'free') {
+                tableOrders = [];
+            }
 
             const isOccupied = tableOrders.length > 0;
             const totalValue = tableOrders.reduce((sum, order) => {
@@ -123,8 +129,8 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                 }
             }
 
-            // OVERRIDE status with custom status if exists (e.g. 'closing')
-            if (customTableStatuses[tableName]) {
+            // OVERRIDE status with custom status if exists (e.g. 'closing', 'closed')
+            if (customTableStatuses[tableName] && customTableStatuses[tableName] !== 'free') {
                 status = customTableStatuses[tableName];
             }
 
@@ -134,8 +140,8 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                 name: tableName,
                 status,
                 time,
-                orderCount: tableOrders.length,
-                totalValue,
+                orderCount: tableOrders.length, // Will be 0 if forced free
+                totalValue, // Will be 0 if forced free
                 suggestions: currentSuggestions,
                 highestPriority: currentSuggestions.reduce((highest, curr) => {
                     if (curr.priority === 'high') return 'high';
@@ -150,7 +156,12 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
         setTables(newTables);
     }, [orders, intelligenceEnabled, ignoredSuggestions, customTableStatuses]); // Added customTableStatuses dependency
 
+    const { log } = useAudit(); // Hook for audit logging
+
     const handleTableClick = (tableId) => {
+        // Log the action
+        log('orders.tables.open.drawer', { tableId }, `Opened drawer for ${tableId}`);
+
         if (autoFilter) {
             onTableSelect(tableId === selectedTable ? null : tableId);
         } else {
@@ -182,9 +193,33 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
         }));
     };
 
-    const StatusChip = ({ label, color }) => (
+    const handleMarkTableClosed = (tableId) => {
+        setCustomTableStatuses(prev => ({
+            ...prev,
+            [tableId]: 'closed'
+        }));
+        log('table.closed', { tableId }, `Table ${tableId} marked as closed`);
+    };
+
+    const handleReleaseTable = (tableId) => {
+        setCustomTableStatuses(prev => ({
+            ...prev,
+            [tableId]: 'free'
+        }));
+        log('table.released', { tableId }, `Table ${tableId} released`);
+        // Note: In a real app, backend would clear orders. Here 'free' status override triggers data clearing in useEffect.
+
+        // Also clear ignored suggestions for a fresh start
+        setIgnoredSuggestions(prev => {
+            const next = { ...prev };
+            delete next[tableId];
+            return next;
+        });
+    };
+
+    const StatusChip = ({ label, color, icon: Icon }) => (
         <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium bg-${color}-50 text-${color}-600 border border-${color}-100`}>
-            <div className={`w-1.5 h-1.5 rounded-full bg-${color}-500`} />
+            {Icon ? <Icon size={10} className="stroke-[3]" /> : <div className={`w-1.5 h-1.5 rounded-full bg-${color}-500`} />}
             {label}
         </span>
     );
@@ -193,31 +228,26 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
     const getPriorityStyles = (priority) => {
         switch (priority) {
             case 'high': return {
+                // RED - Priority 1 (after closing)
                 border: 'border-red-400',
                 glow: 'shadow-[0_0_10px_rgba(248,113,113,0.3)]',
                 badge: 'bg-red-50 text-red-700 border-red-100',
                 balloon: 'bg-red-600 text-white',
                 label: 'Alta',
                 ring: 'ring-red-500 border-red-500 bg-red-50/20',
-                hover: 'hover:border-red-500'
+                hover: 'hover:border-red-500',
+                color: 'red'
             };
             case 'medium': return {
-                border: 'border-amber-400',
-                glow: 'shadow-[0_0_10px_rgba(251,191,36,0.3)]',
-                badge: 'bg-amber-50 text-amber-700 border-amber-100',
-                balloon: 'bg-amber-500 text-white',
+                // ORANGE - Priority 2
+                border: 'border-orange-400',
+                glow: 'shadow-[0_0_10px_rgba(251,146,60,0.3)]',
+                badge: 'bg-orange-50 text-orange-700 border-orange-100',
+                balloon: 'bg-orange-500 text-white',
                 label: 'Média',
-                ring: 'ring-amber-500 border-amber-500 bg-amber-50/20',
-                hover: 'hover:border-amber-500'
-            };
-            case 'low': return {
-                border: 'border-blue-300',
-                glow: 'shadow-[0_0_5px_rgba(96,165,250,0.3)]',
-                badge: 'bg-blue-50 text-blue-700 border-blue-100',
-                balloon: 'bg-blue-500 text-white',
-                label: 'Baixa',
-                ring: 'ring-blue-500 border-blue-500 bg-blue-50/20',
-                hover: 'hover:border-blue-500'
+                ring: 'ring-orange-500 border-orange-500 bg-orange-50/20',
+                hover: 'hover:border-orange-500',
+                color: 'orange'
             };
             default: return null;
         }
@@ -225,42 +255,44 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
 
     const getPriorityIcon = (priority) => {
         switch (priority) {
-            case 'high': return <AlertCircle size={10} />;
+            case 'high': return <AlertTriangle size={10} />;
             case 'medium': return <Zap size={10} />;
-            case 'low': return <Info size={10} />;
             default: return null;
         }
     };
 
+    // Precedence: Closing/Closed > High > Medium > Occupied > Free
     const getTableCardStyles = (status, isSelected, priority) => {
         const base = "relative p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer flex flex-col justify-between h-24";
-
         let styles = `${base} bg-white`;
 
-        if (isSelected) {
-            if (priority) {
-                const pStyles = getPriorityStyles(priority);
-                styles = cn(styles, "ring-2 ring-offset-1", pStyles.ring);
-            } else {
-                styles += " ring-2 ring-offset-1 ring-indigo-500 border-indigo-500 bg-indigo-50/10";
-            }
-        } else {
-            // Base Status Styles
-            if (status === 'free') {
-                styles += " border-gray-100 bg-gray-50/50 hover:bg-white hover:border-gray-200";
-            } else if (status === 'occupied') {
-                styles += " border-blue-100 hover:border-blue-300 hover:shadow-md";
-            } else if (status === 'risk') {
-                styles += " border-red-100 bg-red-50/10 hover:border-red-300 hover:shadow-md";
-            } else if (status === 'closing') {
-                styles += " border-amber-200 bg-amber-50 hover:border-amber-400 hover:shadow-md";
-            }
+        // 1. CLOSING / CLOSED (Overrides everything)
+        if (status === 'closing' || status === 'closed') {
+            styles += " border-purple-400 bg-purple-50 hover:border-purple-500 hover:shadow-md";
+            if (isSelected) styles = cn(styles, "ring-2 ring-offset-1 ring-purple-500 border-purple-500 bg-purple-50/20");
+            return styles;
+        }
 
-            // Priority Override (Glow & Border)
-            if (priority && status !== 'closing') { // Don't show priority glow if closing
-                const pStyles = getPriorityStyles(priority);
-                styles = cn(styles, pStyles.border, pStyles.glow, pStyles.hover, "hover:scale-[1.02]");
-            }
+        // 2 & 3. PRIORITIES (If not closing and has active suggestion)
+        if (priority) {
+            const pStyles = getPriorityStyles(priority);
+            styles = cn(styles, pStyles.border, pStyles.glow, pStyles.hover, "hover:scale-[1.02]");
+            if (isSelected) styles = cn(styles, "ring-2 ring-offset-1", pStyles.ring);
+            return styles;
+        }
+
+        // 4. OCCUPIED (Blue)
+        if (status === 'occupied' || status === 'risk') {
+            styles += " border-blue-200 hover:border-blue-400 hover:shadow-md bg-white";
+            if (isSelected) styles += " ring-2 ring-offset-1 ring-blue-500 border-blue-500 bg-blue-50/10";
+            return styles;
+        }
+
+        // 5. FREE (Gray)
+        if (status === 'free') {
+            styles += " border-gray-100 bg-gray-50/50 hover:bg-white hover:border-gray-200";
+            if (isSelected) styles += " ring-2 ring-offset-1 ring-gray-400 border-gray-400";
+            return styles;
         }
 
         return styles;
@@ -296,8 +328,10 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                 <div className="hidden md:flex items-center gap-2 ml-4 border-l border-gray-200 pl-4">
                                     <StatusChip label="Livre" color="gray" />
                                     <StatusChip label="Ocupada" color="blue" />
-                                    <StatusChip label="Em risco" color="red" />
-                                    <StatusChip label="Encerrando" color="amber" />
+                                    <StatusChip label="Média" color="orange" />
+                                    <StatusChip label="Alta" color="red" />
+                                    <StatusChip label="Encerrando" color="purple" icon={Clock} />
+                                    <StatusChip label="Encerrada" color="purple" />
                                 </div>
                             </div>
 
@@ -315,13 +349,24 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                     : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'
                                     }`}>
                                     {tables.map((table) => {
-                                        const priority = table.highestPriority;
+                                        // Determine effective visual state
+                                        const isClosing = table.status === 'closing';
+                                        const isClosed = table.status === 'closed';
+                                        const priority = (!isClosing && !isClosed) ? table.highestPriority : null;
                                         const pStyles = priority ? getPriorityStyles(priority) : null;
+
+                                        // Aria Label Construction
+                                        const statusText = isClosed ? 'Encerrada' : isClosing ? 'Encerrando' : priority ? `Prioridade ${pStyles.label}` : table.status === 'free' ? 'Livre' : 'Ocupada';
+                                        const ariaLabel = `Mesa ${table.number}, ${statusText}, total parcial R$ ${table.totalValue.toFixed(2)}, tempo ${table.time || '0 min'}`;
 
                                         return (
                                             <div
                                                 key={table.id}
                                                 onClick={() => handleTableClick(table.id)}
+                                                role="button"
+                                                aria-label={ariaLabel}
+                                                tabIndex={0}
+                                                onKeyDown={(e) => { if (e.key === 'Enter') handleTableClick(table.id); }}
                                                 className={cn(
                                                     getTableCardStyles(table.status, selectedTable === table.id, priority),
                                                     "shadow-sm"
@@ -332,20 +377,28 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                                     <div className="relative">
                                                         <span className={cn(
                                                             "inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold transition-all",
-                                                            pStyles && table.status !== 'closing' ? pStyles.balloon :
-                                                                (table.status === 'free' ? 'text-gray-400 bg-gray-100' :
-                                                                    table.status === 'closing' ? 'text-amber-800 bg-amber-100' :
+                                                            (isClosing || isClosed) ? 'bg-purple-600 text-white' :
+                                                                pStyles ? pStyles.balloon :
+                                                                    (table.status === 'free' ? 'text-gray-400 bg-gray-100' :
                                                                         'text-gray-900 bg-gray-100')
                                                         )}>
                                                             {table.number}
                                                         </span>
-                                                        {table.status === 'risk' && !priority && (
+                                                        {table.status === 'risk' && !priority && !isClosing && !isClosed && (
                                                             <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse" />
                                                         )}
                                                     </div>
 
-                                                    {/* Priority Badge */}
-                                                    {priority && table.status !== 'closing' ? (
+                                                    {/* Status Chips */}
+                                                    {isClosing ? (
+                                                        <div className="flex items-center gap-1.5 text-xs text-purple-700 bg-purple-100 px-2 py-0.5 rounded-md font-bold uppercase">
+                                                            <span>Encerrando</span>
+                                                        </div>
+                                                    ) : isClosed ? (
+                                                        <div className="flex items-center gap-1.5 text-xs text-purple-700 bg-purple-100 px-2 py-0.5 rounded-md font-bold uppercase">
+                                                            <span>Encerrada</span>
+                                                        </div>
+                                                    ) : pStyles ? (
                                                         <span className={cn(
                                                             "flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border",
                                                             pStyles.badge
@@ -353,14 +406,15 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                                             {getPriorityIcon(priority)}
                                                             {pStyles.label}
                                                         </span>
-                                                    ) : table.status === 'occupied' ? (
+                                                    ) : table.status === 'occupied' || table.status === 'risk' ? (
                                                         <div className="flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                                                            <Clock size={10} />
-                                                            <span>{table.time}</span>
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                                                            <span>Ocupada</span>
                                                         </div>
-                                                    ) : table.status === 'closing' && (
-                                                        <div className="flex items-center gap-1.5 text-xs text-amber-700 bg-amber-100 px-2 py-0.5 rounded-md font-bold uppercase">
-                                                            <span>Encerrando</span>
+                                                    ) : (
+                                                        <div className="flex items-center gap-1.5 text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                                                            <div className="w-1.5 h-1.5 rounded-full border border-gray-400" />
+                                                            <span>Livre</span>
                                                         </div>
                                                     )}
                                                 </div>
@@ -369,12 +423,20 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                                 <div className="mt-auto">
                                                     {table.status === 'free' ? (
                                                         <div className="flex items-center justify-center h-full">
-                                                            <span className="text-xs font-medium text-gray-400">Livre</span>
+                                                            {/* Empty for clean look or label */}
                                                         </div>
                                                     ) : (
                                                         <div className="flex flex-col gap-1.5">
-                                                            {/* If has priority, explain why briefly or show count */}
-                                                            {priority && table.status !== 'closing' ? (
+                                                            {(isClosing || isClosed) ? (
+                                                                <div className="flex justify-between items-center">
+                                                                    <span className="text-[10px] text-gray-500 font-medium bg-white/50 px-1.5 py-0.5 rounded-md border border-gray-100">
+                                                                        {table.orderCount} pedido(s)
+                                                                    </span>
+                                                                    <span className="text-xs font-bold text-gray-900">
+                                                                        R$ {table.totalValue.toFixed(2)}
+                                                                    </span>
+                                                                </div>
+                                                            ) : pStyles ? (
                                                                 <div className="flex flex-col">
                                                                     <div className="flex justify-between items-end">
                                                                         <div className="flex flex-col">
@@ -390,19 +452,14 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                                                                 </div>
                                                             ) : (
                                                                 <div className="flex justify-between items-center">
-                                                                    <span className="text-[10px] text-gray-500 font-medium bg-white/50 px-1.5 py-0.5 rounded-md border border-gray-100">
-                                                                        {table.orderCount} pedido(s)
-                                                                    </span>
                                                                     <div className="flex items-center gap-2">
-                                                                        {table.status === 'risk' && (
-                                                                            <span className="text-[10px] font-bold text-red-600 flex items-center gap-1">
-                                                                                <AlertTriangle size={10} /> Atencão
-                                                                            </span>
-                                                                        )}
-                                                                        <span className="text-xs font-bold text-gray-900">
-                                                                            R$ {table.totalValue.toFixed(2)}
+                                                                        <span className="flex items-center gap-1 text-[10px] text-gray-500 font-medium bg-white/50 px-1.5 py-0.5 rounded-md border border-gray-100">
+                                                                            <Clock size={10} /> {table.time}
                                                                         </span>
                                                                     </div>
+                                                                    <span className="text-xs font-bold text-gray-900">
+                                                                        R$ {table.totalValue.toFixed(2)}
+                                                                    </span>
                                                                 </div>
                                                             )}
                                                         </div>
@@ -430,6 +487,7 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                             suggestions={tables.find(t => t.id === selectedTable)?.suggestions || []}
                             onAction={handleSuggestionAction}
                             onIgnore={handleSuggestionIgnore}
+                            isClosing={tables.find(t => t.id === selectedTable)?.status === 'closing' || tables.find(t => t.id === selectedTable)?.status === 'closed'}
                         />
                     )
                 }
@@ -440,6 +498,8 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                 <TableDetailsPanel
                     table={tables.find(t => t.id === selectedTable)}
                     onUpdateTableStatus={handleUpdateTableStatus}
+                    onMarkAsClosed={handleMarkTableClosed}
+                    onReleaseTable={handleReleaseTable}
                 />
             )}
         </div>

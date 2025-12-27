@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Clock, Info, Utensils, AlertTriangle, CheckCircle, FileText, RotateCcw, XCircle } from 'lucide-react';
+import { Clock, Info, Utensils, AlertTriangle, CheckCircle, FileText, RotateCcw, XCircle, Ban, Lock } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -9,24 +9,29 @@ import { Button, Input, Label, Select } from '../../components/ui/Form';
 import { useAudit } from '../../hooks/useAudit';
 import toast from 'react-hot-toast';
 
-export default function TableDetailsPanel({ table, onUpdateTableStatus }) {
+export default function TableDetailsPanel({ table, onUpdateTableStatus, onMarkAsClosed, onReleaseTable }) {
   const { log } = useAudit();
 
-  // Local state for Modals only
+  // Local state for Modals
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
+  const [isMarkClosedModalOpen, setIsMarkClosedModalOpen] = useState(false);
+  const [isReleaseModalOpen, setIsReleaseModalOpen] = useState(false);
   const [isReopenModalOpen, setIsReopenModalOpen] = useState(false);
+  const [isBlockerModalOpen, setIsBlockerModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Reopen Reason State
   const [reopenReason, setReopenReason] = useState('more_items');
+  const [blockedItems, setBlockedItems] = useState([]);
 
   if (!table) return null;
   const orders = table.orders || [];
 
-  // Helper to check status (safe access)
-  const isClosing = table.status === 'closing' || table.status === 'closed';
+  // Helper statuses
+  const isClosing = table.status === 'closing';
+  const isClosed = table.status === 'closed';
 
-  // Group items by category (Mock categorization based on names)
+  // Group items by category
   const groupedItems = {
     drinks: [],
     starters: [],
@@ -69,50 +74,67 @@ export default function TableDetailsPanel({ table, onUpdateTableStatus }) {
     cancelled: 'Cancelado'
   };
 
+  // --- Handlers ---
+
   const handleCloseBill = async () => {
     try {
       setIsProcessing(true);
       await new Promise(resolve => setTimeout(resolve, 800));
-
-      log('table.close_requested', {
-        tableId: table.id,
-        tableName: table.name,
-        totalValue: table.totalValue,
-      }, `Solicitado fechamento da Mesa ${table.name}`);
-
-      // Call parent handler to persist status
+      log('table.close_requested', { tableId: table.id, value: table.totalValue }, `Solicitado fechamento da Mesa ${table.name}`);
       onUpdateTableStatus(table.id, 'closing');
-
       toast.success('Conta solicitada. Mesa agora está "Encerrando".');
       setIsCloseModalOpen(false);
-    } catch (error) {
-      toast.error('Erro ao encerrar conta');
-    } finally {
-      setIsProcessing(false);
+    } catch (error) { toast.error('Erro ao encerrar conta'); } finally { setIsProcessing(false); }
+  };
+
+  const handleMarkClosed = async () => {
+    try {
+      setIsProcessing(true);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      onMarkAsClosed(table.id);
+      toast.success('Mesa marcada como Encerrada.');
+      setIsMarkClosedModalOpen(false);
+    } catch (error) { toast.error('Erro'); } finally { setIsProcessing(false); }
+  };
+
+  const handleAttemptRelease = () => {
+    // Check for pending items
+    const pending = [];
+    orders.forEach(o => {
+      // Assuming 'pending', 'preparing', 'ready' are active statuses that block release. 
+      // 'delivered' and 'cancelled' are safe.
+      if (['pending', 'preparing', 'ready'].includes(o.status)) {
+        pending.push({ id: o.id, items: o.items, status: o.status });
+      }
+    });
+
+    if (pending.length > 0) {
+      setBlockedItems(pending);
+      setIsBlockerModalOpen(true);
+    } else {
+      setIsReleaseModalOpen(true);
     }
+  };
+
+  const handleRelease = async () => {
+    try {
+      setIsProcessing(true);
+      await new Promise(resolve => setTimeout(resolve, 500));
+      onReleaseTable(table.id);
+      toast.success('Mesa liberada com sucesso!');
+      setIsReleaseModalOpen(false);
+    } catch (error) { toast.error('Erro'); } finally { setIsProcessing(false); }
   };
 
   const handleReopenBill = async () => {
     try {
       setIsProcessing(true);
       await new Promise(resolve => setTimeout(resolve, 800));
-
-      log('table.reopened', {
-        tableId: table.id,
-        tableName: table.name,
-        reason: reopenReason,
-      }, `Mesa ${table.name} reaberta por: ${reopenReason}`);
-
-      // Call parent handler to revert status
+      log('table.reopened', { tableId: table.id, reason: reopenReason }, `Mesa ${table.name} reaberta por: ${reopenReason}`);
       onUpdateTableStatus(table.id, 'occupied');
-
       toast.success('Conta reaberta. Mesa voltou para "Ocupada".');
       setIsReopenModalOpen(false);
-    } catch (error) {
-      toast.error('Erro ao reabrir conta');
-    } finally {
-      setIsProcessing(false);
-    }
+    } catch (error) { toast.error('Erro ao reabrir conta'); } finally { setIsProcessing(false); }
   };
 
   const ItemGroup = ({ title, items }) => {
@@ -153,16 +175,19 @@ export default function TableDetailsPanel({ table, onUpdateTableStatus }) {
               <h4 className="text-sm font-bold text-gray-900 uppercase tracking-wide">
                 Detalhes Operacionais - {table.name}
               </h4>
-              {isClosing && (
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 uppercase">
-                  Encerrando
+              {(isClosing || isClosed) && (
+                <span className={cn(
+                  "px-1.5 py-0.5 rounded text-[10px] font-bold uppercase",
+                  isClosed ? "bg-purple-100 text-purple-700" : "bg-purple-100 text-purple-700"
+                )}>
+                  {isClosed ? "Mesa Encerrada" : "Encerrando Conta"}
                 </span>
               )}
             </div>
             <div className="flex items-center gap-3 text-xs text-gray-500 mt-0.5">
               <span className="flex items-center gap-1">
                 <Clock size={12} />
-                {orders.length > 0 ? `Último: ${formatDistanceToNow(new Date(orders[0].created_at), { locale: ptBR })} ` : 'Sem pedidos'}
+                {orders.length > 0 ? `Último: ${formatDistanceToNow(new Date(orders[0].created_at), { locale: ptBR })}` : 'Sem pedidos'}
               </span>
               <span className="w-1 h-1 bg-gray-300 rounded-full" />
               <span>{orders.length} pedidos</span>
@@ -177,17 +202,47 @@ export default function TableDetailsPanel({ table, onUpdateTableStatus }) {
             <span className="text-lg font-bold text-gray-900">R$ {table.totalValue?.toFixed(2)}</span>
           </div>
 
-          {/* Action */}
-          <div className="pl-4 border-l border-gray-100">
-            {isClosing ? (
-              <button
-                onClick={() => setIsReopenModalOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-xs font-bold rounded-lg transition-colors shadow-sm active:scale-95"
-              >
-                <RotateCcw size={14} />
-                Reabrir conta
-              </button>
-            ) : (
+          {/* Actions */}
+          <div className="pl-4 border-l border-gray-100 flex items-center gap-2">
+            {isClosing && (
+              <>
+                <button
+                  onClick={() => setIsMarkClosedModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm active:scale-95"
+                >
+                  <Lock size={14} />
+                  Marcar como Encerrada
+                </button>
+                <button
+                  onClick={() => setIsReopenModalOpen(true)}
+                  className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-bold rounded-lg transition-colors"
+                >
+                  <RotateCcw size={14} />
+                  Reabrir
+                </button>
+              </>
+            )}
+
+            {isClosed && (
+              <>
+                <button
+                  onClick={handleAttemptRelease}
+                  className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm active:scale-95"
+                >
+                  <CheckCircle size={14} />
+                  Liberar Mesa
+                </button>
+                <button
+                  onClick={() => setIsReopenModalOpen(true)}
+                  className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-xs font-bold rounded-lg transition-colors"
+                >
+                  <RotateCcw size={14} />
+                  Reabrir
+                </button>
+              </>
+            )}
+
+            {!isClosing && !isClosed && (
               <button
                 onClick={() => setIsCloseModalOpen(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors shadow-sm active:scale-95"
@@ -201,7 +256,7 @@ export default function TableDetailsPanel({ table, onUpdateTableStatus }) {
       </div>
 
       <div className="flex flex-col md:flex-row">
-        {/* 3. Itens na mesa (Primary Content) */}
+        {/* 3. Itens na mesa */}
         <div className="flex-1 p-6 border-r border-gray-100 bg-white">
           <div className="flex items-center gap-2 mb-4">
             <FileText size={16} className="text-gray-400" />
@@ -222,27 +277,23 @@ export default function TableDetailsPanel({ table, onUpdateTableStatus }) {
           )}
         </div>
 
-        {/* 4. Timeline (Secondary Side Panel) */}
+        {/* 4. Timeline */}
         <div className="w-full md:w-80 p-6 bg-gray-50/50">
           <div className="flex items-center gap-2 mb-4">
             <Clock size={16} className="text-gray-400" />
             <h4 className="text-xs font-bold text-gray-700 uppercase">Histórico de Pedidos</h4>
           </div>
-
           <div className="space-y-3 relative pl-4 border-l border-gray-200 ml-1.5">
             {orders.map((order) => (
               <div key={order.id} className="relative group">
-                <div className={`absolute - left - [22px] top - 1.5 w - 2.5 h - 2.5 rounded - full border - 2 border - white transition - colors ${order.status === 'pending' ? 'bg-amber-400' : 'bg-green-400'} `} />
-
+                <div className={`absolute -left-[22px] top-1.5 w-2.5 h-2.5 rounded-full border-2 border-white transition-colors ${order.status === 'pending' ? 'bg-amber-400' : 'bg-green-400'}`} />
                 <div className="bg-white border border-gray-200 p-3 rounded-lg shadow-sm group-hover:shadow-md transition-shadow">
                   <div className="flex justify-between items-start mb-1">
                     <span className="text-xs font-bold text-gray-900">#{order.id}</span>
                     <span className="text-[10px] text-gray-500">{formatDistanceToNow(new Date(order.created_at), { locale: ptBR, addSuffix: true })}</span>
                   </div>
                   <div className="flex justify-between items-center mt-1">
-                    <span className={cn("text-[10px] lowercase",
-                      order.status === 'preparing' ? 'text-blue-600' : 'text-gray-600'
-                    )}>
+                    <span className={cn("text-[10px] lowercase", order.status === 'preparing' ? 'text-blue-600' : 'text-gray-600')}>
                       {statusTranslations[order.status] || order.status}
                     </span>
                     <span className="text-xs font-medium text-gray-900">R$ {order.total_amount?.toFixed(2)}</span>
@@ -255,6 +306,8 @@ export default function TableDetailsPanel({ table, onUpdateTableStatus }) {
         </div>
       </div>
 
+      {/* --- MODALS --- */}
+
       <ConfirmModal
         isOpen={isCloseModalOpen}
         onClose={() => setIsCloseModalOpen(false)}
@@ -266,31 +319,63 @@ export default function TableDetailsPanel({ table, onUpdateTableStatus }) {
         loading={isProcessing}
       />
 
+      <ConfirmModal
+        isOpen={isMarkClosedModalOpen}
+        onClose={() => setIsMarkClosedModalOpen(false)}
+        onConfirm={handleMarkClosed}
+        title="Concluir Atendimento"
+        message="Isso marcará a mesa como 'Encerrada'. A mesa continua ocupada até o cliente sair e você liberá-la."
+        confirmText="Marcar como Encerrada"
+        variant="success"
+        loading={isProcessing}
+      />
+
+      <ConfirmModal
+        isOpen={isReleaseModalOpen}
+        onClose={() => setIsReleaseModalOpen(false)}
+        onConfirm={handleRelease}
+        title="Liberar Mesa"
+        message="Atenção: Todos os dados da mesa serão resetados e ela ficará livre para novos clientes."
+        confirmText="Liberar Mesa Agora"
+        variant="danger"
+        loading={isProcessing}
+      />
+
+      {/* Blocker Modal */}
+      <Modal isOpen={isBlockerModalOpen} onClose={() => setIsBlockerModalOpen(false)} title="Não é possível liberar" className="max-w-md">
+        <div className="space-y-4">
+          <div className="bg-red-50 text-red-800 p-4 rounded-lg flex gap-3 text-sm">
+            <Ban className="shrink-0 w-5 h-5 mt-0.5" />
+            <div>
+              <p className="font-bold">Pedidos em Andamento</p>
+              <p>Existem {blockedItems.length} pedidos que ainda não foram entregues ou cancelados.</p>
+            </div>
+          </div>
+          <div className="max-h-40 overflow-y-auto border rounded-md p-2 bg-gray-50">
+            {blockedItems.map((o, i) => (
+              <div key={i} className="flex justify-between text-xs py-1 border-b last:border-0 border-gray-200">
+                <span className="font-bold">#{o.id}</span>
+                <span className="uppercase text-gray-500">{o.status}</span>
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end pt-2">
+            <Button onClick={() => setIsBlockerModalOpen(false)}>Entendi</Button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Reopen Modal */}
-      <Modal
-        isOpen={isReopenModalOpen}
-        onClose={() => setIsReopenModalOpen(false)}
-        title="Reabrir Conta da Mesa"
-        className="max-w-md"
-      >
+      <Modal isOpen={isReopenModalOpen} onClose={() => setIsReopenModalOpen(false)} title="Reabrir Conta da Mesa" className="max-w-md">
         <div className="space-y-4">
           <div className="bg-blue-50 text-blue-800 p-4 rounded-lg flex gap-3 text-sm">
             <Info className="shrink-0 w-5 h-5 mt-0.5" />
-            <div>
-              <p className="font-bold">Atenção Operacional</p>
-              <p>Você vai reabrir a mesa para novos pedidos. O status voltará para "Ocupada" e as sugestões do Maestro serão reativadas.</p>
-            </div>
+            <div><p className="font-bold">Atenção Operacional</p><p>A mesa voltará para 'Ocupada' e aceitará novos pedidos.</p></div>
           </div>
-
           <div className="space-y-2">
-            <Label htmlFor="reopen-reason">Motivo da Reabertura (Opcional)</Label>
+            <Label htmlFor="reopen-reason">Motivo da Reabertura</Label>
             <div className="relative">
-              <select
-                id="reopen-reason"
-                className="w-full flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                value={reopenReason}
-                onChange={(e) => setReopenReason(e.target.value)}
-              >
+              <select id="reopen-reason" className="w-full border rounded-md p-2 text-sm" value={reopenReason} onChange={(e) => setReopenReason(e.target.value)}>
                 <option value="more_items">Cliente pediu mais itens</option>
                 <option value="correction">Correção de pedido</option>
                 <option value="payment_error">Erro no fechamento</option>
@@ -298,18 +383,12 @@ export default function TableDetailsPanel({ table, onUpdateTableStatus }) {
               </select>
             </div>
           </div>
-
           <div className="flex gap-3 pt-4 justify-end">
-            <Button variant="outline" onClick={() => setIsReopenModalOpen(false)}>
-              Cancelar
-            </Button>
-            <Button onClick={handleReopenBill} disabled={isProcessing}>
-              {isProcessing ? 'Processando...' : 'Confirmar Reabertura'}
-            </Button>
+            <Button variant="outline" onClick={() => setIsReopenModalOpen(false)}>Cancelar</Button>
+            <Button onClick={handleReopenBill} disabled={isProcessing}>{isProcessing ? '...' : 'Confirmar Reabertura'}</Button>
           </div>
         </div>
       </Modal>
     </div>
   );
 }
-

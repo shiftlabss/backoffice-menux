@@ -1,12 +1,13 @@
 import React from 'react';
-import { Sparkles, Coffee, Wine, Utensils, AlertTriangle, Check, X, Clock, Zap, Info } from 'lucide-react';
+import { Sparkles, Coffee, Wine, Utensils, AlertTriangle, Check, X, Clock, Zap, Info, Lock } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 // --- TableDetailsBlock Component ---
 
 
 // --- Main Panel ---
-export default function IntelligencePanel({ table, suggestions, onAction, onIgnore }) {
+// --- Main Panel ---
+export default function IntelligencePanel({ table, suggestions, onAction, onIgnore, isClosing }) {
   if (!table) return null;
 
   const getActionIcon = (type) => {
@@ -26,7 +27,7 @@ export default function IntelligencePanel({ table, suggestions, onAction, onIgno
         label: 'Alta'
       };
       case 'medium': return {
-        styles: 'text-amber-700 bg-amber-50 border-amber-100',
+        styles: 'text-orange-700 bg-orange-50 border-orange-100', // ORANGE - Medium
         icon: Zap,
         label: 'Média'
       };
@@ -48,8 +49,12 @@ export default function IntelligencePanel({ table, suggestions, onAction, onIgno
               {table.name}
             </span>
             <div className="flex items-center gap-3 text-xs text-gray-500">
-              <span className={cn("font-medium", table.status === 'risk' ? 'text-red-600' : 'text-blue-600')}>
-                {table.status === 'occupied' ? 'Ocupada' : table.status === 'risk' ? 'Em risco' : 'Livre'}
+              <span className={cn("font-medium",
+                table.status === 'closed' ? 'text-purple-700 font-bold' :
+                  isClosing ? 'text-purple-600 font-bold' :
+                    table.status === 'risk' ? 'text-red-600' : 'text-blue-600'
+              )}>
+                {table.status === 'closed' ? 'Mesa Encerrada' : isClosing ? 'Encerrando' : table.status === 'occupied' ? 'Ocupada' : table.status === 'risk' ? 'Em risco' : 'Livre'}
               </span>
               <span className="w-1 h-1 rounded-full bg-gray-300" />
               <div className="flex items-center gap-1">
@@ -75,7 +80,22 @@ export default function IntelligencePanel({ table, suggestions, onAction, onIgno
             <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wider">Sugestões do Maestro</h4>
           </div>
 
-          {suggestions.length === 0 ? (
+          {isClosing || table.status === 'closed' ? (
+            // Empty State - Closing/Closed
+            <div className="bg-purple-50 rounded-xl p-4 text-center border border-purple-100">
+              <div className="flex justify-center mb-2 text-purple-200">
+                {table.status === 'closed' ? <Lock size={24} /> : <Clock size={24} />}
+              </div>
+              <p className="text-xs text-purple-900 font-bold mb-1">
+                {table.status === 'closed' ? 'Mesa Encerrada' : 'Mesa em fechamento'}
+              </p>
+              <p className="text-[10px] text-purple-600">
+                {table.status === 'closed'
+                  ? 'Aguardando liberação da mesa para novos clientes.'
+                  : 'Sugestões pausadas até a reabertura da mesa.'}
+              </p>
+            </div>
+          ) : suggestions.length === 0 ? (
             <div className="bg-indigo-50/50 rounded-xl p-4 text-center border border-indigo-100/50">
               <p className="text-xs text-indigo-400 font-medium">Nenhuma oportunidade detectada agora.</p>
             </div>
@@ -90,7 +110,7 @@ export default function IntelligencePanel({ table, suggestions, onAction, onIgno
                   <div key={idx} className={cn(
                     "bg-white rounded-xl border shadow-sm p-3 hover:shadow-md transition-all group",
                     suggestion.priority === 'high' ? 'border-red-100 hover:border-red-200' :
-                      suggestion.priority === 'medium' ? 'border-amber-100 hover:border-amber-200' :
+                      suggestion.priority === 'medium' ? 'border-orange-100 hover:border-orange-200' :
                         'border-gray-200 hover:border-gray-300'
                   )}>
                     {/* Badge */}
