@@ -3,7 +3,7 @@ import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Button } from './Button';
 
-export function Drawer({ isOpen, onClose, title, children, footer, className, size = 'md' }) {
+export function Drawer({ isOpen, onClose, title, children, footer, className, size = 'md', hideHeader = false }) {
   const drawerRef = useRef(null);
 
   // Handle ESC key press
@@ -59,17 +59,19 @@ export function Drawer({ isOpen, onClose, title, children, footer, className, si
         )}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
-          <h2 className="text-xl font-bold text-slate-900">{title}</h2>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-9 w-9 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100"
-          >
-            <X size={20} />
-          </Button>
-        </div>
+        {!hideHeader && (
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 shrink-0">
+            <h2 className="text-xl font-bold text-slate-900">{title}</h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="h-9 w-9 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+            >
+              <X size={20} />
+            </Button>
+          </div>
+        )}
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">

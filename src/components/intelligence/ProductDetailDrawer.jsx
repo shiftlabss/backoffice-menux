@@ -65,6 +65,7 @@ export default function ProductDetailDrawer({ isOpen, onClose, product }) {
       title={null} // Custom header
       size="lg" // Wider drawer for analytics
       hideCloseButton={true} // Custom close button
+      hideHeader={true}
     >
       <div className="h-full flex flex-col bg-slate-50/50">
 
@@ -274,17 +275,7 @@ export default function ProductDetailDrawer({ isOpen, onClose, product }) {
             />
           </div>
 
-          {/* 6. Opportunities (Read Only) */}
-          <div className="border-t border-slate-100 pt-6">
-            <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-              <Sparkles size={16} className="text-purple-500" /> Oportunidades Relacionadas
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <OppCard title="Criar Combo Família" type="Combo" desc="Alta afinidade com Bebidas 2L" />
-              <OppCard title="Melhorar Descrição" type="Conteúdo" desc="Taxa de visualização alta, conversão baixa" />
-              <OppCard title="Oferta de Terça" type="Promoção" desc="Baixo giro às terças-feiras" />
-            </div>
-          </div>
+          {/* 6. Opportunities (Removed) */}
 
         </div>
       </div>
@@ -359,14 +350,4 @@ function SegmentTable({ title, headers, rows }) {
   );
 }
 
-function OppCard({ title, type, desc }) {
-  return (
-    <div className="p-3 bg-slate-50 border border-slate-100 rounded-lg flex flex-col gap-1">
-      <div className="flex justify-between items-start">
-        <span className="font-bold text-xs text-slate-800">{title}</span>
-        <Badge variant="outline" className="text-[9px] bg-white h-4 px-1">{type}</Badge>
-      </div>
-      <p className="text-[10px] text-slate-500 leading-tight">{desc}</p>
-    </div>
-  );
-}
+
