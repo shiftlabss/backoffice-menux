@@ -151,19 +151,7 @@ export function KanbanCard({ card, index, onAction }) {
             >
               Evidência
             </button>
-            <Button
-              size="sm"
-              onClick={(e) => { e.stopPropagation(); onAction?.('apply', card); }}
-              disabled={isApplied || isUnderReview}
-              className={cn(
-                "h-7 text-xs px-3 shadow-sm transition-all",
-                isApplied ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" :
-                  isUnderReview ? "bg-amber-100 text-amber-700 hover:bg-amber-200" :
-                    "bg-slate-900 hover:bg-slate-800 text-white"
-              )}
-            >
-              {isApplied ? "Aplicada" : isUnderReview ? "Aguardando" : "Aplicar"}
-            </Button>
+
           </div>
         </div>
       </Card>
