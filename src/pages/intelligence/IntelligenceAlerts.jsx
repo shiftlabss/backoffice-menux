@@ -5,8 +5,8 @@ import { cn } from '../../lib/utils';
 import { generateMockAlerts } from '../../services/alertMockData';
 
 // New Components
-import { AlertsFilterBar } from '../../components/intelligence/alerts/AlertsFilterBar';
-import { OperationalSummary } from '../../components/intelligence/alerts/OperationalSummary';
+
+
 import { AlertKanbanBoard } from '../../components/intelligence/alerts/AlertKanbanBoard'; // Using Kanban
 import { AlertAnalysisDrawer } from '../../components/intelligence/alerts/AlertAnalysisDrawer';
 import { PlaybookDrawer } from '../../components/intelligence/alerts/PlaybookDrawer';
@@ -126,10 +126,10 @@ export default function IntelligenceAlerts() {
     <div className="space-y-8 pb-20">
 
       {/* 1. Filters */}
-      <AlertsFilterBar filters={filters} onFilterChange={handleFilterChange} />
+
 
       {/* 2. Operational Summary */}
-      <OperationalSummary summary={summaryData} />
+
 
       {/* 3. Helper Text if Empty */}
       {!loading && alerts.length === 0 && (

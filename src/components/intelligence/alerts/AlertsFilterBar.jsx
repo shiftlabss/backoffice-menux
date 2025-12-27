@@ -96,24 +96,7 @@ export function AlertsFilterBar({ filters, onFilterChange }) {
         </div>
       </div>
 
-      {/* Active Chips & Clear */}
-      {activeCount > 0 && (
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider mr-2">Filtros Ativos:</span>
-          {Object.entries(filters).map(([key, value]) => {
-            if (value === 'all' || value === '' || key === 'search' || (key === 'period' && value === 'now')) return null;
-            return (
-              <Badge key={key} variant="secondary" className="gap-1 pl-2 pr-1 py-0.5 bg-slate-100 text-slate-600 border-slate-200">
-                <span className="capitalize">{translatedKey(key)}: {formatValue(value)}</span>
-                <button onClick={() => onFilterChange(key, 'all')} className="hover:bg-slate-200 rounded p-0.5"><X size={12} /></button>
-              </Badge>
-            )
-          })}
-          <Button variant="ghost" size="sm" onClick={handleClear} className="h-6 text-xs text-slate-400 hover:text-slate-600">
-            Limpar filtros
-          </Button>
-        </div>
-      )}
+
     </div>
   );
 }

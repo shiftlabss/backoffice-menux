@@ -5,20 +5,19 @@ import { Badge } from '../../ui/Badge';
 
 export function AlertKanbanBoard({ alerts, onAnalyze, onPlaybook, onResolve, onSnooze }) {
 
-  // Group by Severity Categories for Columns
   const columns = {
     critical: {
-      label: 'Crítico',
+      label: 'Alta',
       color: 'red',
       items: alerts.filter(a => a.severity === 'Crítica')
     },
     high: {
-      label: 'Alta Prioridade',
+      label: 'Média',
       color: 'orange',
       items: alerts.filter(a => a.severity === 'Alta')
     },
     medium_low: {
-      label: 'Média / Baixa',
+      label: 'Baixa',
       color: 'slate',
       items: alerts.filter(a => a.severity === 'Média' || a.severity === 'Baixa')
     }
@@ -27,10 +26,10 @@ export function AlertKanbanBoard({ alerts, onAnalyze, onPlaybook, onResolve, onS
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start h-full">
       <KanbanColumn
-        title={columns.critical.label}
-        count={columns.critical.items.length}
-        color={columns.critical.color}
-        items={columns.critical.items}
+        title={columns.medium_low.label}
+        count={columns.medium_low.items.length}
+        color={columns.medium_low.color}
+        items={columns.medium_low.items}
         actions={{ onAnalyze, onPlaybook, onResolve, onSnooze }}
       />
       <KanbanColumn
@@ -41,10 +40,10 @@ export function AlertKanbanBoard({ alerts, onAnalyze, onPlaybook, onResolve, onS
         actions={{ onAnalyze, onPlaybook, onResolve, onSnooze }}
       />
       <KanbanColumn
-        title={columns.medium_low.label}
-        count={columns.medium_low.items.length}
-        color={columns.medium_low.color}
-        items={columns.medium_low.items}
+        title={columns.critical.label}
+        count={columns.critical.items.length}
+        color={columns.critical.color}
+        items={columns.critical.items}
         actions={{ onAnalyze, onPlaybook, onResolve, onSnooze }}
       />
     </div>
