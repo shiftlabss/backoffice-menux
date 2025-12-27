@@ -84,7 +84,7 @@ export default function AppLayout() {
 
                 {/* Content Outlet */}
                 <main className="flex-1 p-6 lg:p-8 animate-fadeIn overflow-y-auto">
-                    <div className="max-w-[1600px] mx-auto w-full">
+                    <div className="w-full">
                         <Outlet />
                     </div>
                 </main>

@@ -95,11 +95,7 @@ export function ProductRowCard({ product, isExpanded, onToggleExpand, onAnalyze 
 
         {/* Col 3: Action (Span 3) */}
         <div className="col-span-12 md:col-span-3 flex flex-col items-end justify-center gap-2 md:border-l md:border-slate-50 pl-4">
-          {/* Contextual CTA */}
-          <div className="flex items-center gap-1.5 text-xs font-medium text-purple-700 bg-purple-50 px-2.5 py-1.5 rounded-lg border border-purple-100/50 mb-1">
-            <Sparkles size={12} className="text-purple-500" />
-            {product.next_step}
-          </div>
+
 
           {/* Primary Action */}
           <Button

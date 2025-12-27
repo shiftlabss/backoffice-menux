@@ -74,7 +74,7 @@ export default function Dashboard() {
             actions={HeaderActions}
             className="bg-[#FAFAFA]"
         >
-            <div className="flex flex-col gap-6 animate-in fade-in pb-12 max-w-[1600px] mx-auto">
+            <div className="flex flex-col gap-6 animate-in fade-in pb-12">
 
 
 
