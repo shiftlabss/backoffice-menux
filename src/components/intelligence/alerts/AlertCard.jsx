@@ -32,24 +32,7 @@ export function AlertCard({ alert, onAnalyze, onPlaybook, onResolve, onSnooze })
           </div>
 
           <div className="flex items-center gap-1">
-            {/* Only show "Resolver agora" if automatable */}
-            {alert.automatable && (
-              <Button size="xs" variant="ghost" className="h-6 gap-1 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" onClick={() => onResolve(alert)}>
-                <CheckCircle size={12} /> Resolver
-              </Button>
-            )}
-
-            <DropdownMenu>
-              <DropdownMenuTrigger className="text-slate-300 hover:text-slate-600 p-1 rounded transition-colors outline-none flex items-center justify-center">
-                <MoreHorizontal size={16} />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => onSnooze(alert)}>Silenciar por 2h</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onPlaybook(alert)}>Ver Playbook</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onAnalyze(alert)}>Analisar Detalhes</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
+            {/* Actions removed as requested */}
           </div>
         </div>
 
@@ -95,16 +78,9 @@ export function AlertCard({ alert, onAnalyze, onPlaybook, onResolve, onSnooze })
             <ArrowRight size={14} className="ml-2 opacity-80" />
           </Button>
 
-          <Button size="sm" variant="outline" className="text-slate-600 border-slate-200 hover:bg-slate-50 w-full sm:w-auto" onClick={() => onPlaybook(alert)}>
-            <PlayCircle size={14} className="mr-2 text-slate-400" />
-            Playbook
-          </Button>
 
-          {alert.automatable && (
-            <Button size="sm" variant="ghost" className="text-slate-500 hover:text-emerald-700 sm:ml-auto w-full sm:w-auto" onClick={() => onResolve(alert)}>
-              Resolver com 1 clique
-            </Button>
-          )}
+
+          {/* Resolver button removed from footer */}
         </div>
 
       </div>

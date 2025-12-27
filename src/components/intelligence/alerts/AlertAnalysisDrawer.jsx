@@ -109,18 +109,7 @@ export function AlertAnalysisDrawer({ isOpen, onClose, alert, onResolve, onPlayb
       </div>
 
       {/* Footer Actions */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-slate-200 flex gap-3 z-10">
-        <Button variant="outline" className="flex-1" onClick={onClose}>Voltar</Button>
-        <Button variant="outline" className="flex-1 gap-2" onClick={() => onPlaybook(alert)}>
-          <ListChecks size={16} /> Ver Playbook
-        </Button>
-        <Button className="flex-[2] bg-emerald-600 hover:bg-emerald-700 text-white gap-2" onClick={() => {
-          onResolve(alert);
-          onClose();
-        }}>
-          <CheckCircle2 size={16} /> Marcar como Resolvido
-        </Button>
-      </div>
+
 
     </Drawer>
   );
