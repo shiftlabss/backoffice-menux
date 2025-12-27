@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, LayoutGrid, Clock, Users, AlertTriangle, Filter, Sparkles, AlertCircle, Info, Zap } from 'lucide-react';
 import toast from 'react-hot-toast';
 import IntelligencePanel from './IntelligencePanel';
+import TableDetailsPanel from './TableDetailsPanel';
 import { cn } from '../../lib/utils';
 
 export default function TableMap({ orders, onTableSelect, selectedTable }) {
@@ -135,7 +136,8 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
                     if (curr.priority === 'medium' && highest !== 'high') return 'medium';
                     if (curr.priority === 'low' && highest !== 'high' && highest !== 'medium') return 'low';
                     return highest;
-                }, null)
+                }, null),
+                orders: tableOrders // Pass raw orders for the details panel
             };
         });
 
@@ -257,160 +259,169 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
     const grandTotal = tables.reduce((acc, t) => acc + (t.totalValue || 0), 0);
 
     return (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mb-6 flex flex-col lg:flex-row transition-all duration-300 ease-in-out">
-            {/* Main Map Content - Flexible Width */}
-            <div className={`flex-1 flex flex-col transition-all duration-300 min-w-0`}>
-                {/* Header */}
-                <div
-                    className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between bg-white border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors gap-4 overflow-x-auto"
-                    onClick={(e) => {
-                        // Don't toggle if clicking interactive elements
-                        if (e.target.closest('button') || e.target.closest('.interactive')) return;
-                        setIsExpanded(!isExpanded);
-                    }}
-                >
-                    <div className="flex items-center gap-4 min-w-max">
-                        <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
-                            <LayoutGrid size={20} />
+        <div className="flex flex-col gap-6 mb-6">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col lg:flex-row transition-all duration-300 ease-in-out">
+                {/* Main Map Content - Flexible Width */}
+                <div className={`flex-1 flex flex-col transition-all duration-300 min-w-0`}>
+                    <div className="flex-1 overflow-y-auto">
+                        {/* Header */}
+                        <div
+                            className="px-6 py-4 flex flex-col sm:flex-row sm:items-center justify-between bg-white border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors gap-4 overflow-x-auto"
+                            onClick={(e) => {
+                                // Don't toggle if clicking interactive elements
+                                if (e.target.closest('button') || e.target.closest('.interactive')) return;
+                                setIsExpanded(!isExpanded);
+                            }}
+                        >
+                            <div className="flex items-center gap-4 min-w-max">
+                                <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
+                                    <LayoutGrid size={20} />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-semibold text-gray-900 whitespace-nowrap">Mapa de Mesas</h3>
+                                    <p className="text-xs text-gray-500 whitespace-nowrap">
+                                        {tables.filter(t => t.status !== 'free').length} mesas ocupadas
+                                    </p>
+                                </div>
+
+                                <div className="hidden md:flex items-center gap-2 ml-4 border-l border-gray-200 pl-4">
+                                    <StatusChip label="Livre" color="gray" />
+                                    <StatusChip label="Ocupada" color="blue" />
+                                    <StatusChip label="Em risco" color="red" />
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col items-end interactive min-w-max">
+                                <span className="text-xs text-gray-500 font-medium whitespace-nowrap">Valor em Aberto</span>
+                                <span className="text-lg font-bold text-gray-900 whitespace-nowrap">R$ {grandTotal.toFixed(2)}</span>
+                            </div>
                         </div>
-                        <div>
-                            <h3 className="text-sm font-semibold text-gray-900 whitespace-nowrap">Mapa de Mesas</h3>
-                            <p className="text-xs text-gray-500 whitespace-nowrap">
-                                {tables.filter(t => t.status !== 'free').length} mesas ocupadas
-                            </p>
-                        </div>
 
-                        <div className="hidden md:flex items-center gap-2 ml-4 border-l border-gray-200 pl-4">
-                            <StatusChip label="Livre" color="gray" />
-                            <StatusChip label="Ocupada" color="blue" />
-                            <StatusChip label="Em risco" color="red" />
-                        </div>
-                    </div>
+                        {/* Grid Content */}
+                        {isExpanded && (
+                            <div className="p-6 bg-gray-50/50 flex-1 animate-in slide-in-from-top-2 duration-200">
+                                <div className={`grid gap-4 ${selectedTable && intelligenceEnabled
+                                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+                                    : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'
+                                    }`}>
+                                    {tables.map((table) => {
+                                        const priority = table.highestPriority;
+                                        const pStyles = priority ? getPriorityStyles(priority) : null;
 
-                    <div className="flex flex-col items-end interactive min-w-max">
-                        <span className="text-xs text-gray-500 font-medium whitespace-nowrap">Valor em Aberto</span>
-                        <span className="text-lg font-bold text-gray-900 whitespace-nowrap">R$ {grandTotal.toFixed(2)}</span>
-                    </div>
-                </div>
-
-                {/* Grid Content */}
-                {isExpanded && (
-                    <div className="p-6 bg-gray-50/50 flex-1 animate-in slide-in-from-top-2 duration-200">
-                        <div className={`grid gap-4 ${selectedTable && intelligenceEnabled
-                            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
-                            : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4'
-                            }`}>
-                            {tables.map((table) => {
-                                const priority = table.highestPriority;
-                                const pStyles = priority ? getPriorityStyles(priority) : null;
-
-                                return (
-                                    <div
-                                        key={table.id}
-                                        onClick={() => handleTableClick(table.id)}
-                                        className={cn(
-                                            getTableCardStyles(table.status, selectedTable === table.id, priority),
-                                            "shadow-sm"
-                                        )}
-                                    >
-                                        {/* Top Row */}
-                                        <div className="flex justify-between items-start">
-                                            <div className="relative">
-                                                <span className={cn(
-                                                    "inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold transition-all",
-                                                    pStyles ? pStyles.balloon : (table.status === 'free' ? 'text-gray-400 bg-gray-100' : 'text-gray-900 bg-gray-100')
-                                                )}>
-                                                    {table.number}
-                                                </span>
-                                                {table.status === 'risk' && !priority && (
-                                                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+                                        return (
+                                            <div
+                                                key={table.id}
+                                                onClick={() => handleTableClick(table.id)}
+                                                className={cn(
+                                                    getTableCardStyles(table.status, selectedTable === table.id, priority),
+                                                    "shadow-sm"
                                                 )}
-                                            </div>
+                                            >
+                                                {/* Top Row */}
+                                                <div className="flex justify-between items-start">
+                                                    <div className="relative">
+                                                        <span className={cn(
+                                                            "inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold transition-all",
+                                                            pStyles ? pStyles.balloon : (table.status === 'free' ? 'text-gray-400 bg-gray-100' : 'text-gray-900 bg-gray-100')
+                                                        )}>
+                                                            {table.number}
+                                                        </span>
+                                                        {table.status === 'risk' && !priority && (
+                                                            <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+                                                        )}
+                                                    </div>
 
-                                            {/* Priority Badge */}
-                                            {priority ? (
-                                                <span className={cn(
-                                                    "flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border",
-                                                    pStyles.badge
-                                                )}>
-                                                    {getPriorityIcon(priority)}
-                                                    {pStyles.label}
-                                                </span>
-                                            ) : table.status === 'occupied' && (
-                                                <div className="flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
-                                                    <Clock size={10} />
-                                                    <span>{table.time}</span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Bottom Row */}
-                                        <div className="mt-auto">
-                                            {table.status === 'free' ? (
-                                                <div className="flex items-center justify-center h-full">
-                                                    <span className="text-xs font-medium text-gray-400">Livre</span>
-                                                </div>
-                                            ) : (
-                                                <div className="flex flex-col gap-1.5">
-                                                    {/* If has priority, explain why briefly or show count */}
+                                                    {/* Priority Badge */}
                                                     {priority ? (
-                                                        <div className="flex flex-col">
-                                                            <div className="flex justify-between items-end">
-                                                                <div className="flex flex-col">
-                                                                    <span className="text-[10px] text-gray-500 font-medium">Sugestão ativa:</span>
-                                                                    <span className="text-xs font-semibold text-gray-900 truncate max-w-[100px]">
-                                                                        {table.suggestions[0]?.title}
-                                                                    </span>
-                                                                </div>
-                                                                <span className="text-xs font-bold text-gray-900">
-                                                                    R$ {table.totalValue.toFixed(2)}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex justify-between items-center">
-                                                            <span className="text-[10px] text-gray-500 font-medium bg-white/50 px-1.5 py-0.5 rounded-md border border-gray-100">
-                                                                {table.orderCount} pedido(s)
-                                                            </span>
-                                                            <div className="flex items-center gap-2">
-                                                                {table.status === 'risk' && (
-                                                                    <span className="text-[10px] font-bold text-red-600 flex items-center gap-1">
-                                                                        <AlertTriangle size={10} /> Atencão
-                                                                    </span>
-                                                                )}
-                                                                <span className="text-xs font-bold text-gray-900">
-                                                                    R$ {table.totalValue.toFixed(2)}
-                                                                </span>
-                                                            </div>
+                                                        <span className={cn(
+                                                            "flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border",
+                                                            pStyles.badge
+                                                        )}>
+                                                            {getPriorityIcon(priority)}
+                                                            {pStyles.label}
+                                                        </span>
+                                                    ) : table.status === 'occupied' && (
+                                                        <div className="flex items-center gap-1.5 text-xs text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">
+                                                            <Clock size={10} />
+                                                            <span>{table.time}</span>
                                                         </div>
                                                     )}
                                                 </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                        <div className="mt-4 flex justify-end">
-                            <span className="text-xs text-gray-400 italic">
-                                * As cores das bordas indicam a prioridade da sugestão
-                            </span>
-                        </div>
+
+                                                {/* Bottom Row */}
+                                                <div className="mt-auto">
+                                                    {table.status === 'free' ? (
+                                                        <div className="flex items-center justify-center h-full">
+                                                            <span className="text-xs font-medium text-gray-400">Livre</span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-col gap-1.5">
+                                                            {/* If has priority, explain why briefly or show count */}
+                                                            {priority ? (
+                                                                <div className="flex flex-col">
+                                                                    <div className="flex justify-between items-end">
+                                                                        <div className="flex flex-col">
+                                                                            <span className="text-[10px] text-gray-500 font-medium">Sugestão ativa:</span>
+                                                                            <span className="text-xs font-semibold text-gray-900 truncate max-w-[100px]">
+                                                                                {table.suggestions[0]?.title}
+                                                                            </span>
+                                                                        </div>
+                                                                        <span className="text-xs font-bold text-gray-900">
+                                                                            R$ {table.totalValue.toFixed(2)}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="flex justify-between items-center">
+                                                                    <span className="text-[10px] text-gray-500 font-medium bg-white/50 px-1.5 py-0.5 rounded-md border border-gray-100">
+                                                                        {table.orderCount} pedido(s)
+                                                                    </span>
+                                                                    <div className="flex items-center gap-2">
+                                                                        {table.status === 'risk' && (
+                                                                            <span className="text-[10px] font-bold text-red-600 flex items-center gap-1">
+                                                                                <AlertTriangle size={10} /> Atencão
+                                                                            </span>
+                                                                        )}
+                                                                        <span className="text-xs font-bold text-gray-900">
+                                                                            R$ {table.totalValue.toFixed(2)}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                                <div className="mt-4 flex justify-end">
+                                    <span className="text-xs text-gray-400 italic">
+                                        * As cores das bordas indicam a prioridade da sugestão
+                                    </span>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
+                </div>
+
+                {/* Intelligence Panel (Sidebar) */}
+                {
+                    isExpanded && selectedTable && intelligenceEnabled && (
+                        <IntelligencePanel
+                            table={tables.find(t => t.id === selectedTable)}
+                            suggestions={tables.find(t => t.id === selectedTable)?.suggestions || []}
+                            onAction={handleSuggestionAction}
+                            onIgnore={handleSuggestionIgnore}
+                        />
+                    )
+                }
             </div>
 
-            {/* Intelligence Panel (Sidebar) */}
-            {
-                isExpanded && selectedTable && intelligenceEnabled && (
-                    <IntelligencePanel
-                        table={tables.find(t => t.id === selectedTable)}
-                        suggestions={tables.find(t => t.id === selectedTable)?.suggestions || []}
-                        onAction={handleSuggestionAction}
-                        onIgnore={handleSuggestionIgnore}
-                    />
-                )
-            }
-        </div >
+            {/* Table Details Panel (Bottom - Full Width) */}
+            {selectedTable && isExpanded && intelligenceEnabled && (
+                <TableDetailsPanel table={tables.find(t => t.id === selectedTable)} />
+            )}
+        </div>
     );
 }

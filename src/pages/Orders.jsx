@@ -104,9 +104,8 @@ export default function Orders() {
                             selectedTable={selectedTable}
                             onTableSelect={(tableId) => {
                                 setSelectedTable(tableId);
-                                if (tableId) setActiveTab('orders'); // Optional: auto-switch to orders on selection? User didn't ask, but it's a nice flow. Let's keep it manual for now to avoid confusion unless requested.
-                                // Actually, if I stay on Map, I see the map. If I select a table, I probably want to see its orders?
-                                // Let's NOT auto-switch for now, just filter.
+                                // Prevent auto-switch to keep map/drawer visible
+                                // if (tableId) setActiveTab('orders'); 
                             }}
                         />
                     </div>
