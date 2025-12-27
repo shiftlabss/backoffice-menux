@@ -27,6 +27,8 @@ import { SuggestedCombosList } from '../../components/intelligence/combinations/
 import { MaestroSuggestionsList } from '../../components/intelligence/combinations/MaestroSuggestionsList';
 import { EditComboDrawer } from '../../components/intelligence/combinations/EditComboDrawer';
 import { ReviewSuggestionDrawer } from '../../components/intelligence/combinations/ReviewSuggestionDrawer';
+import { ComboPerformanceRow } from '../../components/intelligence/ComboPerformanceRow';
+import ComboAnalysisDrawer from '../../components/intelligence/ComboAnalysisDrawer';
 
 export default function IntelligenceProducts() {
   const [products, setProducts] = useState([]);
@@ -39,11 +41,14 @@ export default function IntelligenceProducts() {
   const [searchTerm, setSearchTerm] = useState('');
 
   // Drawers State
-  const [activeDrawer, setActiveDrawer] = useState(null); // 'product-detail' | 'edit-combo' | 'review-suggestion'
+  const [activeDrawer, setActiveDrawer] = useState(null); // 'product-detail' | 'edit-combo' | 'review-suggestion' | 'analyze-combo'
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [expandedProductId, setExpandedProductId] = useState(null);
   const [selectedCombo, setSelectedCombo] = useState(null);
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
+
+  // State for Combo Performance Block
+  const [comboPerformanceData, setComboPerformanceData] = useState([]);
 
   // --- Real State for Combos Section ---
   const [combosSortBy, setCombosSortBy] = useState('impact');
@@ -127,6 +132,7 @@ export default function IntelligenceProducts() {
 
   useEffect(() => {
     fetchProducts();
+    fetchComboPerformance(); // Fetch combos for performance block
   }, [filters, period, sortBy]);
 
   const fetchProducts = async () => {
@@ -135,7 +141,10 @@ export default function IntelligenceProducts() {
       await new Promise(resolve => setTimeout(resolve, 600));
       const data = await intelligenceService.getProducts();
 
-      const enhancedData = data.map(p => ({
+      // Filter: Strictly exclude 'Combos' category
+      const productsOnly = data.filter(p => p.category !== 'Combos');
+
+      const enhancedData = productsOnly.map(p => ({
         ...p,
         conv_maestro: (p.conversion_rate * 1.15).toFixed(1),
         conv_organic: (p.conversion_rate * 0.9).toFixed(1),
@@ -143,22 +152,70 @@ export default function IntelligenceProducts() {
         acceptance_rate: "High",
         revenue_total: p.revenue_attributed,
         revenue_incremental: p.revenue_attributed * 0.2,
-        dominant_opportunity: p.category === 'Lanches' ? 'upsell' : p.category === 'Combos' ? 'promo' : 'cross-sell',
+        dominant_opportunity: p.category === 'Lanches' ? 'upsell' : 'cross-sell',
         base_sessions: Math.floor(Math.random() * 1000) + 500
       }));
 
+      // Sorting: Revenue > Lift > Base
       const sortedData = enhancedData.sort((a, b) => {
-        if (sortBy === 'revenue') return b.revenue_attributed - a.revenue_attributed;
-        if (sortBy === 'conversion') return b.conversion_rate - a.conversion_rate;
-        return 0;
+        if (b.revenue_attributed !== a.revenue_attributed) return b.revenue_attributed - a.revenue_attributed;
+        const liftA = parseInt(a.lift?.replace(/\D/g, '') || 0);
+        const liftB = parseInt(b.lift?.replace(/\D/g, '') || 0);
+        if (liftB !== liftA) return liftB - liftA;
+        return b.base_sessions - a.base_sessions;
       });
 
       setProducts(sortedData);
     } catch (err) {
+      console.error(err);
       toast.error("Erro ao carregar dados de produtos.");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Mock Fetch for Combo Performance Block
+  const fetchComboPerformance = () => {
+    // Mock data mirroring ProductRowCard structure but for Combos
+    const mockCombos = [
+      {
+        id: 'c1',
+        name: 'Combo Família Inteligente',
+        category: 'Combos',
+        recommendations_count: 3,
+        revenue_total: 3500.00,
+        revenue_incremental: 700.00,
+        conv_maestro: 28.7,
+        conv_organic: 22.5,
+        lift: '+18%',
+        base_sessions: 672,
+        suggestions_count: 36,
+        dominant_opportunity: 'promo',
+        status: 'Active'
+      },
+      {
+        id: 'c2',
+        name: 'Trio Universitário',
+        category: 'Combos',
+        recommendations_count: 1,
+        revenue_total: 1200.00,
+        revenue_incremental: 150.00,
+        conv_maestro: 15.2,
+        conv_organic: 12.0,
+        lift: '+12%',
+        base_sessions: 420,
+        suggestions_count: 15,
+        dominant_opportunity: 'upsell',
+        status: 'Active'
+      }
+    ];
+    setComboPerformanceData(mockCombos);
+  };
+
+  // Handlers
+  const handleAnalyzeCombo = (combo) => {
+    setSelectedCombo(combo);
+    setActiveDrawer('analyze-combo');
   };
 
   // --- Handlers for Combos ---
@@ -278,78 +335,17 @@ export default function IntelligenceProducts() {
     <TooltipProvider>
       <div className="space-y-8">
 
-        {/* 2. Executive KPIs (Static) - Unchanged */}
-        <div className="flex flex-col gap-6">
-          {/* Block 1: Main Impacts */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <KPICard
-              title="Receita Atribuída (IA)"
-              value={`R$ ${MOCK_KPIS.ai_revenue}`}
-              trend="+12%"
-              icon={DollarSign}
-              color="text-emerald-600"
-              tooltip="Faturamento proveniente direto de sugestões aceitas."
-              base="Base: 450 pedidos"
-            />
-            <KPICard
-              title="Produtos Influenciados"
-              value="12"
-              trend="+3"
-              icon={Package}
-              color="text-purple-600"
-              tooltip="Número de SKUs distintos que receberam um boost de vendas via IA."
-              base="Total catálogo: 85"
-            />
-            <KPICard
-              title="Lift de Conversão"
-              value="+15%"
-              trend="vs média"
-              icon={TrendingUp}
-              color="text-blue-600"
-              tooltip="Aumento percentual na taxa de conversão quando há sugestão."
-              base="Comparativo A/B"
-            />
-          </div>
-
-          {/* Block 2: Operational Metrics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <KPICard
-              title="Ticket Médio (Com IA)"
-              value="R$ 85,50"
-              trend="+18%"
-              icon={ArrowUpRight}
-              color="text-orange-600"
-              tooltip="Ticket médio de pedidos que contêm pelo menos uma sugestão aceita."
-              base="vs R$ 72 sem IA"
-            />
-            <KPICard
-              title="Vendas de Combos"
-              value="450"
-              trend="+5%"
-              icon={Layers}
-              color="text-pink-600"
-              tooltip="Total de combos vendidos no período."
-              base="Meta: 400"
-            />
-            <KPICard
-              title="Margem Média"
-              value="32%"
-              trend="-1%"
-              icon={Utensils}
-              color="text-slate-600"
-              tooltip="Margem de contribuição média dos produtos influenciados (Estimada)."
-              base="Custo vs Preço Venda"
-            />
-          </div>
-        </div>
-
         {/* 3. Product Performance List */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              Performance por Produto
-              {loading && <Loader2 size={16} className="animate-spin text-slate-400" />}
-            </h2>
+            <div>
+              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                Performance por Produto
+                {loading && <Loader2 size={16} className="animate-spin text-slate-400" />}
+              </h2>
+              <p className="text-sm text-slate-500">Combos aparecem na seção Combos abaixo.</p>
+            </div>
+
           </div>
 
           <div className="space-y-3">
@@ -380,38 +376,60 @@ export default function IntelligenceProducts() {
         {/* 4. REDESIGNED COMBOS SECTION */}
         {/* ================================================================================= */}
 
+        {/* NEW: Performance por Combos Block */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900">Performance por Combos</h3>
+              <p className="text-sm text-slate-500">Este bloco analisa combos. Para criar e pausar, use Combos ativos abaixo.</p>
+            </div>
+          </div>
+          <div className="flex flex-col gap-3">
+            {comboPerformanceData.map(combo => (
+              <ComboPerformanceRow
+                key={combo.id}
+                combo={combo}
+                isExpanded={false}
+                onAnalyze={() => handleAnalyzeCombo(combo)}
+              />
+            ))}
+          </div>
+        </div>
+
         <div className="pt-10 pb-10">
 
 
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
-            {/* Active Combos Column */}
-            <ActiveCombosList
-              combos={filteredActiveCombos}
-              onNewCombo={handleNewCombo}
-              onEdit={handleEditCombo}
-              onToggleStatus={handleToggleStatus}
-              onPerformance={() => toast("Abre drawer de performance")}
-              onDuplicate={() => toast("Duplicando combo...")}
-              onArchive={() => toast("Combo arquivado")}
-            />
 
-            {/* Suggested Combos Column */}
-            <SuggestedCombosList
-              combos={filteredSuggestedCombos}
-              onReview={handleReviewSuggestion}
+
+          {/* Maestro Suggestions Block */}
+          <div className="mt-8">
+            <MaestroSuggestionsList
+              suggestions={maestroSuggestions}
+              onApply={handleApplyMaestro}
               onIgnore={handleIgnoreSuggestion}
-              onRefresh={() => toast.success("Atualizando...")}
+              onDetails={() => toast("Ver detalhes da oportunidade")}
             />
           </div>
-
-          {/* Maestro Suggestions Row */}
-          <MaestroSuggestionsList
-            suggestions={maestroSuggestions}
-            onApply={handleApplyMaestro}
-            onIgnore={handleIgnoreSuggestion}
-            onDetails={() => toast("Ver detalhes da oportunidade")}
-          />
         </div>
+
+        {/* NEW: Performance por Combos Block (Actually, user wanted this BETWEEN Product and Active Combos)
+            Wait, in the previous broken file, it was inserted ABOVE the Redesigned Combos Section.
+            Checking line 212 of broken file: "NEW: Performance por Combos Block"
+            I missed including this block in my 'logic' analysis above, but I should verify the order.
+            
+            Order:
+            1. Product Performance
+            2. Combo Performance
+            3. Active/Suggested Combos
+            
+            My current write_to_file `return` block above has:
+            1. Product Performance
+            2. Redesigned Combos Section (Active/Suggested)
+            
+            I MISSING THE COMBO PERFORMANCE BLOCK!
+            I need to add it back.
+        */}
+
 
 
         {/* --- Drawers --- */}
@@ -420,6 +438,15 @@ export default function IntelligenceProducts() {
           isOpen={activeDrawer === 'product-detail'}
           onClose={() => { setActiveDrawer(null); setSelectedProduct(null); }}
           product={selectedProduct}
+        />
+
+        <ComboAnalysisDrawer
+          isOpen={activeDrawer === 'analyze-combo'}
+          onClose={() => setActiveDrawer(null)}
+          combo={selectedCombo}
+          onEdit={(c) => {
+            setActiveDrawer('edit-combo');
+          }}
         />
 
         <EditComboDrawer
@@ -438,18 +465,17 @@ export default function IntelligenceProducts() {
             setActiveDrawer(null);
             setTimeout(() => handleEditCombo({
               name: selectedSuggestion.name,
-              items: selectedSuggestion.items, // Simplification
-              // In real app, transform suggestion to combo draft here
+              items: selectedSuggestion.items,
             }), 200);
           }}
         />
 
-      </div >
+      </div>
     </TooltipProvider>
   );
 }
 
-// KPI Component (Unchanged)
+// KPI Component
 const KPICard = ({ title, value, trend, icon: Icon, color, tooltip, base }) => (
   <Tooltip>
     <TooltipTrigger asChild>
@@ -476,4 +502,3 @@ const KPICard = ({ title, value, trend, icon: Icon, color, tooltip, base }) => (
     </TooltipContent>
   </Tooltip>
 );
-
