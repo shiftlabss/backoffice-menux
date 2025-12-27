@@ -141,11 +141,11 @@ export function KanbanBoard({ data, onAction }) {
     >
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px] items-start pb-6">
         <KanbanColumn
-          id="high"
-          title="Prioridade Alta"
-          cards={columns.high}
-          color="text-red-600"
-          count={columns.high.length}
+          id="low"
+          title="Prioridade Baixa"
+          cards={columns.low}
+          color="text-blue-600"
+          count={columns.low.length}
           className="h-full"
           onAction={onAction}
         />
@@ -159,11 +159,11 @@ export function KanbanBoard({ data, onAction }) {
           onAction={onAction}
         />
         <KanbanColumn
-          id="low"
-          title="Prioridade Baixa"
-          cards={columns.low}
-          color="text-blue-600"
-          count={columns.low.length}
+          id="high"
+          title="Prioridade Alta"
+          cards={columns.high}
+          color="text-red-600"
+          count={columns.high.length}
           className="h-full"
           onAction={onAction}
         />
