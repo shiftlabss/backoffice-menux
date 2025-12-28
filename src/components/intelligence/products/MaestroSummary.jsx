@@ -66,8 +66,6 @@ export function MaestroSummary({ metrics, onResolveTopAction, onViewDiagnostics 
         subtext={metrics.top_opportunity_name}
         icon={TrendingUp}
         color="text-emerald-600"
-        actionLabel="Resolver agora"
-        onAction={onResolveTopAction}
       />
 
       <SummaryCard
@@ -76,8 +74,6 @@ export function MaestroSummary({ metrics, onResolveTopAction, onViewDiagnostics 
         subtext="3 itens precisam de atenção"
         icon={Activity}
         color="text-blue-600"
-        actionLabel="Ver diagnósticos"
-        onAction={onViewDiagnostics}
       />
 
     </div>

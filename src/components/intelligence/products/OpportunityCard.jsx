@@ -71,14 +71,7 @@ export function OpportunityCard({ opportunity, onResolve, onEdit, onIgnore, isIg
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2 shrink-0 md:pl-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => onEdit(opportunity)}
-            className="hidden md:flex text-xs text-slate-500 h-8"
-          >
-            Editar
-          </Button>
+
 
           <Button
             size="sm"
