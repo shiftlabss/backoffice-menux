@@ -10,6 +10,9 @@ import { cn } from '../../lib/utils';
 export default function IntelligencePanel({ table, suggestions, onAction, onIgnore, isClosing }) {
   if (!table) return null;
 
+  // Local state to track which suggestion is confirming ignore
+  const [confirmingIgnoreId, setConfirmingIgnoreId] = React.useState(null);
+
   const getActionIcon = (type) => {
     switch (type) {
       case 'drink': return Wine;
@@ -105,6 +108,7 @@ export default function IntelligencePanel({ table, suggestions, onAction, onIgno
                 const Icon = getActionIcon(suggestion.type);
                 const priorityConfig = getPriorityConfig(suggestion.priority);
                 const PriorityIcon = priorityConfig.icon;
+                const isConfirming = confirmingIgnoreId === suggestion.id;
 
                 return (
                   <div key={idx} className={cn(
@@ -113,58 +117,91 @@ export default function IntelligencePanel({ table, suggestions, onAction, onIgno
                       suggestion.priority === 'medium' ? 'border-orange-100 hover:border-orange-200' :
                         'border-gray-200 hover:border-gray-300'
                   )}>
-                    {/* Badge */}
-                    <div className="flex justify-between items-start mb-2">
-                      <span className={cn(
-                        "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase border",
-                        priorityConfig.styles
-                      )}>
-                        <PriorityIcon size={10} />
-                        Prioridade {priorityConfig.label}
-                      </span>
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex items-start gap-3 mb-3">
-                      <div className="p-2 bg-gray-50 rounded-lg text-gray-600 group-hover:bg-white group-hover:shadow-sm transition-all">
-                        <Icon size={18} />
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-900">{suggestion.title}</h4>
-                        <p className="text-xs text-gray-500 mt-0.5">{suggestion.reason}</p>
-                      </div>
-                    </div>
-
-                    {/* Recommended Items */}
-                    {suggestion.items && (
-                      <div className="mb-3 bg-gray-50/50 rounded-lg p-2 border border-dashed border-gray-200">
-                        <div className="flex flex-wrap gap-1">
-                          {suggestion.items.map((item, i) => (
-                            <span key={i} className="text-[10px] bg-white px-2 py-1 rounded border border-gray-100 text-gray-600 shadow-sm font-medium">
-                              {item}
-                            </span>
-                          ))}
+                    {isConfirming ? (
+                      <div className="flex flex-col items-center justify-center py-4 gap-3 animate-in fade-in zoom-in-95 duration-200">
+                        <p className="text-sm font-medium text-gray-900">Ignorar esta sugestão para esta mesa?</p>
+                        <div className="flex gap-2 w-full px-4">
+                          <button
+                            onClick={() => setConfirmingIgnoreId(null)}
+                            className="flex-1 py-1.5 bg-gray-100 text-gray-600 text-xs font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                          >
+                            Cancelar
+                          </button>
+                          <button
+                            onClick={() => {
+                              onIgnore(table.id, suggestion);
+                              setConfirmingIgnoreId(null);
+                            }}
+                            className="flex-1 py-1.5 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700 transition-colors"
+                          >
+                            Ignorar
+                          </button>
                         </div>
                       </div>
-                    )}
+                    ) : (
+                      <>
+                        {/* Badge */}
+                        <div className="flex justify-between items-start mb-2">
+                          <span className={cn(
+                            "inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold uppercase border",
+                            priorityConfig.styles
+                          )}>
+                            <PriorityIcon size={10} />
+                            Prioridade {priorityConfig.label}
+                          </span>
+                        </div>
 
-                    {/* Actions */}
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => onAction(table.id, suggestion)}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-1.5 bg-gray-900 hover:bg-black text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
-                      >
-                        <Check size={14} />
-                        Oferecer
-                      </button>
-                      <button
-                        onClick={() => onIgnore(table.id, suggestion)}
-                        className="px-3 py-1.5 hover:bg-gray-100 text-gray-400 hover:text-gray-600 rounded-lg transition-colors"
-                        title="Ignorar"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
+                        {/* Content */}
+                        <div className="flex items-start gap-3 mb-3">
+                          <div className="p-2 bg-gray-50 rounded-lg text-gray-600 group-hover:bg-white group-hover:shadow-sm transition-all">
+                            <Icon size={18} />
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-900">{suggestion.title}</h4>
+                            <p className="text-xs text-gray-500 mt-0.5">{suggestion.reason}</p>
+                          </div>
+                        </div>
+
+                        {/* Recommended Items */}
+                        {suggestion.items && (
+                          <div className="mb-3 bg-gray-50/50 rounded-lg p-2 border border-dashed border-gray-200">
+                            <div className="flex flex-wrap gap-1">
+                              {suggestion.items.map((item, i) => (
+                                <span key={i} className="text-[10px] bg-white px-2 py-1 rounded border border-gray-100 text-gray-600 shadow-sm font-medium">
+                                  {item}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="space-y-2">
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => onAction(table.id, suggestion)}
+                              className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-gray-900 hover:bg-black text-white text-xs font-bold rounded-lg transition-colors shadow-sm"
+                            >
+                              <Check size={14} />
+                              Marcar como visto
+                            </button>
+                            <button
+                              onClick={() => setConfirmingIgnoreId(suggestion.id)}
+                              className="px-3 py-1.5 hover:bg-gray-100 text-gray-400 hover:text-gray-600 rounded-lg transition-colors border border-transparent hover:border-gray-200"
+                              title="Ignorar"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+
+                          <div className="flex justify-center">
+                            <span className="text-[10px] text-gray-400 font-medium">
+                              Use como lembrete para a equipe.
+                            </span>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 );
               })}
@@ -173,7 +210,13 @@ export default function IntelligencePanel({ table, suggestions, onAction, onIgno
         </div>
 
         {/* Seção 2: Detalhes da Mesa */}
-
+        {/* Removed for brevity in this task context, in real file it continues... but I must preserve it if it was there? 
+            Wait, I am replacing the whole export default. The previous file viewing ended at line 182 and looked incomplete or empty?
+            Let's check the previous view_file.
+            It ended with `// Seção 2: Detalhes da Mesa` and then closing tags. It seems the file was truncated or the previous user didn't implement Section 2 completely.
+            The previous `view_file` output shows `// Seção 2: Detalhes da Mesa` and then `</div>` `</div>` `);` `}`.
+            So it seems empty. I will keep it empty to match the existing state, just adding my changes.
+        */}
 
       </div>
     </div>

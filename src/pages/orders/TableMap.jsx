@@ -44,17 +44,14 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
 
         // Rule: Offer refill if drink ordered and time > 15 min (Mock logic for refill)
         if (hasDrink && minutes > 15 && minutes < 60) {
-            // Check if ignored recently (simple check)
-            if (!ignored[tableId]?.includes('offer_refill')) {
-                suggs.push({
-                    id: 'offer_refill',
-                    type: 'drink',
-                    title: 'Oferecer nova rodada',
-                    reason: 'Última bebida pedida há mais de 15 min',
-                    priority: 'high',
-                    items: ['Repetir anteriores', 'Café', 'Novo Drink']
-                });
-            }
+            suggs.push({
+                id: 'offer_refill',
+                type: 'drink',
+                title: 'Oferecer nova rodada',
+                reason: 'Última bebida pedida há mais de 15 min',
+                priority: 'high',
+                items: ['Repetir anteriores', 'Café', 'Novo Drink']
+            });
         }
 
         // 2. Check for Main Course
@@ -83,7 +80,9 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
             });
         }
 
-        return suggs;
+        // Filter out ignored/seen suggestions
+        const tableIgnored = ignored[tableId] || [];
+        return suggs.filter(s => !tableIgnored.includes(s.id));
     };
 
     useEffect(() => {
@@ -177,7 +176,7 @@ export default function TableMap({ orders, onTableSelect, selectedTable }) {
     };
 
     const handleSuggestionAction = (tableId, suggestion) => {
-        toast.success(`Ação "${suggestion.title}" registrada para ${tableId}`);
+        toast.success(`Sugestão marcada como vista.`);
         // In a real app we would call backend. For now, add to ignored so it disappears
         setIgnoredSuggestions(prev => ({
             ...prev,
