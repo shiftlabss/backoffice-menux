@@ -34,32 +34,7 @@ import { KanbanBoard } from '../../components/maestro/kanban/KanbanBoard';
 import { ConfirmModal, useConfirmModal } from '../../components/ui/ConfirmModal';
 import { useAudit } from '../../hooks/useAudit';
 
-const recommendationsData = [
-  {
-    id: 1,
-    type: 'success',
-    title: 'Aumentar oferta de sobremesa no jantar',
-    diagnosis: 'A conversão de sobremesas caiu 5% nas últimas 2h do jantar.',
-    impact: 'Est. +R$ 450/dia',
-    confidence: 'Alto (85%)'
-  },
-  {
-    id: 2,
-    type: 'warning',
-    title: 'Revisar preço do Combo Família',
-    diagnosis: 'Visualizações altas, mas conversão 20% abaixo da média.',
-    impact: 'Est. +R$ 120/dia',
-    confidence: 'Médio (60%)'
-  },
-  {
-    id: 3,
-    type: 'info',
-    title: 'Ativar "Modo Happy Hour" mais cedo',
-    diagnosis: 'Pico de pedidos de bebidas começando as 17h, 1h antes do previsto.',
-    impact: 'Est. +R$ 300/dia',
-    confidence: 'Alto (92%)'
-  },
-];
+
 
 export default function IntelligenceRecommendations() {
   // State
@@ -326,46 +301,7 @@ export default function IntelligenceRecommendations() {
       </div>
 
 
-      {/* Moved from Intelligence Impact: Oportunidades Identificadas */}
-      <Card className="shadow-sm border-l-4 border-l-purple-500 overflow-hidden">
-        <div className="absolute top-0 right-0 p-4 opacity-5">
-          <Sparkles size={120} />
-        </div>
-        <div className="p-6 relative z-10">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h3 className="text-lg font-semibold text-slate-800">Oportunidades Identificadas</h3>
-              <p className="text-sm text-slate-500">Ações recomendadas para maximizar seu faturamento agora</p>
-            </div>
 
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {recommendationsData.map((rec) => (
-              <div key={rec.id} className="p-4 bg-white rounded-lg border border-slate-200 flex flex-col h-full">
-                <div className="flex items-start justify-between mb-3">
-                  <Badge variant="outline" className={cn(
-                    "text-xs font-semibold px-2 py-0.5",
-                    rec.type === 'success' ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
-                      rec.type === 'warning' ? "bg-amber-50 text-amber-700 border-amber-200" :
-                        "bg-blue-50 text-blue-700 border-blue-200"
-                  )}>
-                    {rec.impact}
-                  </Badge>
-                  <div className="flex gap-1">
-                    <CheckCircle2 size={14} className="text-slate-300" />
-                  </div>
-                </div>
-                <h4 className="text-sm font-bold text-slate-800 mb-2 leading-tight transition-colors">
-                  {rec.title}
-                </h4>
-                <p className="text-xs text-slate-500 mb-4 line-clamp-3">
-                  {rec.diagnosis}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </Card>
 
       {/* Bloco 3: Oportunidades Priorizadas (Kanban) */}
       <div>

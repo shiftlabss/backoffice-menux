@@ -357,7 +357,7 @@ const IntelligenceImpact = () => {
                     </span>
 
                     {/* Pass Rate Badge */}
-                    {step.conversion !== '-' && (
+                    {step.conversion !== '-' && index !== 0 && (
                       <Badge variant="outline" className={cn(
                         "mt-2 text-[10px] h-5",
                         parseInt(step.conversion) < 60 ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-slate-100 text-slate-600"
@@ -511,7 +511,7 @@ const IntelligenceImpact = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {rulesData.map((rule) => (
+                  {data?.rules?.map((rule) => (
                     <TableRow key={rule.id}>
                       <TableCell className="font-medium text-slate-900">{rule.name}</TableCell>
                       <TableCell>
@@ -529,7 +529,7 @@ const IntelligenceImpact = () => {
 
             {rankingTab === 'shifts' && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {shiftsData.map((shift) => (
+                {data?.shifts?.map((shift) => (
                   <div key={shift.id} className="p-4 rounded-lg bg-slate-50 border border-slate-200">
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-bold text-slate-800">{shift.name}</h4>
