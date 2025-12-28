@@ -7,7 +7,7 @@ import { AlertTriangle, Clock, Activity, ListChecks, History, CheckCircle2, Chev
 import { cn } from '../../../lib/utils';
 import { toast } from 'react-hot-toast';
 
-export function AlertAnalysisDrawer({ isOpen, onClose, alert, onResolve, onPlaybook }) {
+export function AlertAnalysisDrawer({ isOpen, onClose, alert, onResolve, onPlaybook, onSnooze }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -74,6 +74,15 @@ export function AlertAnalysisDrawer({ isOpen, onClose, alert, onResolve, onPlayb
                 <p className="text-sm text-slate-700">{step}</p>
               </div>
             ))}
+            {onPlaybook && (
+              <Button
+                variant="link"
+                className="text-xs text-indigo-600 p-0 h-auto mt-2 hover:no-underline hover:text-indigo-700 flex items-center gap-1"
+                onClick={() => onPlaybook(alert)}
+              >
+                Abrir playbook completo <ChevronRight size={12} />
+              </Button>
+            )}
           </div>
         </div>
 
@@ -109,6 +118,26 @@ export function AlertAnalysisDrawer({ isOpen, onClose, alert, onResolve, onPlayb
       </div>
 
       {/* Footer Actions */}
+      <div className="pt-6 mt-6 border-t border-slate-200 flex flex-col gap-3">
+        <div className="flex gap-3">
+          <Button className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white" onClick={() => toast.success("Marcado como em andamento")}>
+            Marcar como em andamento
+          </Button>
+          <Button variant="outline" className="flex-1 border-slate-200 text-slate-700" onClick={() => onResolve(alert)}>
+            Marcar como resolvido
+          </Button>
+        </div>
+        <div className="flex justify-between items-center px-1">
+          <Button variant="ghost" className="text-slate-500 hover:text-slate-900" onClick={onClose}>
+            Voltar
+          </Button>
+          {onSnooze && (
+            <Button variant="link" className="text-slate-400 hover:text-slate-600" onClick={() => onSnooze(alert)}>
+              Silenciar por 2h
+            </Button>
+          )}
+        </div>
+      </div>
 
 
     </Drawer>

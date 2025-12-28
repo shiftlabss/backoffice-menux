@@ -3,6 +3,7 @@ import { toast } from 'react-hot-toast';
 import { Loader2, Armchair, ChefHat } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { generateMockAlerts } from '../../services/alertMockData';
+import { useAudit } from '../../hooks/useAudit';
 
 // New Components
 
@@ -15,6 +16,7 @@ import { PlaybookDrawer } from '../../components/intelligence/alerts/PlaybookDra
 import { Card } from '../../components/ui/Card';
 
 export default function IntelligenceAlerts() {
+  const { log } = useAudit();
   const [loading, setLoading] = useState(true);
   const [alerts, setAlerts] = useState([]);
 
@@ -81,6 +83,7 @@ export default function IntelligenceAlerts() {
 
     setAlerts(filtered);
     setLoading(false);
+    log('intelligence.alerts.viewed', { count: filtered.length, filters });
   };
 
   const handleFilterChange = (key, value) => {
@@ -95,22 +98,28 @@ export default function IntelligenceAlerts() {
   const handleAnalyze = (alert) => {
     setSelectedAlert(alert);
     setActiveDrawer('analyze');
+    log('intelligence.drawer_opened', { drawer_name: 'analise_alerta', alert_id: alert.id });
   };
 
   const handlePlaybook = (alert) => {
     setSelectedAlert(alert);
     setActiveDrawer('playbook');
+    log('intelligence.drawer_opened', { drawer_name: 'playbook', alert_id: alert.id });
   };
 
   const handleResolve = (alert) => {
     toast.success("Ação automatizada iniciada...");
     // Optimistic update
     setAlerts(prev => prev.filter(a => a.id !== alert.id));
+    log('intelligence.action.resolve', { alert_id: alert.id });
+    log('intelligence.status_changed', { alert_id: alert.id, to: 'resolved' });
   };
 
   const handleSnooze = (alert) => {
     toast("Alerta silenciado por 2 horas.");
     setAlerts(prev => prev.filter(a => a.id !== alert.id));
+    log('intelligence.action.snooze', { alert_id: alert.id, duration: '2h' });
+    log('intelligence.alert_snoozed', { alert_id: alert.id, duration: '2h' });
   };
 
   // Summary Metrics
@@ -154,41 +163,7 @@ export default function IntelligenceAlerts() {
         />
       )}
 
-      {/* 5. Operational Views (Map & Queues) - Kept simplified at bottom as context */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8 pt-8 border-t border-slate-200">
-        {/* Simple Map Placeholder */}
-        <Card className="p-6 border-slate-200">
-          <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <Armchair size={18} className="text-slate-500" /> Mapa de Risco
-          </h3>
-          {/* Mini Map Visual */}
-          <div className="flex flex-wrap gap-2">
-            {Array.from({ length: 15 }).map((_, i) => (
-              <div key={i} className={cn(
-                "w-8 h-8 rounded flex items-center justify-center text-xs font-bold border",
-                i === 11 ? "bg-red-100 border-red-200 text-red-700 animate-pulse" : // Matching mock alert mesa 12
-                  i % 4 === 0 ? "bg-purple-50 border-purple-100 text-purple-700" :
-                    "bg-slate-50 border-slate-100 text-slate-300"
-              )}>
-                {i + 1}
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-slate-400 mt-3">Mesa 12 está em estado crítico de atenção.</p>
-        </Card>
 
-        {/* Simple Queue Placeholder */}
-        <Card className="p-6 border-slate-200">
-          <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-            <ChefHat size={18} className="text-slate-500" /> Fila de Produção
-          </h3>
-          <div className="space-y-3">
-            <QueueRow label="Grelha" count={12} color="red" />
-            <QueueRow label="Salada" count={5} color="orange" />
-            <QueueRow label="Bar" count={2} color="green" />
-          </div>
-        </Card>
-      </div>
 
 
       {/* Drawers */}
@@ -198,6 +173,7 @@ export default function IntelligenceAlerts() {
         alert={selectedAlert}
         onResolve={handleResolve}
         onPlaybook={handlePlaybook}
+        onSnooze={handleSnooze}
       />
 
       <PlaybookDrawer
@@ -210,12 +186,4 @@ export default function IntelligenceAlerts() {
   );
 }
 
-const QueueRow = ({ label, count, color }) => {
-  const colorClass = color === 'red' ? 'text-red-600' : color === 'orange' ? 'text-orange-600' : 'text-emerald-600';
-  return (
-    <div className="flex justify-between items-center bg-slate-50 p-2 rounded text-sm">
-      <span className="text-slate-700 font-medium">{label}</span>
-      <span className={cn("font-bold", colorClass)}>{count} pedidos</span>
-    </div>
-  )
-}
+
