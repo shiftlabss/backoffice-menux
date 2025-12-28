@@ -1,10 +1,17 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Button } from './Button';
 
 export function Drawer({ isOpen, onClose, title, children, footer, className, size = 'md', hideHeader = false }) {
   const drawerRef = useRef(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   // Handle ESC key press
   const handleKeyDown = useCallback((e) => {
@@ -32,7 +39,7 @@ export function Drawer({ isOpen, onClose, title, children, footer, className, si
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const sizeClasses = {
     sm: 'max-w-sm',
@@ -43,7 +50,7 @@ export function Drawer({ isOpen, onClose, title, children, footer, className, si
     full: 'max-w-full',
   };
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex justify-end bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={handleOverlayClick}
@@ -85,6 +92,7 @@ export function Drawer({ isOpen, onClose, title, children, footer, className, si
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
