@@ -8,15 +8,22 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../ui/Tabs'; // Ass
 import { cn } from '../../../lib/utils';
 import { Loader2, Package, Layers, Activity } from 'lucide-react';
 
-export function RankingsTabs({ products, combos, loading, onAnalyzeProduct, onAnalyzeCombo }) {
-  const [activeTab, setActiveTab] = useState('products');
+import { useAudit } from '../../../hooks/useAudit';
+
+export function RankingsTabs({ activeTab, onTabChange, products, combos, loading, onAnalyzeProduct, onAnalyzeCombo }) {
+  const { log } = useAudit();
+
+  const handleTabChange = (tab) => {
+    onTabChange(tab);
+    log('intelligence.products.tab_changed', { tab });
+  };
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex bg-slate-100 p-1 rounded-lg self-start">
           <button
-            onClick={() => setActiveTab('products')}
+            onClick={() => handleTabChange('products')}
             className={cn(
               "px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2",
               activeTab === 'products' ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
@@ -26,7 +33,7 @@ export function RankingsTabs({ products, combos, loading, onAnalyzeProduct, onAn
             Produtos
           </button>
           <button
-            onClick={() => setActiveTab('combos')}
+            onClick={() => handleTabChange('combos')}
             className={cn(
               "px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2",
               activeTab === 'combos' ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"
@@ -36,7 +43,7 @@ export function RankingsTabs({ products, combos, loading, onAnalyzeProduct, onAn
             Combos
           </button>
           <button
-            onClick={() => setActiveTab('diagnostics')}
+            onClick={() => handleTabChange('diagnostics')}
             id="tab-diagnostics"
             className={cn(
               "px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2",

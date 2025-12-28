@@ -7,6 +7,9 @@ import { MaestroSummary } from '../../components/intelligence/products/MaestroSu
 import { MaestroActionList } from '../../components/intelligence/products/MaestroActionList';
 import { UniversalActionDrawer } from '../../components/intelligence/products/UniversalActionDrawer';
 import { RankingsTabs } from '../../components/intelligence/products/RankingsTabs';
+import ProductDetailDrawer from '../../components/intelligence/ProductDetailDrawer';
+import ComboAnalysisDrawer from '../../components/intelligence/ComboAnalysisDrawer';
+import { ConfirmModal } from '../../components/ui/ConfirmModal';
 
 // Mock Data Generators for new actionable schema
 const generateOpportunities = () => [
@@ -89,7 +92,20 @@ export default function IntelligenceProducts() {
 
   // Drawer Action State
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [productDrawerOpen, setProductDrawerOpen] = useState(false);
+  const [comboDrawerOpen, setComboDrawerOpen] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [itemToIgnore, setItemToIgnore] = useState(null);
+
+  // Sync Global Entity Filter to Tabs
+  const [activeTab, setActiveTab] = useState('products');
+
+  useEffect(() => {
+    if (filters.entity === 'product') setActiveTab('products');
+    if (filters.entity === 'combo') setActiveTab('combos');
+  }, [filters.entity]);
 
   // Initial Fetch & Filter Effect
   useEffect(() => {
@@ -161,16 +177,48 @@ export default function IntelligenceProducts() {
   };
 
   const handleIgnoreAction = (opportunity) => {
-    toast("Oportunidade ignorada por 7 dias", { icon: "😴" });
-    setOpportunities(prev => prev.filter(o => o.id !== opportunity.id));
-    log('intelligence.products.ignore_click', { id: opportunity.id });
+    setItemToIgnore(opportunity);
+    setConfirmModalOpen(true);
+  };
+
+  const confirmIgnore = () => {
+    if (itemToIgnore) {
+      toast("Oportunidade ignorada por 7 dias", { icon: "😴" });
+      setOpportunities(prev => prev.filter(o => o.id !== itemToIgnore.id));
+      log('intelligence.products.ignore_click', { id: itemToIgnore.id });
+    }
+    setConfirmModalOpen(false);
+    setItemToIgnore(null);
   };
 
   const handleApplyAction = (opportunity) => {
-    // Logic handled inside drawer validation, this is the final commit
     setOpportunities(prev => prev.filter(o => o.id !== opportunity.id));
     setDrawerOpen(false);
-    // Maybe refresh data here
+    toast.success("Ação aplicada com sucesso!");
+    log('intelligence.action.success', { id: opportunity.id });
+  };
+
+  const handleScrollToDiagnostics = () => {
+    setActiveTab('diagnostics');
+    document.getElementById('rankings-section')?.scrollIntoView({ behavior: 'smooth' });
+    log('intelligence.products.view_diagnostics_click');
+  };
+
+  const handleScrollToActions = () => {
+    document.getElementById('maestro-actions-section')?.scrollIntoView({ behavior: 'smooth' });
+    log('intelligence.products.view_actions_click');
+  };
+
+  const handleAnalyzeProduct = (product) => {
+    setSelectedItem(product);
+    setProductDrawerOpen(true);
+    log('intelligence.products.analyze_product', { id: product.id });
+  };
+
+  const handleAnalyzeCombo = (combo) => {
+    setSelectedItem(combo);
+    setComboDrawerOpen(true);
+    log('intelligence.products.analyze_combo', { id: combo.id });
   };
 
   return (
@@ -188,38 +236,75 @@ export default function IntelligenceProducts() {
         <MaestroSummary
           metrics={metrics}
           onResolveTopAction={() => handleResolveAction(opportunities[0])}
+          onViewDiagnostics={handleScrollToDiagnostics}
         />
 
         {/* 3. Priority Actions List */}
-        <MaestroActionList
-          opportunities={opportunities}
-          onResolve={handleResolveAction}
-          onEdit={handleEditAction}
-          onIgnore={handleIgnoreAction}
-        />
+        <div id="maestro-actions-section">
+          <MaestroActionList
+            opportunities={opportunities}
+            onResolve={handleResolveAction}
+            onEdit={handleEditAction}
+            onIgnore={handleIgnoreAction}
+          />
+        </div>
 
         {/* 4. Rankings & Diagnostics (Tabs) */}
-        <div>
+        <div id="rankings-section">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-slate-900">Análise Detalhada</h2>
           </div>
           <RankingsTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
             products={products}
             combos={combos}
             loading={loading}
-            onAnalyzeProduct={(p) => toast(`Analisando ${p.name}`)}
-            onAnalyzeCombo={(c) => toast(`Analisando ${c.name}`)}
+            onAnalyzeProduct={handleAnalyzeProduct}
+            onAnalyzeCombo={handleAnalyzeCombo}
           />
         </div>
 
       </div>
 
-      {/* 5. Drawers */}
+      {/* 5. Drawers & Modals */}
       <UniversalActionDrawer
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         opportunity={selectedOpportunity}
         onApply={handleApplyAction}
+      />
+
+      <ProductDetailDrawer
+        isOpen={productDrawerOpen}
+        onClose={() => setProductDrawerOpen(false)}
+        product={selectedItem}
+        onViewActions={() => {
+          setProductDrawerOpen(false);
+          handleScrollToActions();
+        }}
+      />
+
+      <ComboAnalysisDrawer
+        isOpen={comboDrawerOpen}
+        onClose={() => setComboDrawerOpen(false)}
+        combo={selectedItem}
+        onEdit={() => toast("Abrindo editor de combo...")}
+        onViewActions={() => {
+          setComboDrawerOpen(false);
+          handleScrollToActions();
+        }}
+      />
+
+      <ConfirmModal
+        isOpen={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        onConfirm={confirmIgnore}
+        title="Ignorar esta oportunidade?"
+        description="Esta sugestão não aparecerá novamente pelos próximos 7 dias. Você pode encontrá-la no histórico."
+        confirmText="Ignorar por 7 dias"
+        cancelText="Cancelar"
+        variant="danger"
       />
 
     </div>

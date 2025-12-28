@@ -44,7 +44,7 @@ const generateFunnelData = (impressions = 1240) => {
   ];
 };
 
-export default function ProductDetailDrawer({ isOpen, onClose, product }) {
+export default function ProductDetailDrawer({ isOpen, onClose, product, onViewActions }) {
   if (!product) return null;
 
   const [chartTab, setChartTab] = useState('revenue');
@@ -278,6 +278,17 @@ export default function ProductDetailDrawer({ isOpen, onClose, product }) {
           {/* 6. Opportunities (Removed) */}
 
         </div>
+      </div>
+      {/* Footer Actions */}
+      <div className="p-4 border-t border-slate-100 bg-white flex justify-between items-center">
+        <Button variant="ghost" onClick={onClose} className="text-slate-500">Fechar</Button>
+        <Button
+          variant="default"
+          onClick={onViewActions}
+          className="bg-purple-600 hover:bg-purple-700 text-white"
+        >
+          Ver ações do Maestro
+        </Button>
       </div>
     </Drawer>
   );

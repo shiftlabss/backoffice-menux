@@ -19,27 +19,7 @@ export default function IntelligenceLayout() {
       subtitle={currentItem.subtitle}
       items={null} // No sidebar
       useWindowScroll={true}
-      actions={
-        <div className="flex bg-gray-100/50 p-1 rounded-lg border border-gray-200/50">
-          {['Hoje', 'Ontem', '7 dias', '30 dias'].map((label, index) => {
-            const id = ['today', 'yesterday', '7d', '30d'][index];
-            return (
-              <button
-                key={id}
-                onClick={() => setDateRange(id)}
-                className={cn(
-                  "px-3 py-1.5 text-xs font-bold rounded-md transition-all",
-                  dateRange === id
-                    ? "bg-white text-gray-900 shadow-sm border border-gray-200"
-                    : "text-gray-500 hover:text-gray-700"
-                )}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
-      }
+      actions={null}
     >
       <div className="mb-6">
         <MaestroTabs />

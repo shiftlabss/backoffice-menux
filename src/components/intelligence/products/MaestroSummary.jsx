@@ -38,7 +38,7 @@ const SummaryCard = ({ title, value, subtext, icon: Icon, color, actionLabel, on
   </Card>
 );
 
-export function MaestroSummary({ metrics, onResolveTopAction }) {
+export function MaestroSummary({ metrics, onResolveTopAction, onViewDiagnostics }) {
   if (!metrics) return null;
 
   return (
@@ -77,7 +77,7 @@ export function MaestroSummary({ metrics, onResolveTopAction }) {
         icon={Activity}
         color="text-blue-600"
         actionLabel="Ver diagnósticos"
-        onAction={() => document.getElementById('tab-diagnostics')?.click()}
+        onAction={onViewDiagnostics}
       />
 
     </div>

@@ -11,7 +11,7 @@ import {
 import { cn } from '../../lib/utils';
 import { format } from 'date-fns';
 
-export default function ComboAnalysisDrawer({ isOpen, onClose, combo, onEdit }) {
+export default function ComboAnalysisDrawer({ isOpen, onClose, combo, onEdit, onViewActions }) {
   if (!combo) return null;
 
   // Mock Context Chips
@@ -153,7 +153,12 @@ export default function ComboAnalysisDrawer({ isOpen, onClose, combo, onEdit }) 
           <Button variant="ghost" onClick={onClose} className="text-slate-500">Voltar</Button>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => onEdit(combo)}>Editar Combo</Button>
-            <Button disabled className="opacity-50 cursor-not-allowed">Aplicar Oportunidade</Button>
+            <Button
+              onClick={onViewActions}
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              Ver ações do Maestro
+            </Button>
           </div>
         </div>
       </div>
