@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { useAudit } from '../../hooks/useAudit';
 import { intelligenceService } from '../../services/dataService'; // Keep for products fetch
-import { ProductsFilterBar } from '../../components/intelligence/products/ProductsFilterBar';
+
 import { MaestroSummary } from '../../components/intelligence/products/MaestroSummary';
 import { MaestroActionList } from '../../components/intelligence/products/MaestroActionList';
 import { UniversalActionDrawer } from '../../components/intelligence/products/UniversalActionDrawer';
@@ -222,15 +222,10 @@ export default function IntelligenceProducts() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-20">
+    <div className="min-h-screen pb-20">
 
-      {/* 1. Context & Filters (Sticky) */}
-      <ProductsFilterBar
-        onFilterChange={setFilters}
-        isLoading={loading}
-      />
 
-      <div className="max-w-[1600px] mx-auto px-6 space-y-8 mt-6">
+      <div className="space-y-8">
 
         {/* 2. Maestro Summary */}
         <MaestroSummary
